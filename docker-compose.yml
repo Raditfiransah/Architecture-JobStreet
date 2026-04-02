@@ -1,0 +1,102 @@
+services:
+  # PHP-FPM Service (Laravel App)
+  app:
+    build:
+      context: .
+      dockerfile: docker/php/Dockerfile
+    container_name: pbl-architecture-app
+    working_dir: /var/www
+    volumes:
+      - ./:/var/www
+    networks:
+      - pbl-architecture-network
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: unless-stopped
+    environment:
+      - DB_HOST=db
+      - DB_PORT=3306
+      - DB_DATABASE=${DB_DATABASE:-laravel}
+      - DB_USERNAME=${DB_USERNAME:-laravel}
+      - DB_PASSWORD=${DB_PASSWORD:-secret}
+
+  # Nginx Service
+  nginx:
+    image: nginx:alpine
+    container_name: pbl-architecture-nginx
+    ports:
+      - "8000:80"
+    volumes:  
+      - ./:/var/www
+      - ./docker/nginx/default.conf:/etc/nginx/conf.d/default.conf
+    networks:
+      - pbl-architecture-network
+    depends_on:
+      - app
+    restart: unless-stopped
+
+  # MySQL Service
+  db:
+    image: mysql:8.0
+    container_name: pbl-architecture-db
+    environment:
+      MYSQL_DATABASE: ${DB_DATABASE:-laravel}
+      MYSQL_USER: ${DB_USERNAME:-laravel}
+      MYSQL_PASSWORD: ${DB_PASSWORD:-secret}
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD:-secret}
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysqldata:/var/lib/mysql
+    networks:
+      - pbl-architecture-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${DB_PASSWORD:-secret}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+  # phpMyAdmin Service
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin:latest
+    container_name: pbl-architecture-phpmyadmin
+    environment:
+      PMA_HOST: db
+      PMA_PORT: 3306
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD:-secret}
+    ports:
+      - "8081:80"
+    networks:
+      - pbl-architecture-network
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: unless-stopped
+
+  # Node.js Service (Vite/Asset Compilation)
+  node:
+    image: node:20-alpine
+    container_name: pbl-architecture-node
+    working_dir: /var/www
+    volumes:
+      - ./:/var/www
+    environment:
+      - NODE_ENV=development
+    ports:
+      - "5173:5173" # Port default untuk Vite
+    networks:
+      - pbl-architecture-network
+    # Perintah agar container tetap hidup dan menjalankan dev server
+    command: sh -c "npm install && npm run dev -- --host"
+    restart: unless-stopped
+    
+networks:
+  pbl-architecture-network:
+    driver: bridge
+
+volumes:
+  mysqldata:
+    driver: local

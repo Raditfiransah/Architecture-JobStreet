@@ -76,6 +76,16 @@ services:
         condition: service_healthy
     restart: unless-stopped
 
+  # Redis Service (Session & Cache)
+  redis:
+    image: redis:7-alpine
+    container_name: pbl-architecture-redis
+    ports:
+      - "6379:6379"
+    networks:
+      - pbl-architecture-network
+    restart: unless-stopped
+
   # Node.js Service (Vite/Asset Compilation)
   node:
     image: node:20-alpine

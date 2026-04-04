@@ -20,7 +20,10 @@ return Application::configure(basePath: dirname(__DIR__))
             'profile.complete' => EnsureProfileComplete::class,
         ]);
 
-        $middleware->throttleWithRedis();
+        // Use Redis throttling only when phpredis extension is available
+        if (extension_loaded('redis')) {
+            $middleware->throttleWithRedis();
+        }
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //

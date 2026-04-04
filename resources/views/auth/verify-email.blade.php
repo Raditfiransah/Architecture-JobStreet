@@ -1,6 +1,6 @@
 <x-guest-layout>
     <div class="mb-4 text-sm text-gray-600">
-        {{ __('Email verifikasi telah dikirim ke :email. Silakan masukkan kode 6 digit yang Anda terima.', ['email' => session('otp_email', session('email', ''))]) }}
+        {{ __('Email verifikasi telah dikirim ke :email. Silakan masukkan kode 6 digit yang Anda terima.', ['email' => $email ?? session('otp_email', '')]) }}
     </div>
 
     @if (session('status'))
@@ -9,6 +9,13 @@
         </div>
     @endif
 
+    @if (session('warning'))
+        <div class="mb-4 font-medium text-sm text-amber-600">
+            {{ session('warning') }}
+        </div>
+    @endif
+
+    {{-- Verification Form --}}
     <form method="POST" action="{{ route('verification.verify') }}">
         @csrf
 
@@ -24,19 +31,29 @@
             <x-primary-button>
                 {{ __('Verifikasi') }}
             </x-primary-button>
-
-            <form method="POST" action="{{ route('resend.otp') }}">
-                @csrf
-                <x-secondary-button type="submit" id="resendBtn">
-                    {{ __('Kirim Ulang Kode') }}
-                </x-secondary-button>
-            </form>
         </div>
     </form>
 
-    <div class="mt-4 text-center">
-        <a href="{{ route('login') }}" class="underline text-sm text-gray-600 hover:text-gray-900">
-            {{ __('Kembali ke Login') }}
-        </a>
+    {{-- Resend OTP Form — Separate form, NOT nested --}}
+    <div class="mt-4 flex items-center justify-between">
+        <form method="POST" action="{{ route('resend.otp') }}">
+            @csrf
+            <x-secondary-button type="submit" id="resendBtn">
+                {{ __('Kirim Ulang Kode') }}
+            </x-secondary-button>
+        </form>
+
+        <form method="POST" action="{{ route('logout') }}">
+            @csrf
+            <button type="submit" class="underline text-sm text-gray-600 hover:text-gray-900">
+                {{ __('Keluar & Kembali ke Login') }}
+            </button>
+        </form>
     </div>
+
+    @if ($errors->has('email'))
+        <div class="mt-4">
+            <x-input-error :messages="$errors->get('email')" />
+        </div>
+    @endif
 </x-guest-layout>

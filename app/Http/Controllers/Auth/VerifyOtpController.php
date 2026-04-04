@@ -9,26 +9,68 @@ use App\Models\User;
 use App\Services\OtpService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\View\View;
 
 class VerifyOtpController extends Controller
 {
-    public function show(): View
+    /**
+     * Resolve the user needing OTP verification.
+     * Uses session('otp_email') with fallback to authenticated user.
+     */
+    private function resolveUser(): ?User
     {
-        return view('auth.verify-email');
+        $email = session('otp_email');
+
+        if ($email) {
+            return User::where('email', $email)->first();
+        }
+
+        // Fallback: if user is logged in, use their email
+        if (Auth::check()) {
+            $user = Auth::user();
+            session(['otp_email' => $user->email]); // restore session
+
+            return $user;
+        }
+
+        return null;
+    }
+
+    public function show(): View|RedirectResponse
+    {
+        $user = $this->resolveUser();
+
+        // If no user can be resolved, redirect to login
+        if (! $user) {
+            return redirect()->route('login')
+                ->withErrors(['email' => __('Sesi telah berakhir. Silakan login kembali.')]);
+        }
+
+        // If already verified, redirect to dashboard
+        if ($user->email_verified_at) {
+            return redirect()->route($user->dashboardRoute())
+                ->with('status', __('Email sudah diverifikasi.'));
+        }
+
+        return view('auth.verify-email', [
+            'email' => $user->email,
+        ]);
     }
 
     public function verify(Request $request, OtpService $otpService): RedirectResponse
     {
         $request->validate([
-            'code' => ['required', 'string', 'size:6', 'digits:6'],
+            'code' => ['required', 'string', 'size:6', 'regex:/^\d{6}$/'],
         ]);
 
-        $user = User::where('email', session('otp_email'))->first();
+        $user = $this->resolveUser();
 
         if (! $user) {
-            return back()->withErrors(['code' => __('Kode tidak valid, minta kode baru.')]);
+            return redirect()->route('login')
+                ->withErrors(['email' => __('Sesi telah berakhir. Silakan login kembali.')]);
         }
 
         $verificationCode = $otpService->validate($user, $request->code);
@@ -40,7 +82,7 @@ class VerifyOtpController extends Controller
                 ->first();
 
             if ($existingCode && $existingCode->isExpired()) {
-                return back()->withErrors(['code' => __('Kode sudah expired, kirim ulang.')]);
+                return back()->withErrors(['code' => __('Kode sudah expired. Silakan kirim ulang kode baru.')]);
             }
 
             return back()->withErrors(['code' => __('Kode salah, silakan coba lagi.')]);
@@ -48,20 +90,28 @@ class VerifyOtpController extends Controller
 
         $otpService->markUsed($verificationCode);
 
-        $user->update([
-            'email_verified_at' => now(),
-        ]);
+        $user->email_verified_at = now();
+        $user->save();
 
-        return redirect()->route('login')
-            ->with('status', __('Email berhasil diverifikasi. Silakan login.'));
+        // Ensure user is logged in after verification
+        if (! Auth::check()) {
+            Auth::login($user);
+        }
+
+        // Clean up OTP session
+        session()->forget('otp_email');
+
+        return redirect()->route($user->dashboardRoute())
+            ->with('status', __('Email berhasil diverifikasi. Selamat datang!'));
     }
 
     public function resend(Request $request, OtpService $otpService): RedirectResponse
     {
-        $user = User::where('email', session('otp_email'))->first();
+        $user = $this->resolveUser();
 
         if (! $user) {
-            return back()->withErrors(['email' => __('Email tidak ditemukan.')]);
+            return redirect()->route('login')
+                ->withErrors(['email' => __('Sesi telah berakhir. Silakan login kembali.')]);
         }
 
         if (! $otpService->canResend($user)) {
@@ -70,7 +120,13 @@ class VerifyOtpController extends Controller
 
         $verificationCode = $otpService->generate($user);
 
-        Mail::to($user->email)->send(new ResendOtpMail($verificationCode->code, $user->name));
+        try {
+            Mail::to($user->email)->send(new ResendOtpMail($verificationCode->code, $user->name));
+        } catch (\Exception $e) {
+            Log::error('Failed to resend OTP email: '.$e->getMessage());
+
+            return back()->withErrors(['email' => __('Gagal mengirim email. Silakan coba lagi nanti.')]);
+        }
 
         return back()->with('status', __('Kode verifikasi baru telah dikirim ke :email.', ['email' => $user->email]));
     }

@@ -4,10 +4,13 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\LoginRequest;
+use App\Mail\ResendOtpMail;
+use App\Services\OtpService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Validation\ValidationException;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\View\View;
 
 class AuthenticatedSessionController extends Controller
@@ -17,7 +20,7 @@ class AuthenticatedSessionController extends Controller
         return view('auth.login');
     }
 
-    public function store(LoginRequest $request): RedirectResponse
+    public function store(LoginRequest $request, OtpService $otpService): RedirectResponse
     {
         $request->authenticate();
 
@@ -25,18 +28,29 @@ class AuthenticatedSessionController extends Controller
 
         $user = Auth::user();
 
+        // Unverified user → redirect to OTP verification instead of blocking
         if (! $user->email_verified_at) {
-            Auth::logout();
+            $verificationCode = $otpService->generate($user);
 
-            throw ValidationException::withMessages([
-                'email' => __('Email belum diverifikasi. Silakan verifikasi email Anda terlebih dahulu.'),
-            ]);
+            try {
+                Mail::to($user->email)->send(new ResendOtpMail($verificationCode->code, $user->name));
+            } catch (\Exception $e) {
+                Log::error('Failed to send OTP email on login: '.$e->getMessage());
+            }
+
+            session(['otp_email' => $user->email]);
+
+            return redirect()->route('verification.notice')
+                ->with('status', __('Email belum diverifikasi. Kode verifikasi baru telah dikirim ke :email.', ['email' => $user->email]));
         }
 
+        // Deactivated account
         if (! $user->is_active) {
             Auth::logout();
+            $request->session()->invalidate();
+            $request->session()->regenerateToken();
 
-            throw ValidationException::withMessages([
+            return back()->withErrors([
                 'email' => __('Akun dinonaktifkan, hubungi admin untuk mengaktifkan kembali.'),
             ]);
         }

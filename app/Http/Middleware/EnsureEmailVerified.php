@@ -13,10 +13,15 @@ class EnsureEmailVerified
     {
         $user = Auth::user();
 
+        // Allow if no user (handled by auth middleware) or already verified
         if (! $user || $user->email_verified_at) {
             return $next($request);
         }
 
-        return redirect()->route('verification.notice');
+        // Set session for OTP page to pick up
+        session(['otp_email' => $user->email]);
+
+        return redirect()->route('verification.notice')
+            ->with('warning', __('Anda harus memverifikasi email terlebih dahulu.'));
     }
 }

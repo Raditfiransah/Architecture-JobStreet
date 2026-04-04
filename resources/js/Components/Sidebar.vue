@@ -5,11 +5,13 @@ import { computed } from 'vue';
 const props = defineProps({
     role: {
         type: String,
-        required: true,
+        required: false,
+        default: '',
     },
 });
 
 const panelTitle = computed(() => {
+    if (!props.role) return 'User Panel';
     const titles = {
         arsitek: 'Arsitek Panel',
         perusahaan: 'Perusahaan Panel',
@@ -32,7 +34,7 @@ const isRoute = (name) => route().current(name);
         <nav class="mt-6">
             <!-- Arsitek Menu -->
             <template v-if="role === 'arsitek'">
-                <Link :href="route('dashboard.arsitek')" :class="isRoute('dashboard.arsitek') ? 'bg-gray-800 text-white' : 'text-gray-400 hover:bg-gray-800 hover:text-white'" class="flex items-center px-6 py-3 transition">
+                <Link :href="route('arsitek.dashboard')" :class="isRoute('arsitek.dashboard') ? 'bg-gray-800 text-white' : 'text-gray-400 hover:bg-gray-800 hover:text-white'" class="flex items-center px-6 py-3 transition">
                     <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-4 0h4"/></svg>
                     Dashboard
                 </Link>
@@ -56,7 +58,7 @@ const isRoute = (name) => route().current(name);
 
             <!-- Perusahaan Menu -->
             <template v-else-if="role === 'perusahaan'">
-                <Link :href="route('dashboard.perusahaan')" :class="isRoute('dashboard.perusahaan') ? 'bg-gray-800 text-white' : 'text-gray-400 hover:bg-gray-800 hover:text-white'" class="flex items-center px-6 py-3 transition">
+                <Link :href="route('perusahaan.dashboard')" :class="isRoute('perusahaan.dashboard') ? 'bg-gray-800 text-white' : 'text-gray-400 hover:bg-gray-800 hover:text-white'" class="flex items-center px-6 py-3 transition">
                     <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-4 0h4"/></svg>
                     Dashboard
                 </Link>
@@ -72,7 +74,7 @@ const isRoute = (name) => route().current(name);
 
             <!-- Client Menu -->
             <template v-else-if="role === 'client'">
-                <Link :href="route('dashboard.client')" :class="isRoute('dashboard.client') ? 'bg-gray-800 text-white' : 'text-gray-400 hover:bg-gray-800 hover:text-white'" class="flex items-center px-6 py-3 transition">
+                <Link :href="route('client.dashboard')" :class="isRoute('client.dashboard') ? 'bg-gray-800 text-white' : 'text-gray-400 hover:bg-gray-800 hover:text-white'" class="flex items-center px-6 py-3 transition">
                     <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-4 0h4"/></svg>
                     Dashboard
                 </Link>
@@ -84,7 +86,7 @@ const isRoute = (name) => route().current(name);
 
             <!-- Admin Menu -->
             <template v-else-if="role === 'admin'">
-                <Link :href="route('dashboard.admin')" :class="isRoute('dashboard.admin') ? 'bg-gray-800 text-white' : 'text-gray-400 hover:bg-gray-800 hover:text-white'" class="flex items-center px-6 py-3 transition">
+                <Link :href="route('admin.dashboard')" :class="isRoute('admin.dashboard') ? 'bg-gray-800 text-white' : 'text-gray-400 hover:bg-gray-800 hover:text-white'" class="flex items-center px-6 py-3 transition">
                     <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-4 0h4"/></svg>
                     Dashboard
                 </Link>

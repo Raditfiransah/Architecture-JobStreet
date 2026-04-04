@@ -145,11 +145,6 @@ const popularTags = ['Arsitek Residensial', 'BIM Specialist', 'Interior Designer
                         <form @submit.prevent class="flex flex-col md:flex-row items-stretch md:items-center">
                             <input type="text" placeholder="Cari posisi, keahlian, atau perusahaan..." class="flex-1 border-0 bg-transparent px-4 py-3 text-[15px] text-ink placeholder:text-ink-muted/60 focus:ring-0 focus:outline-none">
                             <div class="hidden md:block w-px h-6 bg-[#e4ede8] self-center shrink-0"></div>
-                            <select class="hidden md:block border-0 bg-transparent px-4 py-3 text-[15px] text-ink-muted focus:ring-0 focus:outline-none appearance-none cursor-pointer">
-                                <option value="">Semua Kota</option>
-                                <option value="jakarta">Jakarta</option>
-                                <option value="surabaya">Surabaya</option>
-                            </select>
                             <button type="submit" class="mt-2 md:mt-0 bg-primary-300 hover:bg-primary-400 text-white font-semibold text-[15px] px-6 py-3 rounded-xl transition-colors duration-150 shrink-0">
                                 Cari Lowongan
                             </button>

@@ -11,9 +11,12 @@ const props = defineProps({
 
 const emit = defineEmits(['toggle-sidebar']);
 
-const userName = computed(() => props.user.name);
-const userInitials = computed(() => props.user.name.charAt(0).toUpperCase());
+const userName = computed(() => props.user?.name || 'User');
+const userInitials = computed(() => {
+    return props.user?.name ? props.user.name.charAt(0).toUpperCase() : 'U';
+});
 const userRole = computed(() => {
+    if (!props.user?.role) return 'Unassigned';
     return props.user.role.charAt(0).toUpperCase() + props.user.role.slice(1);
 });
 

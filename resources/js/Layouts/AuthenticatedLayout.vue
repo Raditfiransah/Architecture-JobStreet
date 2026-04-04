@@ -33,7 +33,7 @@ onUnmounted(() => window.removeEventListener('keydown', handleEsc));
             :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'"
             class="fixed inset-y-0 left-0 z-50 w-64 transition-transform duration-300 ease-in-out lg:static lg:inset-auto lg:translate-x-0 bg-gray-900 shadow-xl lg:shadow-none"
         >
-            <Sidebar :role="user.role" />
+            <Sidebar v-if="user" :role="user.role" />
         </div>
 
         <!-- Sidebar Overlay (Mobile) -->
@@ -54,7 +54,7 @@ onUnmounted(() => window.removeEventListener('keydown', handleEsc));
 
         <!-- Main Content Area -->
         <div class="flex-1 flex flex-col min-w-0 h-screen overflow-hidden">
-            <Topbar :user="user" @toggle-sidebar="toggleSidebar" />
+            <Topbar v-if="user" :user="user" @toggle-sidebar="toggleSidebar" />
 
             <main class="flex-1 overflow-y-auto p-4 md:p-8">
                 <div class="max-w-7xl mx-auto">

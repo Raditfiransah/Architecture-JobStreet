@@ -10,7 +10,9 @@ class LoginController extends Controller
 {
     public function showForm()
     {
-        return view('auth.login');
+        return \Inertia\Inertia::render('Auth/Login', [
+            'status' => session('status'),
+        ]);
     }
 
     public function login(Request $request)
@@ -23,7 +25,7 @@ class LoginController extends Controller
         if (Auth::attempt($credentials, $request->boolean('remember'))) {
             $request->session()->regenerate();
 
-            return redirect()->intended($this->redirectAfterLogin());
+            return redirect()->intended($this->redirectAfterLogin($request));
         }
 
         return back()->withErrors([
@@ -41,9 +43,9 @@ class LoginController extends Controller
         return redirect()->route('home');
     }
 
-    private function redirectAfterLogin(): string
+    private function redirectAfterLogin(Request $request): string
     {
-        return match (auth()->user()->role) {
+        return match ($request->user()->role) {
             'arsitek' => route('arsitek.dashboard'),
             'perusahaan' => route('perusahaan.dashboard'),
             'client' => route('client.dashboard'),

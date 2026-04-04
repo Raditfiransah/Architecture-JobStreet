@@ -10,7 +10,9 @@ class PasswordResetController extends Controller
 {
     public function showForm()
     {
-        return view('auth.forgot-password');
+        return \Inertia\Inertia::render('Auth/ForgotPassword', [
+            'status' => session('status'),
+        ]);
     }
 
     public function sendLink(Request $request)
@@ -26,7 +28,7 @@ class PasswordResetController extends Controller
 
     public function showReset(Request $request, string $token)
     {
-        return view('auth.reset-password', [
+        return \Inertia\Inertia::render('Auth/ResetPassword', [
             'token' => $token,
             'email' => $request->email,
         ]);

@@ -8,7 +8,9 @@ class DashboardController extends Controller
 {
     public function index()
     {
-        return view('dashboard.admin');
+        return \Inertia\Inertia::render('Dashboard/Admin', [
+            'user' => auth()->user(),
+        ]);
     }
 
     public function antrian()

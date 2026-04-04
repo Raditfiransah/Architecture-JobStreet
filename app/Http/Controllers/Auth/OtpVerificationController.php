@@ -8,13 +8,16 @@ use Illuminate\Http\Request;
 
 class OtpVerificationController extends Controller
 {
-    public function showForm()
+    public function showForm(Request $request)
     {
         if (auth()->user()->email_verified_at) {
             return redirect()->route(auth()->user()->dashboardRoute());
         }
 
-        return view('auth.verify-email');
+        return \Inertia\Inertia::render('Auth/VerifyEmail', [
+            'status' => session('status'),
+            'email' => $request->user()->email,
+        ]);
     }
 
     public function verify(Request $request)

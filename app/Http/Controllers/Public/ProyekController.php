@@ -8,11 +8,15 @@ class ProyekController extends Controller
 {
     public function index()
     {
-        return view('public.proyek.index');
+        return \Inertia\Inertia::render('Public/DefaultPublicPage', [
+            'title' => 'Eksplorasi Proyek Arsitektur',
+        ]);
     }
 
     public function show(string $id)
     {
-        return view('public.proyek.show', compact('id'));
+        return \Inertia\Inertia::render('Public/DefaultPublicPage', [
+            'title' => 'Detail Proyek #' . $id,
+        ]);
     }
 }

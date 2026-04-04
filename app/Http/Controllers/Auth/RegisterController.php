@@ -14,17 +14,24 @@ class RegisterController extends Controller
 {
     public function showForm()
     {
-        return view('auth.register');
+        return \Inertia\Inertia::render('Auth/Register');
     }
 
     public function register(Request $request)
     {
-        $request->validate([
+        $rules = [
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
             'role' => ['required', 'in:arsitek,perusahaan,client'],
-        ]);
+        ];
+
+        if ($request->role === 'perusahaan') {
+            $rules['company_name'] = ['required', 'string', 'max:255'];
+            $rules['company_website'] = ['nullable', 'url', 'max:255'];
+        }
+
+        $request->validate($rules);
 
         $user = User::create([
             'name' => $request->name,
@@ -32,6 +39,13 @@ class RegisterController extends Controller
             'password' => Hash::make($request->password),
             'role' => $request->role,
         ]);
+
+        if ($user->role === 'perusahaan') {
+            $user->companyProfile()->create([
+                'company_name' => $request->company_name,
+                'company_website' => $request->company_website,
+            ]);
+        }
 
         event(new Registered($user));
 

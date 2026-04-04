@@ -8,11 +8,15 @@ class ArsitekController extends Controller
 {
     public function index()
     {
-        return view('public.arsitek.index');
+        return \Inertia\Inertia::render('Public/DefaultPublicPage', [
+            'title' => 'Direktori Arsitek Indonesia',
+        ]);
     }
 
     public function show(string $username)
     {
-        return view('public.arsitek.show', compact('username'));
+        return \Inertia\Inertia::render('Public/DefaultPublicPage', [
+            'title' => 'Profil Arsitek: ' . $username,
+        ]);
     }
 }

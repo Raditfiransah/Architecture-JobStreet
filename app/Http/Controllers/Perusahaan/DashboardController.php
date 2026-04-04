@@ -8,6 +8,10 @@ class DashboardController extends Controller
 {
     public function index()
     {
-        return view('dashboard.perusahaan');
+        $user = auth()->user();
+        return \Inertia\Inertia::render('Dashboard/Perusahaan', [
+            'user' => $user,
+            'companyName' => $user->companyProfile->company_name ?? $user->name,
+        ]);
     }
 }

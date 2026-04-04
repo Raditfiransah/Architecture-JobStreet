@@ -12,7 +12,7 @@ Route::get('/', function () {
         return redirect()->route('verification.notice');
     }
 
-    return view('welcome');
+    return \Inertia\Inertia::render('Landing');
 })->name('home');
 
 // ─── Auth (public + login/register + OTP + logout) ──────────

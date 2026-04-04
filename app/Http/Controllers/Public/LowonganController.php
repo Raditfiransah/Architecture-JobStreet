@@ -8,13 +8,15 @@ class LowonganController extends Controller
 {
     public function index()
     {
-        // TODO: Implement - List semua lowongan publik
-        return view('public.lowongan.index');
+        return \Inertia\Inertia::render('Public/DefaultPublicPage', [
+            'title' => 'Daftar Lowongan Arsitek',
+        ]);
     }
 
     public function show(string $id)
     {
-        // TODO: Implement - Detail lowongan
-        return view('public.lowongan.show', compact('id'));
+        return \Inertia\Inertia::render('Public/DefaultPublicPage', [
+            'title' => 'Detail Lowongan #' . $id,
+        ]);
     }
 }

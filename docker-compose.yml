@@ -13,6 +13,8 @@ services:
     depends_on:
       db:
         condition: service_healthy
+      redis:
+        condition: service_started
     restart: unless-stopped
     environment:
       - DB_HOST=db

@@ -1,69 +1,52 @@
 <?php
 
-use App\Http\Controllers\Auth\AuthenticatedSessionController;
-use App\Http\Controllers\Auth\ConfirmablePasswordController;
-use App\Http\Controllers\Auth\EmailVerificationNotificationController;
-use App\Http\Controllers\Auth\NewPasswordController;
-use App\Http\Controllers\Auth\PasswordController;
-use App\Http\Controllers\Auth\PasswordResetLinkController;
-use App\Http\Controllers\Auth\RegisteredUserController;
-use App\Http\Controllers\Auth\VerifyEmailController;
-use App\Http\Controllers\Auth\VerifyOtpController;
+use App\Http\Controllers\Auth\LoginController;
+use App\Http\Controllers\Auth\RegisterController;
+use App\Http\Controllers\Auth\OtpVerificationController;
+use App\Http\Controllers\Auth\PasswordResetController;
+use App\Http\Controllers\Public\LowonganController;
+use App\Http\Controllers\Public\ProyekController;
+use App\Http\Controllers\Public\ArsitekController;
+use App\Http\Controllers\Public\InfoHubController;
 use Illuminate\Support\Facades\Route;
 
+// ─── Halaman publik (guest + logged in bisa akses) ───────────────────
+Route::get('/lowongan', [LowonganController::class, 'index'])->name('lowongan.index');
+Route::get('/lowongan/{id}', [LowonganController::class, 'show'])->name('lowongan.show');
+
+Route::get('/proyek', [ProyekController::class, 'index'])->name('proyek.index');
+Route::get('/proyek/{id}', [ProyekController::class, 'show'])->name('proyek.show');
+
+Route::get('/arsitek', [ArsitekController::class, 'index'])->name('arsitek.direktori');
+Route::get('/arsitek/{username}', [ArsitekController::class, 'show'])->name('arsitek.profil');
+
+Route::get('/info', [InfoHubController::class, 'index'])->name('info.index');
+Route::get('/info/{slug}', [InfoHubController::class, 'show'])->name('info.show');
+
+// ─── Auth (hanya untuk guest) ─────────────────────────────────────────
 Route::middleware('guest')->group(function () {
-    Route::get('register', [RegisteredUserController::class, 'create'])
-        ->name('register');
+    Route::get('/login', [LoginController::class, 'showForm'])->name('login');
+    Route::post('/login', [LoginController::class, 'login']);
 
-    Route::post('register', [RegisteredUserController::class, 'store']);
+    Route::get('/register', [RegisterController::class, 'showForm'])->name('register');
+    Route::post('/register', [RegisterController::class, 'register']);
 
-    Route::get('login', [AuthenticatedSessionController::class, 'create'])
-        ->name('login');
-
-    Route::post('login', [AuthenticatedSessionController::class, 'store'])
-        ->middleware('throttle:5,1');
-
-    Route::get('forgot-password', [PasswordResetLinkController::class, 'create'])
-        ->name('password.request');
-
-    Route::post('forgot-password', [PasswordResetLinkController::class, 'store'])
-        ->middleware('throttle:1,1')
-        ->name('password.email');
-
-    Route::get('reset-password/{token}', [NewPasswordController::class, 'create'])
-        ->name('password.reset');
-
-    Route::post('reset-password', [NewPasswordController::class, 'store'])
-        ->name('password.store');
+    Route::get('/lupa-password', [PasswordResetController::class, 'showForm'])->name('password.request');
+    Route::post('/lupa-password', [PasswordResetController::class, 'sendLink'])->name('password.email');
+    Route::get('/reset-password/{token}', [PasswordResetController::class, 'showReset'])->name('password.reset');
+    Route::post('/reset-password', [PasswordResetController::class, 'reset'])->name('password.update');
 });
 
+// ─── Verifikasi OTP (butuh login, belum verified) ────────────────────
 Route::middleware('auth')->group(function () {
-    Route::get('verify-email', [VerifyOtpController::class, 'show'])
-        ->name('verification.notice');
-
-    Route::post('verify-email', [VerifyOtpController::class, 'verify'])
-        ->middleware('throttle:10,1')
-        ->name('verification.verify');
-
-    Route::post('resend-otp', [VerifyOtpController::class, 'resend'])
-        ->middleware('throttle:1,1')
-        ->name('resend.otp');
-
-    Route::get('verify-email/{id}/{hash}', VerifyEmailController::class)
-        ->middleware(['signed', 'throttle:6,1'])
-        ->name('verification.verify.signed');
-
-    Route::post('email/verification-notification', [EmailVerificationNotificationController::class, 'store'])
-        ->middleware('throttle:6,1')
-        ->name('verification.send');
-
-    Route::get('confirm-password', [ConfirmablePasswordController::class, 'show'])
-        ->name('password.confirm');
-
-    Route::post('confirm-password', [ConfirmablePasswordController::class, 'store']);
-
-    Route::put('password', [PasswordController::class, 'update'])->name('password.update');
-
-    Route::post('logout', [AuthenticatedSessionController::class, 'destroy'])
-        ->name('logout');
+    Route::get('/verifikasi-email', [OtpVerificationController::class, 'showForm'])->name('verification.notice');
+    Route::post('/verifikasi-email', [OtpVerificationController::class, 'verify'])->name('otp.verify');
+    Route::post('/verifikasi-email/resend', [OtpVerificationController::class, 'resend'])
+        ->middleware('throttle:3,1')
+        ->name('otp.resend');
 });
+
+// ─── Logout (butuh login) ─────────────────────────────────────────────
+Route::post('/logout', [LoginController::class, 'logout'])
+    ->middleware('auth')
+    ->name('logout');

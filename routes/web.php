@@ -1,6 +1,5 @@
 <?php
 
-use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -16,34 +15,11 @@ Route::get('/', function () {
     return view('welcome');
 })->name('home');
 
-Route::middleware(['auth', 'email.verified'])->group(function () {
-    Route::middleware('role:arsitek')->prefix('dashboard/arsitek')->group(function () {
-        Route::get('/', function () {
-            return view('dashboard.arsitek');
-        })->name('dashboard.arsitek');
-    });
-
-    Route::middleware('role:perusahaan')->prefix('dashboard/perusahaan')->group(function () {
-        Route::get('/', function () {
-            return view('dashboard.perusahaan');
-        })->name('dashboard.perusahaan');
-    });
-
-    Route::middleware('role:client')->prefix('dashboard/client')->group(function () {
-        Route::get('/', function () {
-            return view('dashboard.client');
-        })->name('dashboard.client');
-    });
-
-    Route::middleware('role:admin')->prefix('dashboard/admin')->group(function () {
-        Route::get('/', function () {
-            return view('dashboard.admin');
-        })->name('dashboard.admin');
-    });
-
-    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
-    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
-});
-
+// ─── Auth (public + login/register + OTP + logout) ──────────
 require __DIR__.'/auth.php';
+
+// ─── Dashboard per role ──────────────────────────────────────
+require __DIR__.'/arsitek.php';
+require __DIR__.'/perusahaan.php';
+require __DIR__.'/client.php';
+require __DIR__.'/admin.php';

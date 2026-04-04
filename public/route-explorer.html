@@ -1,0 +1,819 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Route Explorer — Web Architect</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+
+  :root {
+    --bg-deep: #0a0e17;
+    --bg-surface: #111827;
+    --bg-card: #1a2332;
+    --bg-hover: #1f2d42;
+    --border: #2a3a50;
+    --border-active: #3b82f6;
+    --text-primary: #e2e8f0;
+    --text-secondary: #94a3b8;
+    --text-muted: #64748b;
+    --accent-blue: #3b82f6;
+    --accent-green: #10b981;
+    --accent-amber: #f59e0b;
+    --accent-red: #ef4444;
+    --accent-purple: #8b5cf6;
+    --accent-cyan: #06b6d4;
+    --accent-pink: #ec4899;
+    --method-get: #10b981;
+    --method-post: #3b82f6;
+    --method-put: #f59e0b;
+    --method-delete: #ef4444;
+    --method-patch: #8b5cf6;
+    --radius: 8px;
+    --radius-lg: 12px;
+    --font-sans: 'Plus Jakarta Sans', system-ui, sans-serif;
+    --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+  }
+
+  html { font-size: 15px; scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg-deep);
+    color: var(--text-primary);
+    font-family: var(--font-sans);
+    line-height: 1.6;
+    min-height: 100vh;
+  }
+
+  /* ── Ambient grid background ── */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background:
+      linear-gradient(rgba(59,130,246,.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(59,130,246,.03) 1px, transparent 1px);
+    background-size: 60px 60px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  body::after {
+    content: '';
+    position: fixed;
+    top: -40%; left: -20%;
+    width: 80vw; height: 80vw;
+    background: radial-gradient(circle, rgba(59,130,246,.06) 0%, transparent 60%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .app { position: relative; z-index: 1; max-width: 1200px; margin: 0 auto; padding: 2rem 1.5rem 4rem; }
+
+  /* ── Header ── */
+  .header {
+    text-align: center;
+    margin-bottom: 2.5rem;
+    padding-bottom: 2rem;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .header__badge {
+    display: inline-flex;
+    align-items: center;
+    gap: .5rem;
+    background: rgba(59,130,246,.1);
+    border: 1px solid rgba(59,130,246,.25);
+    border-radius: 999px;
+    padding: .35rem 1rem;
+    font-size: .75rem;
+    font-weight: 600;
+    color: var(--accent-blue);
+    letter-spacing: .04em;
+    text-transform: uppercase;
+    margin-bottom: 1rem;
+  }
+
+  .header__badge svg { width: 14px; height: 14px; }
+
+  .header h1 {
+    font-size: 2.4rem;
+    font-weight: 800;
+    letter-spacing: -.03em;
+    background: linear-gradient(135deg, var(--text-primary) 0%, var(--accent-blue) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: .5rem;
+  }
+
+  .header p {
+    color: var(--text-secondary);
+    font-size: .95rem;
+    max-width: 600px;
+    margin: 0 auto;
+  }
+
+  /* ── Stats bar ── */
+  .stats {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-bottom: 2rem;
+  }
+
+  .stat {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: .8rem 1.4rem;
+    text-align: center;
+    min-width: 130px;
+    transition: border-color .2s, transform .2s;
+  }
+
+  .stat:hover {
+    border-color: var(--border-active);
+    transform: translateY(-2px);
+  }
+
+  .stat__number {
+    font-family: var(--font-mono);
+    font-size: 1.6rem;
+    font-weight: 700;
+    line-height: 1;
+  }
+
+  .stat__label {
+    font-size: .72rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: .06em;
+    margin-top: .25rem;
+  }
+
+  /* ── Search + Filters ── */
+  .controls {
+    display: flex;
+    gap: .75rem;
+    margin-bottom: 2rem;
+    flex-wrap: wrap;
+  }
+
+  .search-box {
+    flex: 1;
+    min-width: 240px;
+    position: relative;
+  }
+
+  .search-box svg {
+    position: absolute;
+    left: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 16px; height: 16px;
+    color: var(--text-muted);
+    pointer-events: none;
+  }
+
+  .search-box input {
+    width: 100%;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: .7rem 1rem .7rem 2.5rem;
+    font-family: var(--font-mono);
+    font-size: .82rem;
+    color: var(--text-primary);
+    outline: none;
+    transition: border-color .2s, box-shadow .2s;
+  }
+
+  .search-box input::placeholder { color: var(--text-muted); }
+  .search-box input:focus {
+    border-color: var(--accent-blue);
+    box-shadow: 0 0 0 3px rgba(59,130,246,.15);
+  }
+
+  .filter-pills {
+    display: flex;
+    gap: .4rem;
+    flex-wrap: wrap;
+  }
+
+  .pill {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    padding: .45rem 1rem;
+    font-size: .78rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: all .2s;
+    user-select: none;
+  }
+
+  .pill:hover { border-color: var(--text-muted); color: var(--text-primary); }
+  .pill.active {
+    background: rgba(59,130,246,.15);
+    border-color: var(--accent-blue);
+    color: var(--accent-blue);
+  }
+
+  .pill[data-role="public"].active  { background: rgba(16,185,129,.12); border-color: var(--accent-green); color: var(--accent-green); }
+  .pill[data-role="auth"].active    { background: rgba(139,92,246,.12); border-color: var(--accent-purple); color: var(--accent-purple); }
+  .pill[data-role="arsitek"].active { background: rgba(6,182,212,.12); border-color: var(--accent-cyan); color: var(--accent-cyan); }
+  .pill[data-role="perusahaan"].active { background: rgba(245,158,11,.12); border-color: var(--accent-amber); color: var(--accent-amber); }
+  .pill[data-role="client"].active  { background: rgba(236,72,153,.12); border-color: var(--accent-pink); color: var(--accent-pink); }
+  .pill[data-role="admin"].active   { background: rgba(239,68,68,.12); border-color: var(--accent-red); color: var(--accent-red); }
+
+  /* ── Route groups ── */
+  .route-group {
+    margin-bottom: 1.25rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    transition: border-color .2s;
+  }
+
+  .route-group:hover { border-color: rgba(59,130,246,.3); }
+
+  .route-group__header {
+    display: flex;
+    align-items: center;
+    gap: .75rem;
+    padding: .9rem 1.2rem;
+    background: var(--bg-card);
+    cursor: pointer;
+    user-select: none;
+    transition: background .2s;
+  }
+
+  .route-group__header:hover { background: var(--bg-hover); }
+
+  .route-group__chevron {
+    width: 18px; height: 18px;
+    color: var(--text-muted);
+    transition: transform .25s ease;
+    flex-shrink: 0;
+  }
+
+  .route-group.open .route-group__chevron { transform: rotate(90deg); }
+
+  .route-group__icon {
+    width: 32px; height: 32px;
+    border-radius: var(--radius);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    font-size: .9rem;
+  }
+
+  .route-group__title {
+    font-weight: 700;
+    font-size: .95rem;
+    flex: 1;
+  }
+
+  .route-group__title small {
+    font-weight: 500;
+    font-family: var(--font-mono);
+    font-size: .72rem;
+    color: var(--text-muted);
+    margin-left: .5rem;
+  }
+
+  .route-group__count {
+    font-family: var(--font-mono);
+    font-size: .72rem;
+    background: rgba(255,255,255,.06);
+    padding: .2rem .6rem;
+    border-radius: 999px;
+    color: var(--text-muted);
+  }
+
+  .route-group__middleware {
+    display: flex;
+    gap: .3rem;
+    flex-wrap: wrap;
+  }
+
+  .mw-tag {
+    font-family: var(--font-mono);
+    font-size: .65rem;
+    padding: .15rem .5rem;
+    border-radius: 999px;
+    background: rgba(139,92,246,.1);
+    color: var(--accent-purple);
+    border: 1px solid rgba(139,92,246,.2);
+  }
+
+  .route-group__body {
+    display: none;
+    background: var(--bg-surface);
+  }
+
+  .route-group.open .route-group__body { display: block; }
+
+  /* ── Individual routes ── */
+  .route-item {
+    display: grid;
+    grid-template-columns: 68px 1fr auto;
+    gap: .75rem;
+    align-items: center;
+    padding: .65rem 1.2rem;
+    border-top: 1px solid rgba(255,255,255,.04);
+    transition: background .15s;
+    font-size: .82rem;
+  }
+
+  .route-item:hover { background: rgba(59,130,246,.04); }
+
+  .route-item__method {
+    font-family: var(--font-mono);
+    font-size: .68rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    text-align: center;
+    padding: .2rem .5rem;
+    border-radius: 4px;
+    letter-spacing: .04em;
+  }
+
+  .method-GET    { background: rgba(16,185,129,.12); color: var(--method-get); }
+  .method-POST   { background: rgba(59,130,246,.12); color: var(--method-post); }
+  .method-PUT    { background: rgba(245,158,11,.12); color: var(--method-put); }
+  .method-DELETE { background: rgba(239,68,68,.12); color: var(--method-delete); }
+  .method-PATCH  { background: rgba(139,92,246,.12); color: var(--method-patch); }
+
+  .route-item__path {
+    font-family: var(--font-mono);
+    font-size: .8rem;
+    color: var(--text-primary);
+    word-break: break-all;
+  }
+
+  .route-item__path .param {
+    color: var(--accent-amber);
+    font-weight: 600;
+  }
+
+  .route-item__name {
+    font-family: var(--font-mono);
+    font-size: .7rem;
+    color: var(--text-muted);
+    text-align: right;
+    white-space: nowrap;
+  }
+
+  .route-item__name::before {
+    content: '→ ';
+    opacity: .4;
+  }
+
+  /* ── Colors per group icon ── */
+  .icon-public    { background: rgba(16,185,129,.15); color: var(--accent-green); }
+  .icon-auth      { background: rgba(139,92,246,.15); color: var(--accent-purple); }
+  .icon-arsitek   { background: rgba(6,182,212,.15); color: var(--accent-cyan); }
+  .icon-perusahaan{ background: rgba(245,158,11,.15); color: var(--accent-amber); }
+  .icon-client    { background: rgba(236,72,153,.15); color: var(--accent-pink); }
+  .icon-admin     { background: rgba(239,68,68,.15); color: var(--accent-red); }
+
+  /* ── Empty state ── */
+  .empty-state {
+    text-align: center;
+    padding: 3rem;
+    color: var(--text-muted);
+    font-size: .9rem;
+    display: none;
+  }
+
+  .empty-state.visible { display: block; }
+
+  .empty-state svg { width: 48px; height: 48px; margin-bottom: 1rem; opacity: .3; }
+
+  /* ── Footer ── */
+  .footer {
+    text-align: center;
+    margin-top: 3rem;
+    padding-top: 2rem;
+    border-top: 1px solid var(--border);
+    color: var(--text-muted);
+    font-size: .75rem;
+  }
+
+  .footer code {
+    font-family: var(--font-mono);
+    background: var(--bg-card);
+    padding: .15rem .5rem;
+    border-radius: 4px;
+    font-size: .72rem;
+  }
+
+  /* ── Responsive ── */
+  @media (max-width: 640px) {
+    .header h1 { font-size: 1.6rem; }
+    .route-item { grid-template-columns: 60px 1fr; }
+    .route-item__name { display: none; }
+    .stats { gap: .5rem; }
+    .stat { min-width: 100px; padding: .6rem 1rem; }
+  }
+
+  /* ── Animations ── */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(12px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .route-group {
+    animation: fadeUp .4s ease both;
+  }
+
+  .route-group:nth-child(1) { animation-delay: .05s; }
+  .route-group:nth-child(2) { animation-delay: .1s; }
+  .route-group:nth-child(3) { animation-delay: .15s; }
+  .route-group:nth-child(4) { animation-delay: .2s; }
+  .route-group:nth-child(5) { animation-delay: .25s; }
+  .route-group:nth-child(6) { animation-delay: .3s; }
+
+  /* ── Expand/Collapse all ── */
+  .toggle-all {
+    background: none;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: .45rem 1rem;
+    font-family: var(--font-sans);
+    font-size: .78rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: all .2s;
+  }
+  .toggle-all:hover { border-color: var(--accent-blue); color: var(--accent-blue); }
+</style>
+</head>
+<body>
+<div class="app">
+
+  <!-- Header -->
+  <header class="header">
+    <div class="header__badge">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l5.447 2.724A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"/></svg>
+      Route Explorer
+    </div>
+    <h1>Web Architect Routes</h1>
+    <p>Interactive documentation — semua route Laravel untuk platform Architecture JobStreet</p>
+  </header>
+
+  <!-- Stats -->
+  <div class="stats" id="stats"></div>
+
+  <!-- Controls -->
+  <div class="controls">
+    <div class="search-box">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+      <input type="text" id="search" placeholder="Cari route, URL, atau name…" autocomplete="off">
+    </div>
+    <div class="filter-pills" id="filters">
+      <button class="pill active" data-role="all">Semua</button>
+      <button class="pill" data-role="public">Public</button>
+      <button class="pill" data-role="auth">Auth</button>
+      <button class="pill" data-role="arsitek">Arsitek</button>
+      <button class="pill" data-role="perusahaan">Perusahaan</button>
+      <button class="pill" data-role="client">Client</button>
+      <button class="pill" data-role="admin">Admin</button>
+    </div>
+    <button class="toggle-all" id="toggleAll" title="Expand / Collapse All">▼ Buka Semua</button>
+  </div>
+
+  <!-- Route list -->
+  <div id="routeList"></div>
+
+  <!-- Empty state -->
+  <div class="empty-state" id="emptyState">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z"/></svg>
+    <p>Tidak ada route yang cocok dengan pencarian.</p>
+  </div>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <p>Generated from <code>routes/*.php</code> — Web Architect Platform &copy; 2026</p>
+  </footer>
+</div>
+
+<script>
+// ────────────────────────────────────────────────────────────
+//  ROUTE DATA
+// ────────────────────────────────────────────────────────────
+const routeGroups = [
+  {
+    id: 'public',
+    title: 'Halaman Publik',
+    subtitle: 'routes/auth.php',
+    icon: '🌐',
+    iconClass: 'icon-public',
+    middleware: [],
+    role: 'public',
+    routes: [
+      { method: 'GET',  path: '/',               name: 'home' },
+      { method: 'GET',  path: '/lowongan',        name: 'lowongan.index' },
+      { method: 'GET',  path: '/lowongan/{id}',   name: 'lowongan.show' },
+      { method: 'GET',  path: '/proyek',          name: 'proyek.index' },
+      { method: 'GET',  path: '/proyek/{id}',     name: 'proyek.show' },
+      { method: 'GET',  path: '/arsitek',         name: 'arsitek.direktori' },
+      { method: 'GET',  path: '/arsitek/{username}', name: 'arsitek.profil' },
+      { method: 'GET',  path: '/info',            name: 'info.index' },
+      { method: 'GET',  path: '/info/{slug}',     name: 'info.show' },
+    ]
+  },
+  {
+    id: 'auth',
+    title: 'Autentikasi',
+    subtitle: 'routes/auth.php',
+    icon: '🔐',
+    iconClass: 'icon-auth',
+    middleware: ['guest'],
+    role: 'auth',
+    routes: [
+      { method: 'GET',  path: '/login',                   name: 'login' },
+      { method: 'POST', path: '/login',                   name: 'login (action)' },
+      { method: 'GET',  path: '/register',                name: 'register' },
+      { method: 'POST', path: '/register',                name: 'register (action)' },
+      { method: 'GET',  path: '/lupa-password',            name: 'password.request' },
+      { method: 'POST', path: '/lupa-password',            name: 'password.email' },
+      { method: 'GET',  path: '/reset-password/{token}',   name: 'password.reset' },
+      { method: 'POST', path: '/reset-password',           name: 'password.update' },
+      { method: 'GET',  path: '/verifikasi-email',         name: 'otp.form' },
+      { method: 'POST', path: '/verifikasi-email',         name: 'otp.verify' },
+      { method: 'POST', path: '/verifikasi-email/resend',  name: 'otp.resend' },
+      { method: 'POST', path: '/logout',                   name: 'logout' },
+    ]
+  },
+  {
+    id: 'arsitek',
+    title: 'Dashboard Arsitek',
+    subtitle: 'routes/arsitek.php',
+    icon: '✏️',
+    iconClass: 'icon-arsitek',
+    middleware: ['auth', 'verified', 'role:arsitek'],
+    role: 'arsitek',
+    routes: [
+      { method: 'GET',    path: '/dashboard/arsitek',                     name: 'arsitek.dashboard' },
+      { method: 'GET',    path: '/dashboard/arsitek/profil',              name: 'arsitek.profil.edit' },
+      { method: 'PUT',    path: '/dashboard/arsitek/profil',              name: 'arsitek.profil.update' },
+      { method: 'GET',    path: '/dashboard/arsitek/profil/preview',      name: 'arsitek.profil.preview' },
+      { method: 'PUT',    path: '/dashboard/arsitek/avatar',              name: 'arsitek.profil.avatar' },
+      { method: 'GET',    path: '/dashboard/arsitek/portofolio',          name: 'arsitek.portofolio.index' },
+      { method: 'GET',    path: '/dashboard/arsitek/portofolio/tambah',   name: 'arsitek.portofolio.create' },
+      { method: 'POST',   path: '/dashboard/arsitek/portofolio',          name: 'arsitek.portofolio.store' },
+      { method: 'GET',    path: '/dashboard/arsitek/portofolio/{id}/edit', name: 'arsitek.portofolio.edit' },
+      { method: 'PUT',    path: '/dashboard/arsitek/portofolio/{id}',     name: 'arsitek.portofolio.update' },
+      { method: 'DELETE', path: '/dashboard/arsitek/portofolio/{id}',     name: 'arsitek.portofolio.destroy' },
+      { method: 'POST',   path: '/dashboard/arsitek/portofolio/reorder',  name: 'arsitek.portofolio.reorder' },
+      { method: 'GET',    path: '/dashboard/arsitek/lamaran',             name: 'arsitek.lamaran.index' },
+      { method: 'GET',    path: '/dashboard/arsitek/lamaran/{id}',        name: 'arsitek.lamaran.show' },
+      { method: 'DELETE', path: '/dashboard/arsitek/lamaran/{id}',        name: 'arsitek.lamaran.withdraw' },
+      { method: 'GET',    path: '/dashboard/arsitek/proposal',            name: 'arsitek.proposal.index' },
+      { method: 'GET',    path: '/dashboard/arsitek/proposal/{id}',       name: 'arsitek.proposal.show' },
+      { method: 'PUT',    path: '/dashboard/arsitek/proposal/{id}',       name: 'arsitek.proposal.update' },
+      { method: 'GET',    path: '/dashboard/arsitek/inbox',               name: 'arsitek.inbox.index' },
+      { method: 'GET',    path: '/dashboard/arsitek/inbox/{thread}',      name: 'arsitek.inbox.show' },
+      { method: 'POST',   path: '/dashboard/arsitek/inbox/{thread}',      name: 'arsitek.inbox.reply' },
+      { method: 'GET',    path: '/dashboard/arsitek/notifikasi',          name: 'arsitek.notifikasi.index' },
+      { method: 'POST',   path: '/dashboard/arsitek/notifikasi/baca-semua', name: 'arsitek.notifikasi.readAll' },
+      { method: 'GET',    path: '/dashboard/arsitek/pengaturan',          name: 'arsitek.pengaturan.index' },
+      { method: 'PUT',    path: '/dashboard/arsitek/pengaturan/password', name: 'arsitek.pengaturan.password' },
+      { method: 'PUT',    path: '/dashboard/arsitek/pengaturan/notifikasi', name: 'arsitek.pengaturan.notifikasi' },
+      { method: 'DELETE', path: '/dashboard/arsitek/pengaturan/akun',     name: 'arsitek.pengaturan.delete' },
+      { method: 'POST',   path: '/lowongan/{id}/lamar',                   name: 'arsitek.lamaran.store' },
+      { method: 'POST',   path: '/proyek/{id}/proposal',                  name: 'arsitek.proposal.store' },
+    ]
+  },
+  {
+    id: 'perusahaan',
+    title: 'Dashboard Perusahaan',
+    subtitle: 'routes/perusahaan.php',
+    icon: '🏢',
+    iconClass: 'icon-perusahaan',
+    middleware: ['auth', 'verified', 'role:perusahaan'],
+    role: 'perusahaan',
+    routes: [
+      { method: 'GET',    path: '/dashboard/perusahaan',                        name: 'perusahaan.dashboard' },
+      { method: 'GET',    path: '/dashboard/perusahaan/profil',                 name: 'perusahaan.profil.edit' },
+      { method: 'PUT',    path: '/dashboard/perusahaan/profil',                 name: 'perusahaan.profil.update' },
+      { method: 'GET',    path: '/dashboard/perusahaan/lowongan',               name: 'perusahaan.lowongan.index' },
+      { method: 'GET',    path: '/dashboard/perusahaan/lowongan/buat',          name: 'perusahaan.lowongan.create' },
+      { method: 'POST',   path: '/dashboard/perusahaan/lowongan',               name: 'perusahaan.lowongan.store' },
+      { method: 'GET',    path: '/dashboard/perusahaan/lowongan/{id}/edit',     name: 'perusahaan.lowongan.edit' },
+      { method: 'PUT',    path: '/dashboard/perusahaan/lowongan/{id}',          name: 'perusahaan.lowongan.update' },
+      { method: 'PUT',    path: '/dashboard/perusahaan/lowongan/{id}/tutup',    name: 'perusahaan.lowongan.tutup' },
+      { method: 'PUT',    path: '/dashboard/perusahaan/lowongan/{id}/perpanjang', name: 'perusahaan.lowongan.perpanjang' },
+      { method: 'DELETE', path: '/dashboard/perusahaan/lowongan/{id}',          name: 'perusahaan.lowongan.destroy' },
+      { method: 'GET',    path: '/dashboard/perusahaan/lowongan/{id}/pelamar',  name: 'perusahaan.pelamar.index' },
+      { method: 'GET',    path: '/dashboard/perusahaan/lowongan/{id}/pelamar/{appId}', name: 'perusahaan.pelamar.show' },
+      { method: 'PUT',    path: '/dashboard/perusahaan/lamaran/{appId}/status', name: 'perusahaan.lamaran.status' },
+      { method: 'POST',   path: '/dashboard/perusahaan/lamaran/{appId}/shortlist', name: 'perusahaan.lamaran.shortlist' },
+      { method: 'GET',    path: '/dashboard/perusahaan/inbox',                  name: 'perusahaan.inbox.index' },
+      { method: 'GET',    path: '/dashboard/perusahaan/inbox/{thread}',         name: 'perusahaan.inbox.show' },
+      { method: 'POST',   path: '/dashboard/perusahaan/inbox/{thread}',         name: 'perusahaan.inbox.reply' },
+      { method: 'GET',    path: '/dashboard/perusahaan/pengaturan',             name: 'perusahaan.pengaturan.index' },
+      { method: 'PUT',    path: '/dashboard/perusahaan/pengaturan/password',    name: 'perusahaan.pengaturan.password' },
+    ]
+  },
+  {
+    id: 'client',
+    title: 'Dashboard Client',
+    subtitle: 'routes/client.php',
+    icon: '👤',
+    iconClass: 'icon-client',
+    middleware: ['auth', 'verified', 'role:client'],
+    role: 'client',
+    routes: [
+      { method: 'GET',    path: '/dashboard/client',                     name: 'client.dashboard' },
+      { method: 'GET',    path: '/dashboard/client/proyek',              name: 'client.proyek.index' },
+      { method: 'GET',    path: '/dashboard/client/proyek/buat',         name: 'client.proyek.create' },
+      { method: 'POST',   path: '/dashboard/client/proyek',              name: 'client.proyek.store' },
+      { method: 'GET',    path: '/dashboard/client/proyek/{id}',         name: 'client.proyek.show' },
+      { method: 'GET',    path: '/dashboard/client/proyek/{id}/edit',    name: 'client.proyek.edit' },
+      { method: 'PUT',    path: '/dashboard/client/proyek/{id}',         name: 'client.proyek.update' },
+      { method: 'PUT',    path: '/dashboard/client/proyek/{id}/tutup',   name: 'client.proyek.tutup' },
+      { method: 'DELETE', path: '/dashboard/client/proyek/{id}',         name: 'client.proyek.destroy' },
+      { method: 'GET',    path: '/dashboard/client/proyek/{id}/proposal', name: 'client.proposal.index' },
+      { method: 'GET',    path: '/dashboard/client/proyek/{id}/proposal/{propId}', name: 'client.proposal.show' },
+      { method: 'POST',   path: '/dashboard/client/proposal/{propId}/terima', name: 'client.proposal.terima' },
+      { method: 'POST',   path: '/dashboard/client/proposal/{propId}/tolak',  name: 'client.proposal.tolak' },
+      { method: 'GET',    path: '/dashboard/client/inbox',               name: 'client.inbox.index' },
+      { method: 'GET',    path: '/dashboard/client/inbox/{thread}',      name: 'client.inbox.show' },
+      { method: 'POST',   path: '/dashboard/client/inbox/{thread}',      name: 'client.inbox.reply' },
+      { method: 'GET',    path: '/dashboard/client/pengaturan',          name: 'client.pengaturan.index' },
+      { method: 'PUT',    path: '/dashboard/client/pengaturan/password', name: 'client.pengaturan.password' },
+    ]
+  },
+  {
+    id: 'admin',
+    title: 'Dashboard Admin',
+    subtitle: 'routes/admin.php',
+    icon: '🛡️',
+    iconClass: 'icon-admin',
+    middleware: ['auth', 'verified', 'role:admin'],
+    role: 'admin',
+    routes: [
+      { method: 'GET',  path: '/dashboard/admin',                        name: 'admin.dashboard' },
+      { method: 'GET',  path: '/dashboard/admin/antrian',                name: 'admin.antrian' },
+      { method: 'GET',  path: '/dashboard/admin/lowongan',               name: 'admin.lowongan.index' },
+      { method: 'GET',  path: '/dashboard/admin/lowongan/{id}',          name: 'admin.lowongan.show' },
+      { method: 'POST', path: '/dashboard/admin/lowongan/{id}/setujui',  name: 'admin.lowongan.setujui' },
+      { method: 'POST', path: '/dashboard/admin/lowongan/{id}/tolak',    name: 'admin.lowongan.tolak' },
+      { method: 'POST', path: '/dashboard/admin/lowongan/{id}/tutup',    name: 'admin.lowongan.tutup' },
+      { method: 'GET',  path: '/dashboard/admin/proyek',                 name: 'admin.proyek.index' },
+      { method: 'GET',  path: '/dashboard/admin/proyek/{id}',            name: 'admin.proyek.show' },
+      { method: 'POST', path: '/dashboard/admin/proyek/{id}/setujui',    name: 'admin.proyek.setujui' },
+      { method: 'POST', path: '/dashboard/admin/proyek/{id}/tolak',      name: 'admin.proyek.tolak' },
+      { method: 'GET',  path: '/dashboard/admin/users',                  name: 'admin.users.index' },
+      { method: 'GET',  path: '/dashboard/admin/users/{id}',             name: 'admin.users.show' },
+      { method: 'POST', path: '/dashboard/admin/users/{id}/verifikasi',  name: 'admin.users.verifikasi' },
+      { method: 'POST', path: '/dashboard/admin/users/{id}/suspend',     name: 'admin.users.suspend' },
+      { method: 'POST', path: '/dashboard/admin/users/{id}/aktifkan',    name: 'admin.users.aktifkan' },
+      { method: 'GET',  path: '/dashboard/admin/info',                   name: 'admin.info.index' },
+      { method: 'POST', path: '/dashboard/admin/info/{id}/setujui',      name: 'admin.info.setujui' },
+      { method: 'POST', path: '/dashboard/admin/info/{id}/tolak',        name: 'admin.info.tolak' },
+      { method: 'GET',  path: '/dashboard/admin/laporan',                name: 'admin.laporan.index' },
+      { method: 'POST', path: '/dashboard/admin/laporan/{id}/tindak',    name: 'admin.laporan.tindak' },
+    ]
+  }
+];
+
+// ────────────────────────────────────────────────────────────
+//  RENDER
+// ────────────────────────────────────────────────────────────
+const $list   = document.getElementById('routeList');
+const $search = document.getElementById('search');
+const $empty  = document.getElementById('emptyState');
+const $stats  = document.getElementById('stats');
+const $toggle = document.getElementById('toggleAll');
+
+// Stats
+const totalRoutes = routeGroups.reduce((s, g) => s + g.routes.length, 0);
+const methods = {};
+routeGroups.forEach(g => g.routes.forEach(r => { methods[r.method] = (methods[r.method]||0) + 1; }));
+
+$stats.innerHTML = `
+  <div class="stat"><div class="stat__number" style="color:var(--text-primary)">${totalRoutes}</div><div class="stat__label">Total Routes</div></div>
+  <div class="stat"><div class="stat__number" style="color:var(--method-get)">${methods.GET||0}</div><div class="stat__label">GET</div></div>
+  <div class="stat"><div class="stat__number" style="color:var(--method-post)">${methods.POST||0}</div><div class="stat__label">POST</div></div>
+  <div class="stat"><div class="stat__number" style="color:var(--method-put)">${methods.PUT||0}</div><div class="stat__label">PUT</div></div>
+  <div class="stat"><div class="stat__number" style="color:var(--method-delete)">${methods.DELETE||0}</div><div class="stat__label">DELETE</div></div>
+  <div class="stat"><div class="stat__number" style="color:var(--accent-purple)">${routeGroups.length}</div><div class="stat__label">Grup</div></div>
+`;
+
+function highlightParams(path) {
+  return path.replace(/\{([^}]+)\}/g, '<span class="param">{$1}</span>');
+}
+
+function renderGroups(groups) {
+  $list.innerHTML = '';
+  if (groups.length === 0) {
+    $empty.classList.add('visible');
+    return;
+  }
+  $empty.classList.remove('visible');
+
+  groups.forEach(g => {
+    const mwHtml = g.middleware.length
+      ? g.middleware.map(m => `<span class="mw-tag">${m}</span>`).join('')
+      : '';
+
+    const routesHtml = g.routes.map(r => `
+      <div class="route-item" data-search="${r.method} ${r.path} ${r.name}">
+        <span class="route-item__method method-${r.method}">${r.method}</span>
+        <span class="route-item__path">${highlightParams(r.path)}</span>
+        <span class="route-item__name">${r.name}</span>
+      </div>
+    `).join('');
+
+    const el = document.createElement('div');
+    el.className = 'route-group open';
+    el.dataset.role = g.role;
+    el.innerHTML = `
+      <div class="route-group__header">
+        <svg class="route-group__chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 5l7 7-7 7"/></svg>
+        <div class="route-group__icon ${g.iconClass}">${g.icon}</div>
+        <span class="route-group__title">${g.title}<small>${g.subtitle}</small></span>
+        <div class="route-group__middleware">${mwHtml}</div>
+        <span class="route-group__count">${g.routes.length}</span>
+      </div>
+      <div class="route-group__body">${routesHtml}</div>
+    `;
+
+    el.querySelector('.route-group__header').addEventListener('click', () => {
+      el.classList.toggle('open');
+    });
+
+    $list.appendChild(el);
+  });
+}
+
+renderGroups(routeGroups);
+
+// ── Filters ──
+let activeRole = 'all';
+
+document.getElementById('filters').addEventListener('click', e => {
+  const pill = e.target.closest('.pill');
+  if (!pill) return;
+
+  document.querySelectorAll('.pill').forEach(p => p.classList.remove('active'));
+  pill.classList.add('active');
+  activeRole = pill.dataset.role;
+  applyFilters();
+});
+
+// ── Search ──
+$search.addEventListener('input', () => applyFilters());
+
+function applyFilters() {
+  const q = $search.value.toLowerCase().trim();
+
+  const filtered = routeGroups
+    .filter(g => activeRole === 'all' || g.role === activeRole)
+    .map(g => {
+      if (!q) return g;
+      const matchedRoutes = g.routes.filter(r =>
+        r.method.toLowerCase().includes(q) ||
+        r.path.toLowerCase().includes(q) ||
+        r.name.toLowerCase().includes(q)
+      );
+      if (matchedRoutes.length === 0 && !g.title.toLowerCase().includes(q)) return null;
+      return { ...g, routes: matchedRoutes.length ? matchedRoutes : g.routes };
+    })
+    .filter(Boolean);
+
+  renderGroups(filtered);
+}
+
+// ── Toggle All ──
+let allOpen = true;
+$toggle.addEventListener('click', () => {
+  allOpen = !allOpen;
+  document.querySelectorAll('.route-group').forEach(g => {
+    g.classList.toggle('open', allOpen);
+  });
+  $toggle.textContent = allOpen ? '▲ Tutup Semua' : '▼ Buka Semua';
+});
+
+// ── Keyboard shortcut: Ctrl+K → focus search ──
+document.addEventListener('keydown', e => {
+  if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+    e.preventDefault();
+    $search.focus();
+    $search.select();
+  }
+});
+</script>
+</body>
+</html>

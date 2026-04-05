@@ -3,20 +3,49 @@
 namespace App\Http\Controllers\Public;
 
 use App\Http\Controllers\Controller;
+use App\Models\Lowongan;
+use Illuminate\Http\Request;
 
 class LowonganController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        return \Inertia\Inertia::render('Public/DefaultPublicPage', [
+        $q = $request->input('q');
+        $l = $request->input('l');
+
+        $query = Lowongan::query()->latest();
+
+        if ($q) {
+            $query->where(function ($qb) use ($q) {
+                $qb->where('posisi', 'like', "%{$q}%")
+                   ->orWhere('perusahaan', 'like', "%{$q}%")
+                   ->orWhere('kota', 'like', "%{$q}%");
+            });
+        }
+
+        if ($l) {
+            $query->where('kota', 'like', "%{$l}%");
+        }
+
+        $jobs = $query->get();
+
+        return \Inertia\Inertia::render('Public/Lowongan/Index', [
             'title' => 'Daftar Lowongan Arsitek',
+            'jobs' => $jobs,
+            'filters' => [
+                'q' => $q,
+                'l' => $l,
+            ],
         ]);
     }
 
     public function show(string $id)
     {
-        return \Inertia\Inertia::render('Public/DefaultPublicPage', [
-            'title' => 'Detail Lowongan #' . $id,
+        $lowongan = Lowongan::findOrFail($id);
+
+        return \Inertia\Inertia::render('Public/Lowongan/Index', [
+            'title' => $lowongan->posisi . ' — ' . $lowongan->perusahaan,
+            'job' => $lowongan,
         ]);
     }
 }

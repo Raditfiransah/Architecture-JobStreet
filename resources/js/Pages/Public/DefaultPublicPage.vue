@@ -1,5 +1,6 @@
 <script setup>
 import { Head, Link } from '@inertiajs/vue3';
+import PublicLayout from "@/Layouts/PublicLayout.vue";
 
 defineProps({
     title: String,
@@ -8,19 +9,8 @@ defineProps({
 </script>
 
 <template>
-    <div class="min-h-screen bg-surface flex flex-col font-sans antialiased text-ink">
+    <PublicLayout>
         <Head :title="title" />
-        
-        <!-- Minimal Header -->
-        <header class="h-20 bg-white border-b border-surface-muted flex items-center px-6 md:px-12 justify-between sticky top-0 z-50">
-            <Link :href="route('home')" class="text-xl font-extrabold tracking-tighter text-ink flex items-center gap-2">
-                <span class="w-8 h-8 rounded-lg bg-primary-300 flex items-center justify-center text-white text-xs">L</span>
-                LokerArsitek
-            </Link>
-            <Link :href="route('home')" class="text-sm font-bold text-primary-500 hover:text-primary-600 transition">
-                Kembali ke Beranda
-            </Link>
-        </header>
 
         <main class="flex-1 flex items-center justify-center p-6 bg-surface-soft">
             <div class="max-w-2xl w-full text-center">
@@ -44,8 +34,5 @@ defineProps({
             </div>
         </main>
 
-        <footer class="py-12 bg-white border-t border-surface-muted text-center">
-            <p class="text-sm text-ink-muted">© 2024 Loker Arsitek Indonesia. Premium Recruitment Platform.</p>
-        </footer>
-    </div>
+    </PublicLayout>
 </template>

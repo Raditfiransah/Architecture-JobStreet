@@ -4,7 +4,10 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Models\EmailVerificationCode;
+use App\Mail\ResendOtpMail;
+use App\Services\OtpService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
 
 class OtpVerificationController extends Controller
 {
@@ -30,7 +33,7 @@ class OtpVerificationController extends Controller
 
         $otp = EmailVerificationCode::where('user_id', $user->id)
             ->where('code', $request->code)
-            ->where('expires_at', '>', now())
+            ->where('expired_at', '>', now())
             ->latest()
             ->first();
 
@@ -45,24 +48,29 @@ class OtpVerificationController extends Controller
             ->with('status', 'Email berhasil diverifikasi!');
     }
 
-    public function resend()
+    public function resend(Request $request, OtpService $otpService)
     {
-        $user = auth()->user();
+        $user = $request->user();
 
         if ($user->email_verified_at) {
             return redirect()->route($user->dashboardRoute());
         }
 
-        // Generate and send new OTP (implementation depends on your mail setup)
-        $code = str_pad(random_int(0, 999999), 6, '0', STR_PAD_LEFT);
+        if (! $otpService->canResend($user)) {
+             return back()->withErrors(['resend' => 'Tunggu sebentar sebelum mencoba lagi.']);
+        }
 
-        EmailVerificationCode::create([
-            'user_id' => $user->id,
-            'code' => $code,
-            'expires_at' => now()->addMinutes(15),
-        ]);
+        // Generate and log new OTP
+        $verificationCode = $otpService->generate($user);
+        
+        \Illuminate\Support\Facades\Log::info("Resending OTP for user {$user->email}: {$verificationCode->code}");
 
-        // TODO: Send OTP via email notification
+        // Send OTP via email
+        try {
+            Mail::to($user->email)->send(new ResendOtpMail($verificationCode->code, $user->name));
+        } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::error('Failed to resend OTP email: '.$e->getMessage());
+        }
 
         return back()->with('status', 'Kode OTP baru telah dikirim ke email Anda.');
     }

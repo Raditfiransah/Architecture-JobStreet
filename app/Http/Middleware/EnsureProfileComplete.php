@@ -13,15 +13,15 @@ class EnsureProfileComplete
     {
         $user = Auth::user();
 
-        if (! $user || ! $user->isArsitek()) {
+        if ($request->is('profil/*') || $request->is('logout') || $request->is('verifikasi-email')) {
             return $next($request);
         }
 
-        if ($request->is('profil/*') || $request->is('logout')) {
-            return $next($request);
+        if ($user->isArsitek() && ! $user->arsitekProfile) {
+            return redirect()->route('profil.lengkapi');
         }
 
-        if (! $user->companyProfile) {
+        if ($user->isPerusahaan() && ! $user->companyProfile) {
             return redirect()->route('profil.lengkapi');
         }
 

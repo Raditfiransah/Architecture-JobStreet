@@ -5,14 +5,19 @@ import InputError from '@/Components/InputError.vue';
 import InputLabel from '@/Components/InputLabel.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import TextInput from '@/Components/TextInput.vue';
-import SelectInput from '@/Components/SelectInput.vue';
+import { 
+    User, 
+    Building2, 
+    Briefcase,
+    CheckCircle2
+} from "lucide-vue-next";
 
 const form = useForm({
     name: '',
     email: '',
     password: '',
     password_confirmation: '',
-    role: '',
+    role: 'arsitek', // Default to arsitek
     company_name: '',
     company_website: '',
     agree_to_terms: false,
@@ -35,12 +40,59 @@ const submit = () => {
     <GuestLayout>
         <Head title="Daftar Akun Baru" />
 
-        <div class="mb-8">
-            <h1 class="text-2xl font-bold text-ink">Bergabung Sekarang</h1>
-            <p class="text-sm text-ink-muted mt-1">Mulai karir arsitektur Anda bersama kami.</p>
+        <div class="mb-10 text-center">
+            <h1 class="text-3xl font-extrabold tracking-tight text-ink">Buat Akun Anda</h1>
+            <p class="text-ink-muted mt-2">Pilih kategori yang sesuai untuk memulai perjalanan Anda.</p>
         </div>
 
-        <form @submit.prevent="submit">
+        <form @submit.prevent="submit" class="space-y-6">
+            <!-- Role Selection Cards -->
+            <div class="grid grid-cols-3 gap-3 mb-10">
+                <div 
+                    v-for="roleOption in roles" 
+                    :key="roleOption.value"
+                    @click="form.role = roleOption.value"
+                    :class="[
+                        'relative cursor-pointer group flex flex-col items-center justify-center p-4 rounded-2xl border-2 transition-all duration-300 active:scale-95',
+                        form.role === roleOption.value 
+                            ? 'border-primary bg-primary/5 shadow-lg shadow-primary/10' 
+                            : 'border-border/50 bg-white hover:border-primary/30 hover:bg-muted/30'
+                    ]"
+                >
+                    <div 
+                        :class="[
+                            'w-12 h-12 rounded-xl flex items-center justify-center mb-3 transition-colors duration-300',
+                            form.role === roleOption.value 
+                                ? 'bg-primary text-white' 
+                                : 'bg-muted text-muted-foreground group-hover:bg-primary/20 group-hover:text-primary'
+                        ]"
+                    >
+                        <User v-if="roleOption.value === 'arsitek'" class="w-6 h-6" />
+                        <Building2 v-else-if="roleOption.value === 'perusahaan'" class="w-6 h-6" />
+                        <Briefcase v-else-if="roleOption.value === 'client'" class="w-6 h-6" />
+                    </div>
+                    
+                    <span 
+                        :class="[
+                            'text-[12px] font-bold text-center leading-tight',
+                            form.role === roleOption.value ? 'text-primary' : 'text-muted-foreground group-hover:text-foreground'
+                        ]"
+                    >
+                        {{ roleOption.label }}
+                    </span>
+
+                    <!-- Check Badge -->
+                    <div 
+                        v-if="form.role === roleOption.value"
+                        class="absolute -top-1.5 -right-1.5 bg-primary text-white rounded-full p-0.5 shadow-sm animate-in zoom-in duration-200"
+                    >
+                        <CheckCircle2 class="w-4 h-4" />
+                    </div>
+                </div>
+            </div>
+            
+            <InputError class="mt-2 text-center" :message="form.errors.role" />
+
             <!-- Full Name -->
             <div>
                 <InputLabel for="name" value="Nama Lengkap" />
@@ -72,20 +124,6 @@ const submit = () => {
                 <InputError class="mt-2" :message="form.errors.email" />
             </div>
 
-            <!-- Role Selection -->
-            <div class="mt-4">
-                <InputLabel for="role" value="Daftar Sebagai" />
-                <SelectInput
-                    id="role"
-                    class="mt-1 block w-full"
-                    v-model="form.role"
-                    :options="roles"
-                    required
-                    placeholder="Pilih kategori Anda"
-                />
-                <InputError class="mt-2" :message="form.errors.role" />
-            </div>
-
             <!-- Company Fields (Dynamic) -->
             <transition
                 enter-active-class="transition ease-out duration-200"
@@ -105,7 +143,7 @@ const submit = () => {
                             type="text"
                             class="mt-1 block w-full bg-white"
                             v-model="form.company_name"
-                            required
+                            :required="form.role === 'perusahaan'"
                             autocomplete="organization"
                             placeholder="Contoh: PT Arsitek Indonesia"
                         />
@@ -178,7 +216,7 @@ const submit = () => {
             </div>
 
             <div class="mt-8 flex flex-col gap-4">
-                <PrimaryButton class="w-full py-4 text-base" :class="{ 'opacity-25': form.processing }" :disabled="form.processing">
+                <PrimaryButton class="w-full py-4 text-base shadow-lg shadow-primary/20" :class="{ 'opacity-25': form.processing }" :disabled="form.processing">
                     Daftar Sekarang
                 </PrimaryButton>
 

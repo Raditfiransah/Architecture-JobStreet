@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Mail\ResendOtpMail;
+use App\Models\ArsitekProfile;
 use App\Models\CompanyProfile;
 use App\Models\User;
 use App\Services\OtpService;
@@ -11,15 +12,18 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rules;
 use Illuminate\Validation\ValidationException;
 use Illuminate\View\View;
+use Inertia\Inertia;
+use Inertia\Response;
 
 class RegisteredUserController extends Controller
 {
-    public function create(): View
+    public function create(): Response
     {
-        return view('auth.register');
+        return Inertia::render('Auth/Register');
     }
 
     /**
@@ -50,9 +54,16 @@ class RegisteredUserController extends Controller
                 'company_name' => $request->company_name,
                 'company_website' => $request->company_website,
             ]);
+        } elseif ($request->role === 'arsitek') {
+            ArsitekProfile::create([
+                'user_id' => $user->id,
+            ]);
         }
 
         $verificationCode = $otpService->generate($user);
+        
+        // Log OTP as fallback for development
+        \Illuminate\Support\Facades\Log::info("OTP created for user {$user->email}: {$verificationCode->code}");
 
         try {
             Mail::to($user->email)->send(new ResendOtpMail($verificationCode->code, $user->name));
@@ -60,11 +71,11 @@ class RegisteredUserController extends Controller
             \Illuminate\Support\Facades\Log::error('Failed to send OTP email: '.$e->getMessage());
         }
 
-        auth()->login($user);
+        Auth::login($user);
 
         session(['otp_email' => $user->email]);
 
         return redirect()->route('verification.notice')
-            ->with('status', __('Registrasi berhasil! Kode verifikasi telah dikirim ke :email.', ['email' => $user->email]));
+            ->with('message', __('Registrasi berhasil! Kode verifikasi telah dikirim ke :email.', ['email' => $user->email]));
     }
 }

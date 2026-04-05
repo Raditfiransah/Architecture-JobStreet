@@ -45,6 +45,7 @@ class HandleInertiaRequests extends Middleware
                     'role' => $request->user()->role,
                     'avatar_url' => $request->user()->avatar_url,
                     'dashboard_route' => $request->user()->dashboardRoute(),
+                    'profile' => $request->user()->role === 'arsitek' ? $request->user()->arsitekProfile : null,
                 ] : null,
             ],
             'flash' => [

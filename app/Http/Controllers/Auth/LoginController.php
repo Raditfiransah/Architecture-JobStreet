@@ -25,7 +25,7 @@ class LoginController extends Controller
         if (Auth::attempt($credentials, $request->boolean('remember'))) {
             $request->session()->regenerate();
 
-            return redirect()->intended($this->redirectAfterLogin($request));
+            return redirect()->intended(route('lowongan.index'));
         }
 
         return back()->withErrors([

@@ -60,6 +60,15 @@ const handleSearch = () => {
 const selectJob = (job) => {
     selectedJob.value = job;
 };
+
+const handleAction = (action) => {
+    if (!user.value) {
+        router.get(route('login'));
+        return;
+    }
+    // Handle authenticated action (e.g. apply, save)
+    console.log(`${action} job:`, selectedJob.value?.posisi);
+};
 </script>
 
 <template>
@@ -149,11 +158,11 @@ const selectJob = (job) => {
                         </div>
 
                         <div class="relative z-10 flex flex-wrap items-center gap-4">
-                            <Button size="lg" class="rounded-[20px] px-12 h-14 font-bold text-lg shadow-xl shadow-primary/20 active:scale-95 group/btn flex-1 md:flex-none">
-                                Lamar Sekarang
+                            <Button @click="handleAction('apply')" size="lg" class="rounded-[20px] px-12 h-14 font-bold text-lg shadow-xl shadow-primary/20 active:scale-95 group/btn flex-1 md:flex-none">
+                                {{ user ? 'Lamar Sekarang' : 'Melamar' }}
                                 <ArrowUpRight class="ml-2 w-5 h-5 group-hover/btn:translate-x-1 group-hover/btn:-translate-y-1 transition-transform" />
                             </Button>
-                            <Button variant="outline" size="lg" class="rounded-[20px] px-8 h-14 border-2 border-border/80 hover:border-primary/30 font-bold transition-all group/save">
+                            <Button @click="handleAction('save')" variant="outline" size="lg" class="rounded-[20px] px-8 h-14 border-2 border-border/80 hover:border-primary/30 font-bold transition-all group/save">
                                 <Bookmark class="w-5 h-5 mr-2 group-hover/save:fill-primary group-hover/save:text-primary transition-all" />
                                 Simpan
                             </Button>

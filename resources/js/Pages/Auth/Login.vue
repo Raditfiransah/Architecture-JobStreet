@@ -2,9 +2,11 @@
 import { Head, Link, useForm } from '@inertiajs/vue3';
 import GuestLayout from '@/Layouts/GuestLayout.vue';
 import InputError from '@/Components/InputError.vue';
-import InputLabel from '@/Components/InputLabel.vue';
-import PrimaryButton from '@/Components/PrimaryButton.vue';
-import TextInput from '@/Components/TextInput.vue';
+import { Button } from "@/Components/UI/ui/button";
+import { Input } from "@/Components/UI/ui/input";
+import { Label } from "@/Components/UI/ui/label";
+import { Checkbox } from "@/Components/UI/ui/checkbox";
+import { LogIn, ArrowRight } from "lucide-vue-next";
 
 defineProps({
     status: {
@@ -29,78 +31,102 @@ const submit = () => {
     <GuestLayout>
         <Head title="Masuk ke Akun" />
 
-        <div v-if="status" class="mb-4 font-medium text-sm text-green-600">
+        <div v-if="status" class="mb-6 p-4 rounded-xl bg-primary/10 border border-primary/20 text-sm font-bold text-primary animate-in fade-in slide-in-from-top-4 duration-500">
             {{ status }}
         </div>
 
-        <div class="mb-8">
-            <h1 class="text-2xl font-bold text-ink">Selamat Datang Kembali</h1>
-            <p class="text-sm text-ink-muted mt-1">Masuk untuk mengelola profil dan lamaran Anda.</p>
+        <div class="mb-10 text-center md:text-left">
+            <h1 class="text-3xl font-display font-black text-foreground tracking-tight leading-none mb-3">Selamat Datang Kembali</h1>
+            <p class="text-[15px] font-medium text-muted-foreground leading-relaxed">Masuk untuk mengelola profil profesional dan lamaran arsitektur Anda.</p>
         </div>
 
-        <form @submit.prevent="submit">
-            <div>
-                <InputLabel for="email" value="Email" />
-                <TextInput
+        <form @submit.prevent="submit" class="space-y-6">
+            <div class="space-y-2">
+                <Label for="email" class="text-xs font-black uppercase tracking-widest text-muted-foreground/80">Email</Label>
+                <Input
                     id="email"
                     type="email"
-                    class="mt-1 block w-full"
                     v-model="form.email"
                     required
                     autofocus
                     autocomplete="username"
                     placeholder="nama@email.com"
+                    class="h-12 rounded-xl bg-muted/30 border-border/50 focus:bg-background focus:border-primary/50 transition-all duration-300"
                 />
-                <InputError class="mt-2" :message="form.errors.email" />
+                <InputError :message="form.errors.email" />
             </div>
 
-            <div class="mt-5">
+            <div class="space-y-2">
                 <div class="flex items-center justify-between">
-                    <InputLabel for="password" value="Password" />
+                    <Label for="password" class="text-xs font-black uppercase tracking-widest text-muted-foreground/80">Password</Label>
                     <Link
                         v-if="route().has('password.request')"
                         :href="route('password.request')"
-                        class="text-xs font-medium text-primary-500 hover:text-primary-600 transition"
+                        class="text-xs font-bold text-primary hover:text-primary/80 transition-colors"
                     >
                         Lupa password?
                     </Link>
                 </div>
-                <TextInput
+                <Input
                     id="password"
                     type="password"
-                    class="mt-1 block w-full"
                     v-model="form.password"
                     required
                     autocomplete="current-password"
                     placeholder="••••••••"
+                    class="h-12 rounded-xl bg-muted/30 border-border/50 focus:bg-background focus:border-primary/50 transition-all duration-300"
                 />
-                <InputError class="mt-2" :message="form.errors.password" />
+                <InputError :message="form.errors.password" />
             </div>
 
-            <div class="block mt-4">
-                <label class="flex items-center cursor-pointer">
-                    <input
-                        type="checkbox"
-                        name="remember"
-                        v-model="form.remember"
-                        class="rounded border-[#e4ede8] text-primary-300 shadow-sm focus:ring-primary-100 transition"
-                    />
-                    <span class="ms-2 text-sm text-ink-muted">Ingat saya</span>
+            <div class="flex items-center space-x-2 py-2">
+                <Checkbox 
+                    id="remember" 
+                    :checked="form.remember" 
+                    @update:checked="(val) => form.remember = val"
+                    class="rounded-md border-border/50 data-[state=checked]:bg-primary data-[state=checked]:border-primary"
+                />
+                <label
+                    for="remember"
+                    class="text-sm font-bold text-muted-foreground cursor-pointer select-none"
+                >
+                    Ingat saya di perangkat ini
                 </label>
             </div>
 
-            <div class="mt-8 flex flex-col gap-4">
-                <PrimaryButton class="w-full py-4 text-base" :class="{ 'opacity-25': form.processing }" :disabled="form.processing">
+            <div class="pt-4 space-y-6">
+                <Button 
+                    type="submit"
+                    class="w-full h-14 rounded-2xl text-base font-bold shadow-xl shadow-primary/20 group"
+                    :disabled="form.processing"
+                >
                     Masuk Sekarang
-                </PrimaryButton>
+                    <LogIn class="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                </Button>
 
-                <p class="text-center text-sm text-ink-muted">
-                    Belum punya akun?
-                    <Link :href="route('register')" class="font-bold text-primary-500 hover:text-primary-600 transition">
+                <div class="relative py-4">
+                    <div class="absolute inset-0 flex items-center">
+                        <div class="w-full border-t border-border/50"></div>
+                    </div>
+                    <div class="relative flex justify-center text-xs uppercase tracking-widest font-black text-muted-foreground/40">
+                        <span class="bg-card px-4">Atau</span>
+                    </div>
+                </div>
+
+                <p class="text-center text-sm font-medium text-muted-foreground">
+                    Belum punya akun profesional?
+                    <Link :href="route('register')" class="font-black text-primary hover:text-primary/80 transition-colors inline-flex items-center gap-1 group/reg">
                         Daftar Gratis
+                        <ArrowRight class="w-4 h-4 group-hover/reg:translate-x-0.5 transition-transform" />
                     </Link>
                 </p>
             </div>
         </form>
     </GuestLayout>
 </template>
+
+<style scoped>
+.font-display {
+    font-family: 'Outfit', sans-serif;
+}
+</style>

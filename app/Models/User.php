@@ -54,6 +54,11 @@ class User extends Authenticatable
         ];
     }
 
+    public function arsitekProfile(): HasOne
+    {
+        return $this->hasOne(ArsitekProfile::class);
+    }
+
     public function companyProfile(): HasOne
     {
         return $this->hasOne(CompanyProfile::class);

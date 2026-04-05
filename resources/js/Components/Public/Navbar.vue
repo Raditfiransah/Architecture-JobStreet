@@ -22,11 +22,10 @@ import {
 import {
     DropdownMenu,
     DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuLabel,
     DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from "@/Components/UI/ui/dropdown-menu";
+import ProfileCard from "./ProfileCard.vue";
 
 const props = defineProps({
     showSearch: {
@@ -70,12 +69,22 @@ onUnmounted(() => {
     window.removeEventListener('scroll', handleScroll);
 });
 
-const navLinks = [
-    { name: "Lowongan Kerja", route: "lowongan.index" },
-    { name: "Proyek", route: "proyek.index" },
-    { name: "Info Hub", route: "info.index" },
-    { name: "Hire Architect", route: "home" },
-];
+const navLinks = computed(() => {
+    const baseLinks = [
+        { name: "Lowongan Kerja", route: "lowongan.index" },
+    ];
+
+    if (user.value) {
+        return [
+            ...baseLinks,
+            { name: "Proyek", route: "proyek.index" },
+            { name: "Info Hub", route: "info.index" },
+            { name: "Hire Architect", route: "home" },
+        ];
+    }
+
+    return baseLinks;
+});
 </script>
 
 <template>
@@ -140,33 +149,36 @@ const navLinks = [
                                 </Avatar>
                             </Button>
                         </DropdownMenuTrigger>
-                        <DropdownMenuContent class="w-56 mt-2 rounded-2xl shadow-2xl border-border/50 p-2" align="end">
-                            <DropdownMenuLabel class="font-normal px-3 py-3">
-                                <div class="flex flex-col space-y-1">
-                                    <p class="text-sm font-bold leading-none">{{ user.name }}</p>
-                                    <p class="text-xs leading-none text-muted-foreground mt-1">{{ user.email }}</p>
+                        <DropdownMenuContent 
+                            class="w-[320px] mt-2 rounded-[24px] shadow-2xl border-none p-0 overflow-hidden" 
+                            align="end"
+                        >
+                            <template v-if="user.role === 'arsitek'">
+                                <ProfileCard :user="user" />
+                                <div class="px-2 pb-2 bg-background">
+                                    <DropdownMenuSeparator class="mx-2 mb-2" />
+                                    <Link :href="route('logout')" method="post" as="button" class="flex items-center w-full px-4 py-3 rounded-xl text-destructive hover:bg-destructive/10 transition-all font-semibold">
+                                        <LogOut class="mr-2 h-4 w-4" />
+                                        <span>Keluar</span>
+                                    </Link>
                                 </div>
-                            </DropdownMenuLabel>
-                            <DropdownMenuSeparator />
-                            <DropdownMenuItem asChild class="rounded-xl cursor-pointer py-2.5">
-                                <Link :href="route(user.dashboard_route || 'home')" class="flex items-center w-full">
-                                    <LayoutDashboard class="mr-2 h-4 w-4 text-primary" />
-                                    <span>Dashboard</span>
-                                </Link>
-                            </DropdownMenuItem>
-                            <DropdownMenuItem asChild class="rounded-xl cursor-pointer py-2.5">
-                                <Link :href="route('profile.edit')" class="flex items-center w-full">
-                                    <User class="mr-2 h-4 w-4 text-primary" />
-                                    <span>Profil Anda</span>
-                                </Link>
-                            </DropdownMenuItem>
-                            <DropdownMenuSeparator />
-                            <DropdownMenuItem asChild class="rounded-xl cursor-pointer py-2.5 text-destructive focus:bg-destructive/10 focus:text-destructive">
-                                <Link :href="route('logout')" method="post" as="button" class="flex items-center w-full">
-                                    <LogOut class="mr-2 h-4 w-4" />
-                                    <span>Keluar</span>
-                                </Link>
-                            </DropdownMenuItem>
+                            </template>
+                            <template v-else>
+                                <!-- Standard menu for other roles if needed -->
+                                <div class="p-4">
+                                    <p class="font-bold">{{ user.name }}</p>
+                                    <p class="text-xs text-muted-foreground">{{ user.email }}</p>
+                                    <DropdownMenuSeparator class="my-3" />
+                                    <Link :href="route(user.dashboard_route || 'home')" class="flex items-center py-2 hover:text-primary">
+                                        <LayoutDashboard class="mr-2 h-4 w-4" />
+                                        <span>Dashboard</span>
+                                    </Link>
+                                    <Link :href="route('logout')" method="post" as="button" class="flex items-center w-full py-2 text-destructive mt-2">
+                                        <LogOut class="mr-2 h-4 w-4" />
+                                        <span>Keluar</span>
+                                    </Link>
+                                </div>
+                            </template>
                         </DropdownMenuContent>
                     </DropdownMenu>
                 </template>

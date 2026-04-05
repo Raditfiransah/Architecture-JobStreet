@@ -1,6 +1,20 @@
 <script setup>
-import { Link } from '@inertiajs/vue3';
+import { Link, useForm } from '@inertiajs/vue3';
 import { computed } from 'vue';
+import { 
+    LayoutDashboard, 
+    User, 
+    FolderRoot, 
+    Briefcase, 
+    FileText, 
+    Users, 
+    MessageSquare,
+    ChevronRight,
+    Search,
+    LogOut
+} from "lucide-vue-next";
+import { Button } from "@/Components/UI/ui/button";
+import { Separator } from "@/Components/UI/ui/separator";
 
 const props = defineProps({
     role: {
@@ -13,94 +27,159 @@ const props = defineProps({
 const panelTitle = computed(() => {
     if (!props.role) return 'User Panel';
     const titles = {
-        arsitek: 'Arsitek Panel',
-        perusahaan: 'Perusahaan Panel',
-        client: 'Client Panel',
-        admin: 'Admin Panel',
+        arsitek: 'Arsitek',
+        perusahaan: 'Perusahaan',
+        client: 'Client',
+        admin: 'Administrator',
     };
     return titles[props.role] || 'User Panel';
 });
 
 const isRoute = (name) => route().current(name);
+
+const form = useForm({});
+const logout = () => {
+    form.post(route('logout'));
+};
 </script>
 
 <template>
-    <aside class="bg-gray-900 text-white w-64 min-h-screen flex-shrink-0">
-        <div class="p-6 border-b border-gray-800">
-            <h1 class="text-xl font-bold">Web Architect</h1>
-            <p class="text-gray-400 text-sm mt-1">{{ panelTitle }}</p>
+    <aside class="bg-card text-card-foreground w-64 min-h-screen flex-shrink-0 border-r border-border/50 flex flex-col sticky top-0 h-screen">
+        <div class="p-6">
+            <Link :href="route('home')" class="flex items-center gap-2 group mb-6">
+                <div class="w-8 h-8 rounded-lg bg-primary flex items-center justify-center text-primary-foreground shadow-lg shadow-primary/20 group-hover:rotate-12 transition-all duration-500">
+                    <Briefcase class="w-4 h-4" />
+                </div>
+                <span class="text-xl font-display font-extrabold tracking-tight text-primary">
+                    Loker<span class="text-foreground">Arsitek</span>
+                </span>
+            </Link>
+            
+            <div class="px-3 py-2 rounded-xl bg-muted/50 border border-border/50">
+                <p class="text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground mb-1">Access Level</p>
+                <p class="text-sm font-bold text-foreground">{{ panelTitle }}</p>
+            </div>
         </div>
 
-        <nav class="mt-6">
+        <nav class="flex-1 px-3 space-y-1 overflow-y-auto mt-2">
             <!-- Arsitek Menu -->
             <template v-if="role === 'arsitek'">
-                <Link :href="route('arsitek.dashboard')" :class="isRoute('arsitek.dashboard') ? 'bg-gray-800 text-white' : 'text-gray-400 hover:bg-gray-800 hover:text-white'" class="flex items-center px-6 py-3 transition">
-                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-4 0h4"/></svg>
-                    Dashboard
-                </Link>
-                <Link href="#" class="flex items-center px-6 py-3 text-gray-400 hover:bg-gray-800 hover:text-white transition">
-                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
-                    Profil Saya
-                </Link>
-                <Link href="#" class="flex items-center px-6 py-3 text-gray-400 hover:bg-gray-800 hover:text-white transition">
-                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/></svg>
-                    Portofolio
-                </Link>
-                <Link href="#" class="flex items-center px-6 py-3 text-gray-400 hover:bg-gray-800 hover:text-white transition">
-                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
-                    Lamaran Kerja
-                </Link>
-                <Link href="#" class="flex items-center px-6 py-3 text-gray-400 hover:bg-gray-800 hover:text-white transition">
-                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
-                    Proposal Proyek
-                </Link>
+                <div class="px-3 py-2 text-[11px] font-bold uppercase tracking-widest text-muted-foreground/60 mt-4 mb-1">Utama</div>
+                <Button asChild variant="ghost" :class="[isRoute('arsitek.dashboard') ? 'bg-primary/10 text-primary hover:bg-primary/15' : 'text-muted-foreground']" class="w-full justify-start rounded-xl font-semibold mb-1">
+                    <Link :href="route('arsitek.dashboard')">
+                        <LayoutDashboard class="mr-3 h-4 w-4" />
+                        Dashboard
+                    </Link>
+                </Button>
+                <Button asChild variant="ghost" class="w-full justify-start rounded-xl font-semibold text-muted-foreground mb-1 transition-all hover:translate-x-1">
+                    <Link href="#">
+                        <User class="mr-3 h-4 w-4" />
+                        Profil Saya
+                    </Link>
+                </Button>
+
+                <div class="px-3 py-2 text-[11px] font-bold uppercase tracking-widest text-muted-foreground/60 mt-4 mb-1">Karir & Kerja</div>
+                <Button asChild variant="ghost" class="w-full justify-start rounded-xl font-semibold text-muted-foreground mb-1 transition-all hover:translate-x-1">
+                    <Link href="#">
+                        <FolderRoot class="mr-3 h-4 w-4" />
+                        Portofolio
+                    </Link>
+                </Button>
+                <Button asChild variant="ghost" class="w-full justify-start rounded-xl font-semibold text-muted-foreground mb-1 transition-all hover:translate-x-1">
+                    <Link href="#">
+                        <Briefcase class="mr-3 h-4 w-4" />
+                        Lamaran Kerja
+                    </Link>
+                </Button>
+                <Button asChild variant="ghost" class="w-full justify-start rounded-xl font-semibold text-muted-foreground mb-1 transition-all hover:translate-x-1">
+                    <Link href="#">
+                        <FileText class="mr-3 h-4 w-4" />
+                        Proposal Proyek
+                    </Link>
+                </Button>
             </template>
 
             <!-- Perusahaan Menu -->
             <template v-else-if="role === 'perusahaan'">
-                <Link :href="route('perusahaan.dashboard')" :class="isRoute('perusahaan.dashboard') ? 'bg-gray-800 text-white' : 'text-gray-400 hover:bg-gray-800 hover:text-white'" class="flex items-center px-6 py-3 transition">
-                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-4 0h4"/></svg>
-                    Dashboard
-                </Link>
-                <Link href="#" class="flex items-center px-6 py-3 text-gray-400 hover:bg-gray-800 hover:text-white transition">
-                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/></svg>
-                    Kelola Lowongan
-                </Link>
-                <Link href="#" class="flex items-center px-6 py-3 text-gray-400 hover:bg-gray-800 hover:text-white transition">
-                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
-                    Kandidat Masuk
-                </Link>
+                <div class="px-3 py-2 text-[11px] font-bold uppercase tracking-widest text-muted-foreground/60 mt-4 mb-1">Dashboard</div>
+                <Button asChild variant="ghost" :class="[isRoute('perusahaan.dashboard') ? 'bg-primary/10 text-primary hover:bg-primary/15' : 'text-muted-foreground']" class="w-full justify-start rounded-xl font-semibold mb-1">
+                    <Link :href="route('perusahaan.dashboard')">
+                        <LayoutDashboard class="mr-3 h-4 w-4" />
+                        Ringkasan
+                    </Link>
+                </Button>
+                
+                <div class="px-3 py-2 text-[11px] font-bold uppercase tracking-widest text-muted-foreground/60 mt-4 mb-1">Manajemen</div>
+                <Button asChild variant="ghost" class="w-full justify-start rounded-xl font-semibold text-muted-foreground mb-1 transition-all hover:translate-x-1">
+                    <Link href="#">
+                        <FileText class="mr-3 h-4 w-4" />
+                        Kelola Lowongan
+                    </Link>
+                </Button>
+                <Button asChild variant="ghost" class="w-full justify-start rounded-xl font-semibold text-muted-foreground mb-1 transition-all hover:translate-x-1">
+                    <Link href="#">
+                        <Users class="mr-3 h-4 w-4" />
+                        Kandidat Masuk
+                    </Link>
+                </Button>
             </template>
 
             <!-- Client Menu -->
             <template v-else-if="role === 'client'">
-                <Link :href="route('client.dashboard')" :class="isRoute('client.dashboard') ? 'bg-gray-800 text-white' : 'text-gray-400 hover:bg-gray-800 hover:text-white'" class="flex items-center px-6 py-3 transition">
-                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-4 0h4"/></svg>
-                    Dashboard
-                </Link>
-                <Link href="#" class="flex items-center px-6 py-3 text-gray-400 hover:bg-gray-800 hover:text-white transition">
-                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"/></svg>
-                    Proyek Saya
-                </Link>
+                <Button asChild variant="ghost" :class="[isRoute('client.dashboard') ? 'bg-primary/10 text-primary hover:bg-primary/15' : 'text-muted-foreground']" class="w-full justify-start rounded-xl font-semibold mb-1">
+                    <Link :href="route('client.dashboard')">
+                        <LayoutDashboard class="mr-3 h-4 w-4" />
+                        Dashboard
+                    </Link>
+                </Button>
+                <Button asChild variant="ghost" class="w-full justify-start rounded-xl font-semibold text-muted-foreground mb-1 transition-all hover:translate-x-1">
+                    <Link href="#">
+                        <FolderRoot class="mr-3 h-4 w-4" />
+                        Proyek Saya
+                    </Link>
+                </Button>
             </template>
 
             <!-- Admin Menu -->
             <template v-else-if="role === 'admin'">
-                <Link :href="route('admin.dashboard')" :class="isRoute('admin.dashboard') ? 'bg-gray-800 text-white' : 'text-gray-400 hover:bg-gray-800 hover:text-white'" class="flex items-center px-6 py-3 transition">
-                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-4 0h4"/></svg>
-                    Dashboard
-                </Link>
-                <Link href="#" class="flex items-center px-6 py-3 text-gray-400 hover:bg-gray-800 hover:text-white transition">
-                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0z"/></svg>
-                    Kelola User
-                </Link>
+                <Button asChild variant="ghost" :class="[isRoute('admin.dashboard') ? 'bg-primary/10 text-primary hover:bg-primary/15' : 'text-muted-foreground']" class="w-full justify-start rounded-xl font-semibold mb-1">
+                    <Link :href="route('admin.dashboard')">
+                        <LayoutDashboard class="mr-3 h-4 w-4" />
+                        Dashboard
+                    </Link>
+                </Button>
+                <Button asChild variant="ghost" class="w-full justify-start rounded-xl font-semibold text-muted-foreground mb-1 transition-all hover:translate-x-1">
+                    <Link href="#">
+                        <Users class="mr-3 h-4 w-4" />
+                        Kelola User
+                    </Link>
+                </Button>
             </template>
-
-            <!-- Shared links -->
-            <Link :href="route('info.index')" class="flex items-center px-6 py-3 text-gray-400 hover:bg-gray-800 hover:text-white transition border-t border-gray-800 mt-4">
-                <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"/></svg>
-                Info Hub
-            </Link>
         </nav>
+
+        <div class="px-6 py-6 border-t border-border/50">
+            <Button asChild variant="outline" class="w-full justify-start rounded-xl font-semibold text-muted-foreground bg-muted/30 border-border/50 transition-all hover:border-primary/30 hover:text-primary mb-2">
+                <Link :href="route('info.index')">
+                    <MessageSquare class="mr-3 h-4 w-4" />
+                    Info Hub
+                </Link>
+            </Button>
+
+            <Button @click="logout" variant="ghost" class="w-full justify-start rounded-xl font-semibold text-destructive hover:bg-destructive/10 hover:text-destructive border border-transparent hover:border-destructive/20 transition-all">
+                <LogOut class="mr-3 h-4 w-4" />
+                Keluar
+            </Button>
+            
+            <div class="mt-6 flex items-center gap-3 px-1">
+                <div class="w-2 h-2 rounded-full bg-primary animate-pulse"></div>
+                <span class="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">System Online</span>
+            </div>
+        </div>
     </aside>
 </template>
+
+<style scoped>
+.font-display {
+    font-family: 'Bricolage Grotesque', sans-serif;
+}
+</style>

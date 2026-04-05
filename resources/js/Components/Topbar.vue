@@ -1,6 +1,31 @@
 <script setup>
 import { Link, useForm } from '@inertiajs/vue3';
 import { computed } from 'vue';
+import { 
+    LogOut, 
+    User, 
+    Settings, 
+    Bell, 
+    Search, 
+    Menu,
+    ChevronDown,
+    LayoutDashboard
+} from "lucide-vue-next";
+import { Button } from "@/Components/UI/ui/button";
+import { Input } from "@/Components/UI/ui/input";
+import { 
+    Avatar, 
+    AvatarImage, 
+    AvatarFallback 
+} from "@/Components/UI/ui/avatar";
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuLabel,
+    DropdownMenuSeparator,
+    DropdownMenuTrigger,
+} from "@/Components/UI/ui/dropdown-menu";
 
 const props = defineProps({
     user: {
@@ -28,46 +53,80 @@ const logout = () => {
 </script>
 
 <template>
-    <header class="bg-white border-b border-gray-100 h-16 px-6 flex items-center justify-between sticky top-0 z-40">
-        <div class="flex items-center">
-            <button
-                type="button"
-                class="lg:hidden mr-4 text-gray-500 hover:text-gray-700 focus:outline-none"
+    <header class="bg-background/80 backdrop-blur-xl border-b border-border/50 h-16 px-6 flex items-center justify-between sticky top-0 z-40 transition-all duration-300">
+        <div class="flex items-center gap-4 flex-1">
+            <Button
+                variant="ghost"
+                size="icon"
+                class="lg:hidden rounded-xl"
                 @click="emit('toggle-sidebar')"
             >
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
-                </svg>
-            </button>
+                <Menu class="w-5 h-5" />
+            </Button>
+            
+            <!-- Global Search -->
+            <div class="hidden md:flex items-center relative max-w-sm w-full group">
+                <Search class="absolute left-3 w-4 h-4 text-muted-foreground group-focus-within:text-primary transition-colors" />
+                <Input 
+                    placeholder="Cari fitur, lowongan, atau bantuan..." 
+                    class="pl-10 h-10 bg-muted/30 border-border/50 focus:bg-background focus:border-primary/50 rounded-xl transition-all duration-300"
+                />
+            </div>
         </div>
 
-        <div class="flex items-center space-x-6">
-            <div class="flex items-center gap-3">
-                <div class="text-right hidden sm:block">
-                    <p class="text-sm font-semibold text-gray-900 leading-tight">{{ userName }}</p>
-                    <p class="text-[11px] font-medium text-gray-500 uppercase tracking-wider">{{ userRole }}</p>
-                </div>
+        <div class="flex items-center gap-3">
+            <!-- Notifications -->
+            <Button variant="ghost" size="icon" class="rounded-xl relative hover:bg-primary/5 group">
+                <Bell class="w-5 h-5 text-muted-foreground group-hover:text-primary transition-colors" />
+                <span class="absolute top-2.5 right-2.5 w-2 h-2 bg-primary rounded-full border-2 border-background"></span>
+            </Button>
 
-                <div v-if="user.avatar_url" class="w-9 h-9 rounded-full overflow-hidden border border-gray-200">
-                    <img :src="user.avatar_url" alt="Avatar" class="w-full h-full object-cover">
-                </div>
-                <div v-else class="w-9 h-9 rounded-full bg-primary-300 flex items-center justify-center border border-primary-400/20 shadow-sm shadow-primary-100">
-                    <span class="text-white text-sm font-bold">{{ userInitials }}</span>
-                </div>
-            </div>
+            <div class="h-8 w-px bg-border/50 mx-2"></div>
 
-            <div class="h-6 w-px bg-gray-100"></div>
-
-            <button
-                type="button"
-                @click="logout"
-                class="text-sm font-medium text-gray-500 hover:text-red-600 transition flex items-center gap-2"
-            >
-                <span>Logout</span>
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-                </svg>
-            </button>
+            <!-- User Menu -->
+            <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                    <Button variant="ghost" class="p-1 pl-3 h-11 rounded-xl hover:bg-muted/50 border border-transparent hover:border-border/50 transition-all gap-3">
+                        <div class="text-right hidden sm:block">
+                            <p class="text-sm font-bold text-foreground leading-none">{{ userName }}</p>
+                            <p class="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mt-1">{{ userRole }}</p>
+                        </div>
+                        <Avatar class="h-8 w-8 rounded-lg">
+                            <AvatarImage :src="user.avatar_url" :alt="userName" />
+                            <AvatarFallback class="bg-primary/10 text-primary font-bold text-xs rounded-lg">
+                                {{ userInitials }}
+                            </AvatarFallback>
+                        </Avatar>
+                        <ChevronDown class="w-3.5 h-3.5 text-muted-foreground" />
+                    </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent class="w-56 mt-2 rounded-2xl shadow-2xl border-border/50 p-2" align="end">
+                    <DropdownMenuLabel class="font-normal px-3 py-3">
+                        <div class="flex flex-col space-y-1">
+                            <p class="text-sm font-bold leading-none">{{ userName }}</p>
+                            <p class="text-xs leading-none text-muted-foreground mt-1">{{ user.email }}</p>
+                        </div>
+                    </DropdownMenuLabel>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem asChild class="rounded-xl cursor-pointer py-2.5">
+                        <Link :href="route('profile.edit')" class="flex items-center w-full">
+                            <User class="mr-2 h-4 w-4 text-primary" />
+                            <span>Profil Anda</span>
+                        </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem asChild class="rounded-xl cursor-pointer py-2.5">
+                        <Link href="#" class="flex items-center w-full">
+                            <Settings class="mr-2 h-4 w-4 text-primary" />
+                            <span>Pengaturan</span>
+                        </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem @click="logout" class="rounded-xl cursor-pointer py-2.5 text-destructive focus:bg-destructive/10 focus:text-destructive">
+                        <LogOut class="mr-2 h-4 w-4" />
+                        <span>Keluar</span>
+                    </DropdownMenuItem>
+                </DropdownMenuContent>
+            </DropdownMenu>
         </div>
     </header>
 </template>

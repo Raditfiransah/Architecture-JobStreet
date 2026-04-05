@@ -1,10 +1,20 @@
+<script setup>
+import { Briefcase } from "lucide-vue-next";
+</script>
+
 <template>
-    <div class="flex items-center gap-2">
-        <span class="w-8 h-8 rounded border-2 border-primary-300 flex items-center justify-center">
-            <span class="w-3 h-3 bg-primary-300 rounded-sm"></span>
-        </span>
-        <span class="text-2xl font-bold tracking-tight">
-            <span class="text-ink">Loker</span><span class="text-primary-400">Arsitek</span>
+    <div class="flex items-center gap-2.5 group">
+        <div class="w-9 h-9 rounded-xl bg-primary flex items-center justify-center text-primary-foreground shadow-lg shadow-primary/20 group-hover:rotate-12 transition-all duration-500">
+            <Briefcase class="w-5 h-5" />
+        </div>
+        <span class="text-2xl font-display font-extrabold tracking-tight text-primary">
+            Loker<span class="text-foreground">Arsitek</span>
         </span>
     </div>
 </template>
+
+<style scoped>
+.font-display {
+    font-family: 'Bricolage Grotesque', sans-serif;
+}
+</style>

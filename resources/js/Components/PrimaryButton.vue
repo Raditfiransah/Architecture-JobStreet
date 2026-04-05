@@ -1,4 +1,6 @@
 <script setup>
+import { Button } from "@/Components/UI/ui/button";
+
 defineProps({
     type: {
         type: String,
@@ -8,10 +10,10 @@ defineProps({
 </script>
 
 <template>
-    <button
+    <Button
         :type="type"
-        class="inline-flex items-center justify-center px-6 py-3 bg-primary-300 border border-transparent rounded-xl font-bold text-sm text-white uppercase tracking-widest hover:bg-primary-400 active:bg-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-100 transition ease-in-out duration-150 shadow-md shadow-primary-100/50"
+        class="rounded-xl font-bold uppercase tracking-widest transition-all duration-300"
     >
         <slot />
-    </button>
+    </Button>
 </template>

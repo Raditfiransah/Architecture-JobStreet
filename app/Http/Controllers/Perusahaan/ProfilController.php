@@ -7,6 +7,17 @@ use Illuminate\Http\Request;
 
 class ProfilController extends Controller
 {
+    public function edit(Request $request)
+    {
+        $user = $request->user()->load('companyProfile');
+        
+        return \Inertia\Inertia::render('Profile/Edit', [
+            'user' => $user,
+            'companyProfile' => $user->companyProfile,
+            'companyName' => $user->companyProfile->company_name ?? $user->name,
+        ]);
+    }
+
     public function update(Request $request)
     {
         $request->validate([

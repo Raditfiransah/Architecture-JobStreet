@@ -16,8 +16,8 @@ const footerSections = [
     title: "Platform",
     links: [
       { name: "Lowongan Kerja", route: "lowongan.index" },
+      { name: "Hire Architect", route: "arsitek.index" },
       { name: "Proyek", route: "proyek.index" },
-      { name: "Direktori Arsitek", route: "arsitek.index" },
       { name: "Info Hub", route: "info.index" },
     ]
   },

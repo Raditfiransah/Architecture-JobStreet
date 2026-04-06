@@ -8,7 +8,7 @@ class DashboardController extends Controller
 {
     public function index()
     {
-        return \Inertia\Inertia::render('Client/Profile', [
+        return \Inertia\Inertia::render('Profile/Edit', [
             'user' => auth()->user(),
         ]);
     }

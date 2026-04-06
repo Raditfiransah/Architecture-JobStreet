@@ -14,8 +14,9 @@ class ProfilController extends Controller
     {
         $user = $request->user()->load('arsitekProfile');
         
-        return Inertia::render('Dashboard/Arsitek/ProfilEdit', [
-            'profile' => $user->arsitekProfile,
+        return Inertia::render('Profile/Edit', [
+            'user' => $user,
+            'arsitekProfile' => $user->arsitekProfile,
         ]);
     }
 

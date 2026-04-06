@@ -69,9 +69,8 @@ const menuItems = computed(() => {
   if (role === 'arsitek') {
     return [
       { group: 'Profil Karir', items: [
-        { label: 'Dashboard', icon: LayoutDashboard, href: route('arsitek.profile') },
-        { label: 'Edit Profil', icon: Edit2, href: route('arsitek.profil.edit') },
-        { label: 'Kelola Portofolio', icon: Briefcase, href: route('arsitek.portofolio.index') },
+        { label: 'Profile', icon: Edit2, href: route('arsitek.profil.edit') },
+        { label: 'Portofolio', icon: Briefcase, href: route('arsitek.portofolio.index') },
         { label: 'Aktivitas Lamaran', icon: History, href: route('arsitek.lamaran.index') },
       ]},
       { group: 'Mengelola Akun', items: [
@@ -83,7 +82,6 @@ const menuItems = computed(() => {
   if (role === 'perusahaan') {
     return [
       { group: 'Perusahaan', items: [
-        { label: 'Dashboard', icon: LayoutDashboard, href: route('perusahaan.profile') },
         { label: 'Edit Profil Bisnis', icon: Edit2, href: route('perusahaan.profil.edit') },
         { label: 'Kelola Lowongan', icon: Briefcase, href: route('perusahaan.lowongan.index') },
         { label: 'Pesan & Kandidat', icon: MessageSquare, href: route('perusahaan.inbox.index') },
@@ -97,7 +95,6 @@ const menuItems = computed(() => {
   if (role === 'client') {
     return [
       { group: 'Client', items: [
-        { label: 'Dashboard Utama', icon: LayoutDashboard, href: route('client.profile') },
         { label: 'Proyek Saya', icon: Building2, href: route('client.proyek.index') },
         { label: 'Pesan Masuk', icon: MessageSquare, href: route('client.inbox.index') },
       ]},

@@ -9,7 +9,9 @@ class ProfilController extends Controller
 {
     public function edit(Request $request)
     {
-        $user = $request->user()->load('companyProfile');
+        /** @var \App\Models\User $user */
+        $user = $request->user();
+        $user->load('companyProfile');
         
         return \Inertia\Inertia::render('Profile/Edit', [
             'user' => $user,
@@ -29,6 +31,7 @@ class ProfilController extends Controller
             'description' => 'nullable|string',
         ]);
 
+        /** @var \App\Models\User $user */
         $user = $request->user();
         
         $user->companyProfile()->updateOrCreate(

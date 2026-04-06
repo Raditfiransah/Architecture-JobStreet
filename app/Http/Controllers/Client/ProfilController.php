@@ -15,6 +15,7 @@ class ProfilController extends Controller
             'phone' => 'nullable|string|max:20',
         ]);
 
+        /** @var \App\Models\User $user */
         $user = $request->user();
         $user->update([
             'name' => $request->name,

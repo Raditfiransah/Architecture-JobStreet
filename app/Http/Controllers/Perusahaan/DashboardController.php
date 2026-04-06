@@ -8,7 +8,9 @@ class DashboardController extends Controller
 {
     public function index()
     {
-        $user = auth()->user()->load('companyProfile');
+        /** @var \App\Models\User $user */
+        $user = \Illuminate\Support\Facades\Auth::user();
+        $user->load('companyProfile');
         return \Inertia\Inertia::render('Profile/Edit', [
             'user' => $user,
             'companyProfile' => $user->companyProfile,

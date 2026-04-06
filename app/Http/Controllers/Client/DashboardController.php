@@ -8,8 +8,11 @@ class DashboardController extends Controller
 {
     public function index()
     {
+        /** @var \App\Models\User $user */
+        $user = \Illuminate\Support\Facades\Auth::user();
+        
         return \Inertia\Inertia::render('Profile/Edit', [
-            'user' => auth()->user(),
+            'user' => $user,
         ]);
     }
 }

@@ -105,15 +105,9 @@ const logout = () => {
           </DropdownMenuLabel>
           <DropdownMenuSeparator />
           <DropdownMenuItem asChild class="rounded-lg cursor-pointer py-2">
-            <Link :href="route(user.role + '.profile')" class="flex items-center w-full">
+            <Link :href="route(user.role === 'client' ? 'client.profile' : (user.role === 'admin' ? 'admin.dashboard' : user.role + '.profile'))" class="flex items-center w-full">
               <User class="mr-2 h-4 w-4 text-primary" />
-              <span>Profil Anda</span>
-            </Link>
-          </DropdownMenuItem>
-          <DropdownMenuItem asChild class="rounded-lg cursor-pointer py-2">
-            <Link href="#" class="flex items-center w-full">
-              <Settings class="mr-2 h-4 w-4 text-primary" />
-              <span>Pengaturan</span>
+              <span>Profil Saya</span>
             </Link>
           </DropdownMenuItem>
           <DropdownMenuSeparator />

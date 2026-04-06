@@ -65,41 +65,13 @@ const userInitials = computed(() => {
 
     <div class="space-y-6">
       <!-- Banner & Profile Illustration -->
-      <Card class="border-border/60 shadow-sm overflow-hidden rounded-2xl bg-white">
-        <div class="h-48 w-full bg-[#f8fafc] relative flex items-center justify-center border-b border-border/40">
-           <!-- Mockup Illustration (Simulated) -->
-           <div class="absolute inset-0 opacity-10 bg-[radial-gradient(#e2e8f0_1.5px,transparent_1.5px)] [background-size:24px_24px]"></div>
-           <div class="relative z-10 flex items-center gap-8 text-slate-300">
-              <svg class="w-24 h-24" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
-              <div class="flex flex-col gap-2">
-                 <div class="h-4 w-32 bg-slate-200 rounded"></div>
-                 <div class="h-4 w-48 bg-slate-200 rounded"></div>
-                 <div class="h-4 w-24 bg-slate-200 rounded"></div>
-              </div>
-           </div>
-           <!-- Character Sketch Mockup -->
-           <div class="absolute right-12 bottom-0 h-40 w-64 opacity-50 select-none pointer-events-none hidden md:block">
-              <img src="https://illustrations.popsy.co/slate/orchestrating-innovation.svg" class="h-full w-full object-contain object-bottom" alt="Illustration" />
-           </div>
+      <Card class="border-border/60 shadow-[0_2px_4px_rgba(0,0,0,0.02)] overflow-hidden rounded-2xl bg-white">
+        <div class="px-8 pt-8 pb-2">
+            <h1 class="text-[28px] font-display font-bold text-slate-800 tracking-tight">Profil Utama</h1>
+            <p class="text-sm font-medium text-slate-500 mt-1">Lengkapi data diri dan riwayat pendidikan Anda.</p>
         </div>
-        
         <CardContent class="p-0 relative">
-           <div class="px-8 pb-10">
-              <!-- Overlapping Avatar -->
-              <div class="relative -mt-12 mb-8 flex justify-center lg:justify-start">
-                 <div class="relative group">
-                    <Avatar class="h-28 w-28 rounded-full border-4 border-white shadow-md">
-                       <AvatarImage :src="user?.avatar_url" />
-                       <AvatarFallback class="bg-primary/5 text-primary text-3xl font-bold font-display">
-                          {{ userInitials }}
-                       </AvatarFallback>
-                    </Avatar>
-                    <Button variant="secondary" size="icon" class="absolute bottom-0 right-0 h-9 w-9 rounded-full shadow-lg border border-white">
-                       <Camera class="w-4 h-4" />
-                    </Button>
-                 </div>
-              </div>
-
+           <div class="px-8 pb-10 pt-6">
               <!-- Form Sections -->
               <form @submit.prevent="submit" class="space-y-10">
                  <!-- Main Info -->

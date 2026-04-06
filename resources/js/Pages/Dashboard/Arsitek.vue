@@ -1,6 +1,6 @@
 <script setup>
 import { Head, Link } from '@inertiajs/vue3';
-import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
+import ProfileLayout from '@/Layouts/ProfileLayout.vue';
 import StatCard from '@/Components/StatCard.vue';
 import EmptyState from '@/Components/EmptyState.vue';
 import { 
@@ -20,7 +20,7 @@ const props = defineProps({
 </script>
 
 <template>
-  <AuthenticatedLayout>
+  <ProfileLayout>
     <Head :title="'Dashboard ' + user.name" />
 
     <div class="mb-12 flex flex-col md:flex-row md:items-end justify-between gap-6">
@@ -90,7 +90,7 @@ const props = defineProps({
         />
       </div>
     </section>
-  </AuthenticatedLayout>
+  </ProfileLayout>
 </template>
 
 <style scoped>

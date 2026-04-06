@@ -14,6 +14,10 @@ defineProps({
   transparentNavbar: {
     type: Boolean,
     default: false,
+  },
+  showBreadcrumb: {
+    type: Boolean,
+    default: false,
   }
 });
 </script>

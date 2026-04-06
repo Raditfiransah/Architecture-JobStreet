@@ -17,6 +17,9 @@ class CompanyProfile extends Model
         'company_website',
         'company_logo_url',
         'company_desc',
+        'industry',
+        'company_size',
+        'location',
         'verified_at',
     ];
 

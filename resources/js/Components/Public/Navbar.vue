@@ -154,31 +154,19 @@ const navLinks = computed(() => {
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent class="w-80 mt-2 rounded-xl border-border/50 p-0 overflow-hidden" align="end">
-              <template v-if="user.role === 'arsitek'">
-                <ProfileCard :user="user" />
-                <div class="px-2 pb-2 bg-background">
-                  <DropdownMenuSeparator class="mx-2 mb-2" />
-                  <Link :href="route('logout')" method="post" as="button" class="flex items-center w-full px-4 py-3 rounded-lg text-destructive hover:bg-destructive/10 font-medium">
-                    <LogOut class="mr-2 h-4 w-4" />
-                    <span>Keluar</span>
-                  </Link>
-                </div>
-              </template>
-              <template v-else>
-                <div class="p-4">
-                  <p class="font-medium">{{ user.name }}</p>
-                  <p class="text-xs text-muted-foreground">{{ user.email }}</p>
-                  <DropdownMenuSeparator class="my-3" />
-                   <Link :href="route(user.role + '.profile')" class="flex items-center py-2 hover:text-primary">
-                     <User class="mr-2 h-4 w-4" />
-                     <span>Profil Saya</span>
-                   </Link>
-                  <Link :href="route('logout')" method="post" as="button" class="flex items-center w-full py-2 text-destructive mt-2">
-                    <LogOut class="mr-2 h-4 w-4" />
-                    <span>Keluar</span>
-                  </Link>
-                </div>
-              </template>
+              <div class="p-4 bg-background">
+                <p class="font-bold text-foreground">{{ user.name }}</p>
+                <p class="text-xs text-muted-foreground">{{ user.email }}</p>
+                <DropdownMenuSeparator class="my-3" />
+                <Link :href="route(user.role === 'admin' ? 'admin.dashboard' : (user.role === 'client' ? 'client.profile' : user.role + '.profile'))" class="flex items-center py-2 text-sm font-medium hover:text-primary transition-colors">
+                  <User class="mr-3 h-4 w-4" />
+                  <span>Profil Saya</span>
+                </Link>
+                <Link :href="route('logout')" method="post" as="button" class="flex items-center w-full py-2 text-sm font-medium text-destructive mt-1 hover:text-destructive/80 transition-colors">
+                  <LogOut class="mr-3 h-4 w-4" />
+                  <span>Keluar</span>
+                </Link>
+              </div>
             </DropdownMenuContent>
           </DropdownMenu>
         </template>

@@ -3,15 +3,6 @@
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
-    if (auth()->check()) {
-        $user = auth()->user();
-        if ($user->email_verified_at) {
-            return redirect()->route($user->dashboardRoute());
-        }
-
-        return redirect()->route('verification.notice');
-    }
-
     return \Inertia\Inertia::render('Landing');
 })->name('home');
 

@@ -31,6 +31,8 @@ class User extends Authenticatable
         'is_active',
         'is_verified',
         'avatar_url',
+        'location',
+        'phone',
         'email_verified_at',
     ];
 

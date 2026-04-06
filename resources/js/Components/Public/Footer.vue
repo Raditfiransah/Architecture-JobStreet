@@ -17,7 +17,7 @@ const footerSections = [
     links: [
       { name: "Lowongan Kerja", route: "lowongan.index" },
       { name: "Proyek", route: "proyek.index" },
-      { name: "Direktori Arsitek", route: "home" },
+      { name: "Direktori Arsitek", route: "arsitek.index" },
       { name: "Info Hub", route: "info.index" },
     ]
   },
@@ -25,7 +25,7 @@ const footerSections = [
     title: "Perusahaan",
     links: [
       { name: "Tentang Kami", route: "home" },
-      { name: "Pasang Lowongan", route: "perusahaan.dashboard" },
+      { name: "Pasang Lowongan", route: "perusahaan.profile" },
       { name: "Pricelist", route: "home" },
       { name: "Karir", route: "home" },
     ]

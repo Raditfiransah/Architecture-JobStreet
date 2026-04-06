@@ -47,13 +47,23 @@ const searchQuery = ref(page.props.filters?.q || "");
 const locationQuery = ref(page.props.filters?.l || "");
 
 const handleSearch = () => {
-  router.get(route("lowongan.index"), { 
-    q: searchQuery.value,
-    l: locationQuery.value 
-  }, { 
-    preserveState: true,
-    replace: true 
-  });
+  if (route().current('arsitek.index')) {
+    router.get(route("arsitek.index"), { 
+      search: searchQuery.value,
+      location: locationQuery.value 
+    }, { 
+      preserveState: true,
+      replace: true 
+    });
+  } else {
+    router.get(route("lowongan.index"), { 
+      q: searchQuery.value,
+      l: locationQuery.value 
+    }, { 
+      preserveState: true,
+      replace: true 
+    });
+  }
 };
 
 const handleScroll = () => {
@@ -71,6 +81,7 @@ onUnmounted(() => {
 const navLinks = computed(() => {
   const baseLinks = [
     { name: "Lowongan Kerja", route: "lowongan.index" },
+    { name: "Hire Architect", route: "arsitek.index" },
   ];
 
   if (user.value) {
@@ -78,7 +89,6 @@ const navLinks = computed(() => {
       ...baseLinks,
       { name: "Proyek", route: "proyek.index" },
       { name: "Info Hub", route: "info.index" },
-      { name: "Hire Architect", route: "home" },
     ];
   }
 
@@ -136,7 +146,7 @@ const navLinks = computed(() => {
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" class="h-10 w-10 rounded-full p-0 border border-border/50 hover:border-primary/30 overflow-hidden">
                 <Avatar class="h-10 w-10">
-                  <AvatarImage :src="user.profile_photo_url" :alt="user.name" />
+                  <AvatarImage :src="user.avatar_url" :alt="user.name" />
                   <AvatarFallback class="bg-primary/10 text-primary font-bold">
                     {{ user.name.charAt(0).toUpperCase() }}
                   </AvatarFallback>
@@ -159,9 +169,9 @@ const navLinks = computed(() => {
                   <p class="font-medium">{{ user.name }}</p>
                   <p class="text-xs text-muted-foreground">{{ user.email }}</p>
                   <DropdownMenuSeparator class="my-3" />
-                   <Link :href="route(user.dashboard_route || 'home')" class="flex items-center py-2 hover:text-primary">
-                     <LayoutDashboard class="mr-2 h-4 w-4" />
-                     <span>Dashboard</span>
+                   <Link :href="route(user.role + '.profile')" class="flex items-center py-2 hover:text-primary">
+                     <User class="mr-2 h-4 w-4" />
+                     <span>Profil Saya</span>
                    </Link>
                   <Link :href="route('logout')" method="post" as="button" class="flex items-center w-full py-2 text-destructive mt-2">
                     <LogOut class="mr-2 h-4 w-4" />

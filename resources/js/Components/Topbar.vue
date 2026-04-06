@@ -105,7 +105,7 @@ const logout = () => {
           </DropdownMenuLabel>
           <DropdownMenuSeparator />
           <DropdownMenuItem asChild class="rounded-lg cursor-pointer py-2">
-            <Link :href="route('profile.edit')" class="flex items-center w-full">
+            <Link :href="route(user.role + '.profile')" class="flex items-center w-full">
               <User class="mr-2 h-4 w-4 text-primary" />
               <span>Profil Anda</span>
             </Link>

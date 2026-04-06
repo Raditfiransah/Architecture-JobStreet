@@ -61,14 +61,14 @@ const logout = () => {
       <!-- Arsitek Menu -->
       <template v-if="role === 'arsitek'">
         <div class="px-3 py-2 text-[11px] font-bold uppercase tracking-widest text-muted-foreground mt-4 mb-1">Utama</div>
-        <Button asChild variant="ghost" :class="[isRoute('arsitek.dashboard') ? 'bg-primary/10 text-primary' : 'text-muted-foreground hover:text-foreground hover:bg-muted']" class="w-full justify-start rounded-lg font-medium mb-1">
-          <Link :href="route('arsitek.dashboard')">
+        <Button asChild variant="ghost" :class="[isRoute('arsitek.profile') ? 'bg-primary/10 text-primary' : 'text-muted-foreground hover:text-foreground hover:bg-muted']" class="w-full justify-start rounded-lg font-medium mb-1">
+          <Link :href="route('arsitek.profile')">
             <LayoutDashboard class="mr-3 h-4 w-4" />
             Dashboard
           </Link>
         </Button>
         <Button asChild variant="ghost" class="w-full justify-start rounded-lg font-medium text-muted-foreground mb-1 hover:bg-muted hover:text-foreground">
-          <Link href="#">
+          <Link :href="route('arsitek.profil.edit')">
              <User class="mr-3 h-4 w-4" />
             Profil Saya
           </Link>
@@ -98,8 +98,8 @@ const logout = () => {
       <!-- Perusahaan Menu -->
       <template v-else-if="role === 'perusahaan'">
         <div class="px-3 py-2 text-[11px] font-bold uppercase tracking-widest text-muted-foreground mt-4 mb-1">Dashboard</div>
-        <Button asChild variant="ghost" :class="[isRoute('perusahaan.dashboard') ? 'bg-primary/10 text-primary' : 'text-muted-foreground hover:text-foreground hover:bg-muted']" class="w-full justify-start rounded-lg font-medium mb-1">
-          <Link :href="route('perusahaan.dashboard')">
+        <Button asChild variant="ghost" :class="[isRoute('perusahaan.profile') ? 'bg-primary/10 text-primary' : 'text-muted-foreground hover:text-foreground hover:bg-muted']" class="w-full justify-start rounded-lg font-medium mb-1">
+          <Link :href="route('perusahaan.profile')">
             <LayoutDashboard class="mr-3 h-4 w-4" />
             Ringkasan
           </Link>
@@ -122,8 +122,8 @@ const logout = () => {
 
       <!-- Client Menu -->
       <template v-else-if="role === 'client'">
-        <Button asChild variant="ghost" :class="[isRoute('client.dashboard') ? 'bg-primary/10 text-primary' : 'text-muted-foreground hover:text-foreground hover:bg-muted']" class="w-full justify-start rounded-lg font-medium mb-1">
-          <Link :href="route('client.dashboard')">
+        <Button asChild variant="ghost" :class="[isRoute('client.profile') ? 'bg-primary/10 text-primary' : 'text-muted-foreground hover:text-foreground hover:bg-muted']" class="w-full justify-start rounded-lg font-medium mb-1">
+          <Link :href="route('client.profile')">
             <LayoutDashboard class="mr-3 h-4 w-4" />
             Dashboard
           </Link>

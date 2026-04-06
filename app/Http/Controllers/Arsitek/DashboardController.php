@@ -8,8 +8,10 @@ class DashboardController extends Controller
 {
     public function index()
     {
-        return \Inertia\Inertia::render('Dashboard/Arsitek', [
-            'user' => auth()->user(),
+        $user = auth()->user()->load('arsitekProfile');
+        return \Inertia\Inertia::render('Arsitek/Profile', [
+            'user' => $user,
+            'arsitekProfile' => $user->arsitekProfile,
         ]);
     }
 }

@@ -21,19 +21,19 @@
     --border: 147 15% 92%;
     --input: 147 15% 92%;
 
-    --primary: 147 56% 40%;
-    --primary-foreground: 147 20% 99%;
+    --primary: 144 27% 8%;         /* hitam untuk primary */
+    --primary-foreground: 0 0% 98%; /* putih */
 
     --secondary: 153 10% 90%;
     --secondary-foreground: 144 27% 8%;
 
-    --accent: 147 30% 95%;
-    --accent-foreground: 147 56% 40%;
+    --accent: 144 27% 8%;          /* hitam */
+    --accent-foreground: 0 0% 98%; /* putih */
 
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 210 40% 98%;
 
-    --ring: 147 56% 40%;
+    --ring: 144 27% 8%;            /* hitam */
 
     --radius: 0.75rem;
   }
@@ -54,19 +54,19 @@
     --border: 144 20% 15%;
     --input: 144 20% 15%;
 
-    --primary: 147 50% 50%;
-    --primary-foreground: 144 27% 8%;
+    --primary: 0 0% 98%;         /* putih untuk dark mode */
+    --primary-foreground: 0 0% 10%; /* hitam */
 
     --secondary: 144 20% 12%;
     --secondary-foreground: 147 20% 99%;
 
-    --accent: 144 20% 15%;
-    --accent-foreground: 147 50% 50%;
+    --accent: 0 0% 98%;          /* putih */
+    --accent-foreground: 0 0% 10%; /* hitam */
 
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 147 20% 99%;
 
-    --ring: 147 50% 50%;
+    --ring: 0 0% 98%;            /* putih */
   }
 }
 

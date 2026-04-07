@@ -5,7 +5,7 @@ import GuestLayout from '@/Layouts/GuestLayout.vue';
 import InputError from '@/Components/InputError.vue';
 import InputLabel from '@/Components/InputLabel.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
-import TextInput from '@/Components/TextInput.vue';
+import { PinInput, PinInputGroup, PinInputSlot } from '@/Components/UI/ui/pin-input';
 
 const props = defineProps({
   status: String,
@@ -13,7 +13,7 @@ const props = defineProps({
 });
 
 const form = useForm({
-  code: '',
+  code: [],
 });
 
 const resendForm = useForm({});
@@ -21,7 +21,10 @@ const resendForm = useForm({});
 const verificationStatus = computed(() => props.status);
 
 const submit = () => {
-  form.post(route('otp.verify'));
+  form.transform((data) => ({
+    ...data,
+    code: data.code.join(''),
+  })).post(route('otp.verify'));
 };
 
 const resendOtp = () => {
@@ -51,20 +54,26 @@ const resendOtp = () => {
     </div>
 
     <form @submit.prevent="submit">
-      <div>
-        <InputLabel for="code" value="Kode Verifikasi" class="text-center" />
-        <TextInput
+      <div class="flex flex-col items-center">
+        <InputLabel for="code" value="Kode Verifikasi" class="mb-4 text-center" />
+        <PinInput
           id="code"
-          type="text"
-          class="mt-1 block w-full text-center text-3xl tracking-[0.5em] font-mono py-4"
           v-model="form.code"
-          required
-          autofocus
-          maxlength="6"
-          placeholder="000000"
-          inputmode="numeric"
-          pattern="[0-9]*"
-        />
+          otp
+          type="number"
+          :name="'code'"
+          @complete="submit"
+          class="flex gap-3 justify-center"
+        >
+          <PinInputGroup class="gap-3">
+            <PinInputSlot
+              v-for="(slot, index) in 6"
+              :key="slot"
+              :index="index"
+              class="w-12 h-14 text-2xl font-bold rounded-lg border-2 border-input focus:border-primary transition-all duration-200"
+            />
+          </PinInputGroup>
+        </PinInput>
         <InputError class="mt-2 text-center" :message="form.errors.code" />
       </div>
 

@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Outfit:wght@200..800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Poppins:wght@600;700;800&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -6,67 +6,67 @@
 
 @layer base {
   :root {
-    --background: 147 20% 99%;
-    --foreground: 144 27% 8%;
+    --background: 0 0% 100%;
+    --foreground: 0 0% 0%;
 
-    --muted: 147 10% 94%;
-    --muted-foreground: 153 10% 35%;
+    --muted: 0 0% 96%;
+    --muted-foreground: 0 0% 45%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 144 27% 8%;
+    --popover-foreground: 0 0% 0%;
 
     --card: 0 0% 100%;
-    --card-foreground: 144 27% 8%;
+    --card-foreground: 0 0% 0%;
 
-    --border: 147 15% 92%;
-    --input: 147 15% 92%;
+    --border: 0 0% 90%;
+    --input: 0 0% 90%;
 
-    --primary: 144 27% 8%;         /* hitam untuk primary */
-    --primary-foreground: 0 0% 98%; /* putih */
+    --primary: 0 0% 0%;         /* hitam untuk primary */
+    --primary-foreground: 0 0% 100%; /* putih */
 
-    --secondary: 153 10% 90%;
-    --secondary-foreground: 144 27% 8%;
+    --secondary: 0 0% 96%;
+    --secondary-foreground: 0 0% 0%;
 
-    --accent: 144 27% 8%;          /* hitam */
-    --accent-foreground: 0 0% 98%; /* putih */
+    --accent: 0 0% 96%;
+    --accent-foreground: 0 0% 0%;
 
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 210 40% 98%;
 
-    --ring: 144 27% 8%;            /* hitam */
+    --ring: 0 0% 0%;            /* hitam */
 
-    --radius: 0.75rem;
+    --radius: 0.5rem;
   }
 
   .dark {
-    --background: 144 27% 6%;
-    --foreground: 147 20% 99%;
+    --background: 0 0% 0%;
+    --foreground: 0 0% 100%;
 
-    --muted: 144 20% 12%;
-    --muted-foreground: 153 10% 65%;
+    --muted: 0 0% 12%;
+    --muted-foreground: 0 0% 65%;
 
-    --popover: 144 27% 8%;
-    --popover-foreground: 147 20% 99%;
+    --popover: 0 0% 0%;
+    --popover-foreground: 0 0% 100%;
 
-    --card: 144 27% 8%;
-    --card-foreground: 147 20% 99%;
+    --card: 0 0% 0%;
+    --card-foreground: 0 0% 100%;
 
-    --border: 144 20% 15%;
-    --input: 144 20% 15%;
+    --border: 0 0% 15%;
+    --input: 0 0% 15%;
 
-    --primary: 0 0% 98%;         /* putih untuk dark mode */
-    --primary-foreground: 0 0% 10%; /* hitam */
+    --primary: 0 0% 100%;         /* putih untuk dark mode */
+    --primary-foreground: 0 0% 0%; /* hitam */
 
-    --secondary: 144 20% 12%;
-    --secondary-foreground: 147 20% 99%;
+    --secondary: 0 0% 12%;
+    --secondary-foreground: 0 0% 100%;
 
-    --accent: 0 0% 98%;          /* putih */
-    --accent-foreground: 0 0% 10%; /* hitam */
+    --accent: 0 0% 12%;
+    --accent-foreground: 0 0% 100%;
 
     --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 147 20% 99%;
+    --destructive-foreground: 0 0% 100%;
 
-    --ring: 0 0% 98%;            /* putih */
+    --ring: 0 0% 100%;            /* putih */
   }
 }
 

@@ -3,6 +3,7 @@ import { ref, computed, onMounted, onUnmounted } from "vue";
 import { Link, usePage, router } from "@inertiajs/vue3";
 import { 
   Search, 
+  MapPin, 
   User, 
   Menu, 
   X, 
@@ -192,36 +193,40 @@ const navLinks = computed(() => {
       leave-from-class="opacity-100 translate-y-0"
       leave-to-class="opacity-0 -translate-y-4"
     >
-      <div v-if="showSearch" class="bg-background border-t border-border py-4 shadow-sm backdrop-blur">
+      <div v-if="showSearch" class="bg-background border-t border-border py-3 shadow-sm backdrop-blur">
         <div class="max-w-[1280px] mx-auto px-4">
-          <div class="relative flex items-stretch bg-muted/20 rounded-full border border-border focus-within:border-primary/50 p-1">
-            <div class="flex-1 flex items-center px-4 py-2">
-              <Search class="w-4 h-4 text-muted-foreground mr-3" />
+          <div class="max-w-2xl mx-auto relative flex items-center bg-muted/20 rounded-xl border border-border focus-within:border-primary/50 transition-all p-1.5 gap-1.5">
+            <div class="flex-1 flex items-center px-4 py-1.5">
+              <Search class="w-4 h-4 text-muted-foreground mr-3 shrink-0" />
               <Input 
                 v-model="searchQuery" 
                 type="text" 
                 @keyup.enter="handleSearch"
-                placeholder="Cari lowongan (misal: Senior Arsitek)" 
-                class="border-none shadow-none focus-visible:ring-0 px-0 bg-transparent h-auto py-2 text-sm" 
+                placeholder="Cari lowongan..." 
+                class="border-none shadow-none focus-visible:ring-0 px-0 bg-transparent h-8 py-0 text-sm placeholder:text-muted-foreground/60 w-full" 
               />
             </div>
-            <div class="w-px h-6 bg-border mx-2"></div>
-            <div class="flex-1 flex items-center px-4 py-2 border-l border-border">
-              <Search class="w-4 h-4 text-muted-foreground mr-3" />
+            
+            <div class="w-px h-6 bg-border shrink-0"></div>
+            
+            <div class="flex-1 flex items-center px-4 py-1.5">
+              <MapPin class="w-4 h-4 text-muted-foreground mr-3 shrink-0" />
               <Input 
                 v-model="locationQuery" 
                 type="text" 
                 @keyup.enter="handleSearch"
-                placeholder="Lokasi (misal: Jakarta)" 
-                class="border-none shadow-none focus-visible:ring-0 px-0 bg-transparent h-auto py-2 text-sm" 
+                placeholder="Lokasi..." 
+                class="border-none shadow-none focus-visible:ring-0 px-0 bg-transparent h-8 py-0 text-sm placeholder:text-muted-foreground/60 w-full" 
               />
             </div>
+            
             <Button 
               @click="handleSearch" 
-              size="default"
-              class="rounded-full px-8 font-medium"
+              size="icon"
+              class="rounded-lg w-10 h-10 shrink-0 font-medium"
+              title="Cari"
             >
-              Cari
+              <Search class="w-4 h-4" />
             </Button>
           </div>
         </div>
@@ -265,6 +270,6 @@ const navLinks = computed(() => {
 
 <style scoped>
 .font-display {
-  font-family: 'Outfit', sans-serif;
+  font-family: 'Poppins', sans-serif;
 }
 </style>

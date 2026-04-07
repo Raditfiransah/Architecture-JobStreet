@@ -2,7 +2,7 @@
 import { ref, computed } from "vue";
 import { Head, Link, usePage, router } from "@inertiajs/vue3";
 import PublicLayout from "@/Layouts/PublicLayout.vue";
-import { Search, ChevronRight, Activity } from "lucide-vue-next";
+import { Search, ChevronRight, Activity, MapPin } from "lucide-vue-next";
 import { Button } from "@/Components/UI/ui/button";
 import { Input } from "@/Components/UI/ui/input";
 import { Badge } from "@/Components/UI/ui/badge";
@@ -11,10 +11,13 @@ const page = usePage();
 const user = computed(() => page.props.auth.user);
 
 const searchQuery = ref("");
+const locationQuery = ref("");
 
 const handleSearch = () => {
-  if (!searchQuery.value.trim()) return;
-  router.get(route("lowongan.index"), { q: searchQuery.value });
+  router.get(route("lowongan.index"), { 
+    q: searchQuery.value,
+    l: locationQuery.value 
+  });
 };
 
 const popularTags = [
@@ -56,31 +59,43 @@ const popularTags = [
               </svg>
             </span>
           </h1>
-          <p class="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed font-medium">
+          <p class="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed font-display font-semibold opacity-90">
             Temukan ribuan lowongan kerja, proyek kolaboratif, dan kembangkan portofolio digitalmu di komunitas arsitek terbesar di Indonesia.
           </p>
         </div>
 
-        <div class="w-full max-w-3xl mx-auto">
-          <div class="bg-card/80 backdrop-blur border-border/50 border-2 rounded-2xl p-2 relative">
-            <form @submit.prevent="handleSearch" class="flex flex-col md:flex-row items-stretch md:items-center">
-              <div class="flex-1 flex items-center px-6 py-2">
-                <Search class="w-6 h-6 text-muted-foreground shrink-0" />
+        <div class="w-full max-w-2xl mx-auto">
+          <div class="bg-card/80 backdrop-blur border-border/50 border-2 rounded-xl p-1.5 shadow-sm relative group focus-within:border-primary/40 transition-all">
+            <form @submit.prevent="handleSearch" class="flex flex-row items-center gap-1.5">
+              <div class="flex-[1.2] flex items-center px-4">
+                <Search class="w-5 h-5 text-muted-foreground shrink-0" />
                 <Input
                   v-model="searchQuery"
                   type="text"
-                  placeholder="Cari posisi, keahlian, atau perusahaan..."
-                  required
-                  class="border-0 bg-transparent text-lg h-12 shadow-none focus-visible:ring-0 placeholder:text-muted-foreground/50 font-medium"
+                  placeholder="Cari posisi atau keahlian..."
+                  class="border-0 bg-transparent text-base h-12 shadow-none focus-visible:ring-0 placeholder:text-muted-foreground/50 font-medium w-full"
                 />
               </div>
+              
+              <div class="w-px h-8 bg-border shrink-0"></div>
+              
+              <div class="flex-1 flex items-center px-4">
+                <MapPin class="w-5 h-5 text-muted-foreground shrink-0" />
+                <Input
+                  v-model="locationQuery"
+                  type="text"
+                  placeholder="Lokasi..."
+                  class="border-0 bg-transparent text-base h-12 shadow-none focus-visible:ring-0 placeholder:text-muted-foreground/50 font-medium w-full"
+                />
+              </div>
+              
               <Button
                 type="submit"
                 size="lg"
-                class="rounded-full px-10 h-12 font-bold"
+                class="rounded-lg px-8 h-12 font-bold shrink-0"
               >
-                Cari Lowongan
-                <ChevronRight class="ml-2 w-5 h-5" />
+                Cari
+                <Search class="ml-2 w-4 h-4" />
               </Button>
             </form>
           </div>
@@ -105,6 +120,6 @@ const popularTags = [
 
 <style scoped>
 .font-display {
-  font-family: 'Outfit', sans-serif;
+  font-family: 'Poppins', sans-serif;
 }
 </style>

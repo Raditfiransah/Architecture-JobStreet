@@ -11,12 +11,12 @@ use App\Http\Controllers\Arsitek\PengaturanController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware(['auth', 'verified', 'role:arsitek'])
-    ->prefix('dashboard/arsitek')
+    ->prefix('profile/arsitek')
     ->name('arsitek.')
     ->group(function () {
 
-    // Dashboard
-    Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
+    // Dashboard (now Profile)
+    Route::get('/', [DashboardController::class, 'index'])->name('profile');
 
     // Profil
     Route::get('/profil', [ProfilController::class, 'edit'])->name('profil.edit');

@@ -30,16 +30,6 @@ export default {
                 primary: {
                     DEFAULT: "hsl(var(--primary))",
                     foreground: "hsl(var(--primary-foreground))",
-                    50:  '#f0faf4',
-                    100: '#d6f2e0',
-                    200: '#aee3c2',
-                    300: '#7dcfa0',
-                    400: '#4db87c',
-                    500: '#2d9e60',
-                    600: '#1e7a47',
-                    700: '#155c35',
-                    800: '#0e3d23',
-                    900: '#071f12',
                 },
                 secondary: {
                     DEFAULT: "hsl(var(--secondary))",
@@ -65,16 +55,6 @@ export default {
                     DEFAULT: "hsl(var(--card))",
                     foreground: "hsl(var(--card-foreground))",
                 },
-                ink: {
-                    DEFAULT: '#0f1a14',
-                    soft:    '#2a3d32',
-                    muted:   '#4d6358',
-                },
-                surface: {
-                    DEFAULT: '#ffffff',
-                    soft:    '#f8faf9',
-                    muted:   '#f0f5f2',
-                },
             },
             borderRadius: {
                 xl: "calc(var(--radius) + 4px)",
@@ -84,14 +64,14 @@ export default {
             },
             fontFamily: {
                 sans: ['Inter', ...defaultTheme.fontFamily.sans],
-                display: ['Outfit', ...defaultTheme.fontFamily.sans],
+                display: ['Poppins', ...defaultTheme.fontFamily.sans],
                 mono: ['JetBrains Mono', ...defaultTheme.fontFamily.mono],
             },
             borderColor: {
                 DEFAULT: 'hsl(var(--border))',
             },
             boxShadow: {
-                'soft': '0 1px 3px 0 rgba(125, 207, 160, 0.12), 0 1px 2px -1px rgba(125, 207, 160, 0.08)',
+                'soft': '0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.05)',
             },
             keyframes: {
                 "accordion-down": {

@@ -9,11 +9,11 @@ use App\Http\Controllers\Perusahaan\PengaturanController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware(['auth', 'verified', 'role:perusahaan'])
-    ->prefix('dashboard/perusahaan')
+    ->prefix('profile/perusahaan')
     ->name('perusahaan.')
     ->group(function () {
 
-    Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
+    Route::get('/', [DashboardController::class, 'index'])->name('profile');
 
     // Profil perusahaan
     Route::get('/profil', [ProfilController::class, 'edit'])->name('profil.edit');

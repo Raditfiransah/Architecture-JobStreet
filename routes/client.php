@@ -8,11 +8,12 @@ use App\Http\Controllers\Client\PengaturanController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware(['auth', 'verified', 'role:client'])
-    ->prefix('dashboard/client')
+    ->prefix('profile/client')
     ->name('client.')
     ->group(function () {
 
-    Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
+    Route::get('/', [DashboardController::class, 'index'])->name('profile');
+    Route::put('/profile', [\App\Http\Controllers\Client\ProfilController::class, 'update'])->name('profile.update');
 
     // Kelola proyek
     Route::get('/proyek', [ProyekController::class, 'index'])->name('proyek.index');

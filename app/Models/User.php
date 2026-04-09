@@ -31,6 +31,8 @@ class User extends Authenticatable
         'is_active',
         'is_verified',
         'avatar_url',
+        'location',
+        'phone',
         'email_verified_at',
     ];
 
@@ -93,9 +95,9 @@ class User extends Authenticatable
     {
         return match ($this->role) {
             'admin' => 'admin.dashboard',
-            'arsitek' => 'arsitek.dashboard',
-            'perusahaan' => 'perusahaan.dashboard',
-            'client' => 'client.dashboard',
+            'arsitek' => 'arsitek.profile',
+            'perusahaan' => 'perusahaan.profile',
+            'client' => 'client.profile',
             default => 'home',
         };
     }

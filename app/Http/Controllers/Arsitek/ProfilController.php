@@ -12,10 +12,13 @@ class ProfilController extends Controller
 {
     public function edit(Request $request)
     {
-        $user = $request->user()->load('arsitekProfile');
+        /** @var \App\Models\User $user */
+        $user = $request->user();
+        $user->load('arsitekProfile');
         
-        return Inertia::render('Dashboard/Arsitek/ProfilEdit', [
-            'profile' => $user->arsitekProfile,
+        return Inertia::render('Profile/Edit', [
+            'user' => $user,
+            'arsitekProfile' => $user->arsitekProfile,
         ]);
     }
 
@@ -32,6 +35,7 @@ class ProfilController extends Controller
             'preferences' => 'nullable|array',
         ]);
 
+        /** @var \App\Models\User $user */
         $user = $request->user();
         
         ArsitekProfile::updateOrCreate(
@@ -53,7 +57,9 @@ class ProfilController extends Controller
 
     public function preview(Request $request)
     {
-        $user = $request->user()->load('arsitekProfile');
+        /** @var \App\Models\User $user */
+        $user = $request->user();
+        $user->load('arsitekProfile');
         
         return Inertia::render('Dashboard/Arsitek/ProfilPreview', [
             'player' => $user, // Using 'player' or 'user' as per project convention if exists
@@ -66,6 +72,7 @@ class ProfilController extends Controller
             'avatar' => 'required|image|max:2048',
         ]);
 
+        /** @var \App\Models\User $user */
         $user = $request->user();
         
         if ($user->avatar_url) {

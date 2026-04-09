@@ -3,17 +3,11 @@
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
-    if (auth()->check()) {
-        $user = auth()->user();
-        if ($user->email_verified_at) {
-            return redirect()->route($user->dashboardRoute());
-        }
-
-        return redirect()->route('verification.notice');
-    }
-
     return \Inertia\Inertia::render('Landing');
 })->name('home');
+
+// ─── Public Arsitek Directory ───────────────────────────────
+Route::get('/hire-arsitek', [\App\Http\Controllers\Public\ArsitekController::class, 'index'])->name('arsitek.index');
 
 // ─── Auth (public + login/register + OTP + logout) ──────────
 require __DIR__.'/auth.php';

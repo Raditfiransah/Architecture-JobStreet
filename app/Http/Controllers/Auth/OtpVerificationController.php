@@ -13,8 +13,11 @@ class OtpVerificationController extends Controller
 {
     public function showForm(Request $request)
     {
-        if (auth()->user()->email_verified_at) {
-            return redirect()->route(auth()->user()->dashboardRoute());
+        /** @var \App\Models\User $user */
+        $user = \Illuminate\Support\Facades\Auth::user();
+
+        if ($user->email_verified_at) {
+            return redirect()->route($user->dashboardRoute());
         }
 
         return \Inertia\Inertia::render('Auth/VerifyEmail', [
@@ -29,7 +32,8 @@ class OtpVerificationController extends Controller
             'code' => ['required', 'string', 'size:6'],
         ]);
 
-        $user = auth()->user();
+        /** @var \App\Models\User $user */
+        $user = \Illuminate\Support\Facades\Auth::user();
 
         $otp = EmailVerificationCode::where('user_id', $user->id)
             ->where('code', $request->code)
@@ -50,6 +54,7 @@ class OtpVerificationController extends Controller
 
     public function resend(Request $request, OtpService $otpService)
     {
+        /** @var \App\Models\User $user */
         $user = $request->user();
 
         if ($user->email_verified_at) {

@@ -45,7 +45,10 @@ class LoginController extends Controller
 
     private function redirectAfterLogin(Request $request): string
     {
-        return match ($request->user()->role) {
+        /** @var \App\Models\User $user */
+        $user = $request->user();
+        
+        return match ($user->role) {
             'arsitek' => route('arsitek.dashboard'),
             'perusahaan' => route('perusahaan.dashboard'),
             'client' => route('client.dashboard'),

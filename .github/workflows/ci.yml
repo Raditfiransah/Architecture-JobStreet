@@ -1,0 +1,75 @@
+name: Docker Laravel CI
+
+on:
+  push:
+    branches: [ "main", "docker" ]
+  pull_request:
+    branches: [ "main", "docker" ]
+
+jobs: 
+  docker-test:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Copy env
+      run: cp .env.example .env || true
+
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+
+    - name: Cache Docker layers
+      uses: actions/cache@v4
+      with:
+        path: /tmp/.buildx-cache
+        key: ${{ runner.os }}-buildx-${{ github.sha }}
+        restore-keys: |
+          ${{ runner.os }}-buildx-
+
+    - name: Build containers
+      run: |
+        docker compose build
+
+    - name: Start containers
+      run: docker compose up -d
+
+    - name: Wait for services (60 seconds max)
+      run: |
+        echo "Waiting for Laravel to be ready at http://localhost:8000/health..."
+        for i in {1..60}; do
+          if curl -s --fail http://localhost:8000/health; then
+            echo "Laravel is up and running!"
+            exit 0
+          fi
+          echo "Waiting... ($i/60)"
+          sleep 2
+        done
+        echo "Laravel failed to start in time."
+        exit 1
+
+    - name: Check running containers
+      run: docker ps
+
+    - name: Run migrations in container
+      run: docker exec pbl-architecture-app php artisan migrate --force
+
+    - name: Check Laravel response
+      run: |
+        RESPONSE=$(curl -s http://localhost:8000/health)
+        echo "Response: $RESPONSE"
+        if [[ $RESPONSE == *"\"status\":\"ok\""* ]]; then
+          echo "Health check passed!"
+        else
+          echo "Health check failed!"
+          exit 1
+        fi
+
+    - name: Show logs if failed
+      if: failure()
+      run: docker compose logs
+
+    - name: Shutdown containers
+      if: always()
+      run: docker compose down -v

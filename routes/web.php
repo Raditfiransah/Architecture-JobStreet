@@ -17,3 +17,7 @@ require __DIR__.'/arsitek.php';
 require __DIR__.'/perusahaan.php';
 require __DIR__.'/client.php';
 require __DIR__.'/admin.php';
+
+Route::get('/health', function () {
+    return response()->json(['status' => 'ok', 'timestamp' => now()]);
+});

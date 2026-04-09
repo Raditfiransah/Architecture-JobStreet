@@ -42,13 +42,6 @@ const popularTags = [
 
     <main class="relative min-h-[90vh] flex flex-col items-center justify-center">
       <div class="w-full max-w-5xl px-6 py-20 text-center space-y-12">
-        <div class="flex justify-center">
-          <Badge variant="secondary" class="px-4 py-1.5 rounded-full bg-primary/10 text-primary border-primary/20 font-bold tracking-wide uppercase text-xs flex items-center gap-2">
-            <Activity class="w-3.5 h-3.5" />
-            Platform Karir Arsitek Terpercaya
-          </Badge>
-        </div>
-
         <div class="space-y-6">
           <h1 class="text-4xl md:text-6xl font-display font-bold text-foreground tracking-tight leading-tight">
             Bangun Karir Impianmu sebagai <br />

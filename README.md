@@ -1,58 +1,128 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Web Architect Project
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+This is a Laravel-based web application that uses Docker for containerization to ensure consistent development environments across teams.
 
-## About Laravel
+## Prerequisites
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+- Docker and Docker Compose installed on your machine
+- Git installed (for cloning the repository)
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## Getting Started
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+### Option 1: Using the Startup Script (Recommended)
 
-## Learning Laravel
-
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
-
-In addition, [Laracasts](https://laracasts.com) contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
-
-You can also watch bite-sized lessons with real-world projects on [Laravel Learn](https://laravel.com/learn), where you will be guided through building a Laravel application from scratch while learning PHP fundamentals.
-
-## Agentic Development
-
-Laravel's predictable structure and conventions make it ideal for AI coding agents like Claude Code, Cursor, and GitHub Copilot. Install [Laravel Boost](https://laravel.com/docs/ai) to supercharge your AI workflow:
+The easiest way to get started is to use the provided startup script:
 
 ```bash
-composer require laravel/boost --dev
-
-php artisan boost:install
+git clone <repository-url>
+cd Web-Architect
+chmod +x start.sh
+./start.sh
 ```
 
-Boost provides your agent 15+ tools and skills that help agents build Laravel applications while following best practices.
+This script will:
+1. Check if Docker is installed
+2. Build and start all containers
+3. Display access URLs and useful commands
 
-## Contributing
+### Option 2: Manual Setup with Makefile
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+Alternatively, you can use the Makefile for more control:
 
-## Code of Conduct
+```bash
+git clone <repository-url>
+cd Web-Architect
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+# Build and start containers
+make up
 
-## Security Vulnerabilities
+# Install JavaScript dependencies (PHP deps handled by Docker entrypoint)
+make node-install    # npm install in node container
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+# Application setup is handled by Docker entrypoint:
+# - .env file creation from .env.example
+# - Composer install
+# - Application key generation
+# - Database migrations
+# - Cache clearing
+# - Permission fixing
 
-## License
+# Access the application immediately after containers are healthy
+```
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+### Option 3: Direct Docker Commands
+
+If you prefer to use Docker Compose directly:
+
+```bash
+git clone <repository-url>
+cd Web-Architect
+
+# Build and start containers
+docker compose up -d --build
+
+# Install JavaScript dependencies (PHP deps handled by Docker entrypoint)
+docker compose exec node npm install
+
+# Application setup is handled by Docker entrypoint (see above)
+```
+
+## Access the Application
+
+- **Main Application**: http://localhost:8000
+- **phpMyAdmin**: http://localhost:8081 (use database credentials from .env)
+- **Vite Dev Server**: http://localhost:5173 (for HMR during development)
+
+## Useful Commands
+
+```bash
+# Using Makefile
+make up           # Start containers
+make down         # Stop and remove containers
+make build        # Rebuild containers
+make restart      # Restart containers
+make shell        # Enter PHP application container
+make logs         # Follow logs of all containers
+make migrate      # Run database migrations
+make seed         # Run database seeders
+make node-install # Run npm install in node container
+
+# Direct Docker Compose commands
+docker compose up -d          # Start containers in background
+docker compose down           # Stop containers
+docker compose logs -f        # View logs
+docker compose exec app sh    # Enter app container
+docker compose exec node sh   # Enter node container
+```
+
+## Important Notes About Docker Entrypoint
+
+The Docker container for the PHP application includes an entrypoint script that automatically handles:
+- Creating `.env` from `.env.example` if it doesn't exist
+- Running `composer install` to install PHP dependencies
+- Generating the application key if not already set
+- Clearing configuration and cache
+- Running database migrations (`php artisan migrate --force`)
+- Fixing permissions for Laravel directories
+
+This means you don't need to manually run `composer install`, `php artisan key:generate`, or `php artisan migrate` after starting the containers - these are handled automatically!
+
+## Database Credentials (from .env)
+
+By default, the database credentials are:
+- Database: laravel
+- Username: laravel
+- Password: secret
+- Host: db
+- Port: 3306
+
+These can be customized in the `.env` file.
+
+## Notes
+
+- The application will be available at http://localhost:8000 once all services are healthy (typically within 1-2 minutes after startup)
+- Initial startup may take a few minutes as Docker images are built and dependencies are installed
+- Make sure Docker has sufficient resources allocated (at least 2GB RAM recommended)
+- The startup script (`start.sh`) provides the quickest way to get started
+- The Makefile offers convenient shortcuts for common development tasks
+- Since the Docker entrypoint handles Laravel setup, you can focus on frontend development with `docker compose exec node npm run dev`

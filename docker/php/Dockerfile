@@ -32,6 +32,10 @@ RUN useradd -G www-data,root -u $uid -d /home/$user $user \
 # Set working directory
 WORKDIR /var/www/
 
+# Copy entrypoint script
+COPY docker/php/entrypoint.sh /usr/local/bin/entrypoint.sh
+RUN chmod +x /usr/local/bin/entrypoint.sh
+
 # Copy existing application directory
 COPY . /var/www
 
@@ -39,8 +43,6 @@ COPY . /var/www
 RUN chown -R $user:www-data /var/www \
     && chmod -R 775 /var/www/storage /var/www/bootstrap/cache || true
 
-USER $user
+ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
 
 EXPOSE 9000
-
-CMD ["php-fpm"]

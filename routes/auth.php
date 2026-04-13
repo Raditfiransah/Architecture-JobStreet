@@ -1,9 +1,12 @@
 <?php
 
+use App\Http\Controllers\Auth\ConfirmablePasswordController;
 use App\Http\Controllers\Auth\LoginController;
+use App\Http\Controllers\Auth\PasswordController;
 use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\Auth\OtpVerificationController;
 use App\Http\Controllers\Auth\PasswordResetController;
+use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Public\LowonganController;
 use App\Http\Controllers\Public\ProyekController;
 use App\Http\Controllers\Public\ArsitekController;
@@ -48,6 +51,18 @@ Route::middleware('auth')->group(function () {
     Route::post('/verifikasi-email/resend', [OtpVerificationController::class, 'resend'])
         ->middleware('throttle:3,1')
         ->name('otp.resend');
+
+    // Konfirmasi Password
+    Route::get('/confirm-password', [ConfirmablePasswordController::class, 'show'])->name('password.confirm');
+    Route::post('/confirm-password', [ConfirmablePasswordController::class, 'store']);
+
+    // Profil Pengguna
+    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+
+    // Update Password (dari halaman profile)
+    Route::put('/password', [PasswordController::class, 'update'])->name('password.update.profile');
 
     // Logout
     Route::post('/logout', [LoginController::class, 'logout'])->name('logout');

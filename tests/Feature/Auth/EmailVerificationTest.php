@@ -2,11 +2,10 @@
 
 namespace Tests\Feature\Auth;
 
+use App\Models\EmailVerificationCode;
 use App\Models\User;
-use Illuminate\Auth\Events\Verified;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Support\Facades\Event;
-use Illuminate\Support\Facades\URL;
+use Illuminate\Support\Facades\Mail;
 use Tests\TestCase;
 
 class EmailVerificationTest extends TestCase
@@ -17,42 +16,42 @@ class EmailVerificationTest extends TestCase
     {
         $user = User::factory()->unverified()->create();
 
-        $response = $this->actingAs($user)->get('/verify-email');
+        $response = $this->actingAs($user)->get('/verifikasi-email');
 
         $response->assertStatus(200);
     }
 
-    public function test_email_can_be_verified(): void
+    public function test_email_can_be_verified_with_otp(): void
     {
-        $user = User::factory()->unverified()->create();
+        $user = User::factory()->unverified()->arsitek()->create();
 
-        Event::fake();
+        EmailVerificationCode::create([
+            'user_id' => $user->id,
+            'code' => '123456',
+            'expired_at' => now()->addMinutes(10),
+        ]);
 
-        $verificationUrl = URL::temporarySignedRoute(
-            'verification.verify',
-            now()->addMinutes(60),
-            ['id' => $user->id, 'hash' => sha1($user->email)]
-        );
+        $response = $this->actingAs($user)
+            ->post('/verifikasi-email', ['code' => '123456']);
 
-        $response = $this->actingAs($user)->get($verificationUrl);
-
-        Event::assertDispatched(Verified::class);
-        $this->assertTrue($user->fresh()->hasVerifiedEmail());
-        $response->assertRedirect(route('dashboard', absolute: false).'?verified=1');
+        $this->assertNotNull($user->fresh()->email_verified_at);
+        $response->assertRedirect(route('arsitek.profile'));
     }
 
-    public function test_email_is_not_verified_with_invalid_hash(): void
+    public function test_email_is_not_verified_with_invalid_otp(): void
     {
-        $user = User::factory()->unverified()->create();
+        $user = User::factory()->unverified()->arsitek()->create();
 
-        $verificationUrl = URL::temporarySignedRoute(
-            'verification.verify',
-            now()->addMinutes(60),
-            ['id' => $user->id, 'hash' => sha1('wrong-email')]
-        );
+        EmailVerificationCode::create([
+            'user_id' => $user->id,
+            'code' => '123456',
+            'expired_at' => now()->addMinutes(10),
+        ]);
 
-        $this->actingAs($user)->get($verificationUrl);
+        $response = $this->actingAs($user)
+            ->post('/verifikasi-email', ['code' => '999999']);
 
-        $this->assertFalse($user->fresh()->hasVerifiedEmail());
+        $this->assertNull($user->fresh()->email_verified_at);
+        $response->assertSessionHasErrors('code');
     }
 }

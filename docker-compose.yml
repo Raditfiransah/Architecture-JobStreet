@@ -15,6 +15,12 @@ services:
         condition: service_healthy
       redis:
         condition: service_started
+    healthcheck:
+      test: ["CMD", "cgi-fcgi", "-bind", "-connect", "localhost:9000"]
+      interval: 15s
+      timeout: 10s
+      retries: 10
+      start_period: 120s
     restart: unless-stopped
     environment:
       - DB_HOST=db
@@ -35,7 +41,8 @@ services:
     networks:
       - pbl-architecture-network
     depends_on:
-      - app
+      app:
+        condition: service_healthy
     restart: unless-stopped
 
   # MySQL Service

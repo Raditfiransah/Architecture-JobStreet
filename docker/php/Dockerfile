@@ -1,11 +1,11 @@
 # Stage 1: PHP Dependencies
-FROM composer:latest as vendor
+FROM composer:latest AS vendor
 WORKDIR /var/www
 COPY composer*.json ./
 RUN composer install --no-interaction --prefer-dist --no-dev --no-scripts
 
 # Stage 2: Build Assets
-FROM node:20-alpine as assets-builder
+FROM node:20-alpine AS assets-builder
 WORKDIR /var/www
 COPY package*.json ./
 RUN npm install
@@ -30,9 +30,15 @@ RUN apt-get update && apt-get install -y \
     libxml2-dev \
     default-libmysqlclient-dev \
     libzip-dev \
+    libicu-dev \
+    g++ \
+    make \
+    autoconf \
+    libfcgi-bin \
     zip \
     unzip \
-    && docker-php-ext-install pdo pdo_mysql mbstring exif pcntl bcmath gd zip \
+    && docker-php-ext-configure intl \
+    && docker-php-ext-install pdo pdo_mysql mbstring exif pcntl bcmath gd zip intl \
     && pecl install redis \
     && docker-php-ext-enable redis \
     && apt-get clean \

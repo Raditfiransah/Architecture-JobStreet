@@ -95,14 +95,14 @@ services:
     working_dir: /var/www
     volumes:
       - ./:/var/www
+      - ./docker/node/entrypoint.sh:/usr/local/bin/entrypoint.sh
     environment:
       - NODE_ENV=development
     ports:
       - "5173:5173" # Port default untuk Vite
     networks:
       - pbl-architecture-network
-    # Perintah agar container tetap hidup dan menjalankan dev server
-    command: sh -c "npm run dev -- --host"
+    entrypoint: ["sh", "/usr/local/bin/entrypoint.sh"]
     restart: unless-stopped
     
 networks:

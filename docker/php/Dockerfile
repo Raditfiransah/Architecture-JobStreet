@@ -1,3 +1,20 @@
+# Stage 1: PHP Dependencies
+FROM composer:latest as vendor
+WORKDIR /var/www
+COPY composer*.json ./
+RUN composer install --no-interaction --prefer-dist --no-dev --no-scripts
+
+# Stage 2: Build Assets
+FROM node:20-alpine as assets-builder
+WORKDIR /var/www
+COPY package*.json ./
+RUN npm install
+COPY . .
+# Copy vendor from Stage 1 because Vite needs Ziggy located in vendor/
+COPY --from=vendor /var/www/vendor /var/www/vendor
+RUN npm run build
+
+# Stage 3: PHP Application
 FROM php:8.3-fpm
 
 # Arguments
@@ -38,6 +55,12 @@ RUN chmod +x /usr/local/bin/entrypoint.sh
 
 # Copy existing application directory
 COPY . /var/www
+
+# Copy vendor from Stage 1
+COPY --from=vendor /var/www/vendor /var/www/vendor
+
+# Copy built assets from Stage 2
+COPY --from=assets-builder /var/www/public/build /var/www/public/build
 
 # Set permissions
 RUN chown -R $user:www-data /var/www \

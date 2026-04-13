@@ -15,6 +15,12 @@ services:
         condition: service_healthy
       redis:
         condition: service_started
+    healthcheck:
+      test: ["CMD", "cgi-fcgi", "-bind", "-connect", "localhost:9000"]
+      interval: 15s
+      timeout: 10s
+      retries: 10
+      start_period: 120s
     restart: unless-stopped
     environment:
       - DB_HOST=db
@@ -35,7 +41,8 @@ services:
     networks:
       - pbl-architecture-network
     depends_on:
-      - app
+      app:
+        condition: service_healthy
     restart: unless-stopped
 
   # MySQL Service
@@ -95,14 +102,14 @@ services:
     working_dir: /var/www
     volumes:
       - ./:/var/www
+      - ./docker/node/entrypoint.sh:/usr/local/bin/entrypoint.sh
     environment:
       - NODE_ENV=development
     ports:
       - "5173:5173" # Port default untuk Vite
     networks:
       - pbl-architecture-network
-    # Perintah agar container tetap hidup dan menjalankan dev server
-    command: sh -c "npm run dev -- --host"
+    entrypoint: ["sh", "/usr/local/bin/entrypoint.sh"]
     restart: unless-stopped
     
 networks:

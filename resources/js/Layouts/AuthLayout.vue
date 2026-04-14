@@ -58,10 +58,10 @@ const author = "Walt Disney";
  
     <!-- Right Panel (Form) -->
     <div class="lg:p-8 flex items-center justify-center lg:col-span-2">
-      <div class="mx-auto flex w-full flex-col justify-center space-y-6 sm:w-[350px]">
+      <div class="mx-auto flex w-full flex-col justify-center space-y-4 sm:w-[320px]">
         <slot />
         
-        <p class="px-8 text-center text-xs text-muted-foreground leading-relaxed">
+        <p class="px-8 text-center text-[10px] text-muted-foreground leading-relaxed">
           Dengan melanjutkan, Anda menyetujui 
           <Link href="#" class="underline underline-offset-4 hover:text-primary transition-colors">Syarat & Ketentuan</Link> 
           dan 

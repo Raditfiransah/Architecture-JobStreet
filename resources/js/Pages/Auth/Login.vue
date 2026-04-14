@@ -33,14 +33,14 @@ const submit = () => {
       {{ status }}
     </div>
 
-    <div class="flex flex-col space-y-2 text-center mb-8">
-      <h1 class="text-3xl font-display font-bold tracking-tight">Selamat Datang</h1>
-      <p class="text-sm text-muted-foreground leading-relaxed">Masukkan email Anda untuk masuk ke dashboard profesional.</p>
+    <div class="flex flex-col text-center mb-5">
+      <h1 class="text-2xl font-display font-bold tracking-tight">Selamat Datang</h1>
+      <p class="text-[11px] mt-1 text-muted-foreground leading-relaxed">Masukkan email Anda untuk masuk ke dashboard profesional.</p>
     </div>
 
-    <form @submit.prevent="submit" class="grid gap-6">
-      <div class="grid gap-2">
-        <Label for="email" class="text-xs font-bold tracking-widest text-muted-foreground">Email</Label>
+    <form @submit.prevent="submit" class="grid gap-4">
+      <div class="grid gap-1">
+        <Label for="email" class="text-[10px] font-bold tracking-widest text-muted-foreground">Email</Label>
         <Input
           id="email"
           type="email"
@@ -49,14 +49,14 @@ const submit = () => {
           autofocus
           autocomplete="username"
           placeholder="nama@email.com"
-          class="h-10 bg-muted/20 border-border"
+          class="h-8 text-xs bg-muted/20 border-border"
         />
         <span v-if="form.errors.email" class="text-[0.8rem] font-medium text-destructive">{{ form.errors.email }}</span>
       </div>
 
-      <div class="grid gap-2">
+      <div class="grid gap-1">
         <div class="flex items-center justify-between">
-          <Label for="password" class="text-xs font-bold uppercase tracking-widest text-muted-foreground">Password</Label>
+          <Label for="password" class="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Password</Label>
         </div>
         <Input
           id="password"
@@ -65,7 +65,7 @@ const submit = () => {
           required
           autocomplete="current-password"
           placeholder="••••••••"
-          class="h-10 bg-muted/20 border-border"
+          class="h-8 text-xs bg-muted/20 border-border"
         />
         <span v-if="form.errors.password" class="text-[0.8rem] font-medium text-destructive">{{ form.errors.password }}</span>
       </div>
@@ -80,7 +80,7 @@ const submit = () => {
           />
           <label
             for="remember"
-            class="text-xs font-medium text-muted-foreground cursor-pointer select-none"
+            class="text-[10px] font-medium text-muted-foreground cursor-pointer select-none"
           >
             Ingat saya
           </label>
@@ -89,7 +89,7 @@ const submit = () => {
         <Link
           v-if="route().has('password.request')"
           :href="route('password.request')"
-          class="text-xs font-semibold text-primary hover:text-primary/80 transition-colors"
+          class="text-[10px] font-semibold text-primary hover:text-primary/80 transition-colors"
         >
           Lupa sandi?
         </Link>
@@ -97,12 +97,12 @@ const submit = () => {
 
       <Button 
         type="submit"
-        class="w-full h-10 font-bold uppercase tracking-widest text-xs mt-2"
+        class="w-full h-8 font-bold uppercase tracking-widest text-[10px] mt-1"
         :disabled="form.processing"
       >
         <span v-if="!form.processing" class="flex items-center gap-2">
            Masuk Sekarang
-           <LogIn class="w-4 h-4" />
+           <LogIn class="w-[14px] h-[14px]" />
         </span>
         <span v-else>Memproses...</span>
       </Button>

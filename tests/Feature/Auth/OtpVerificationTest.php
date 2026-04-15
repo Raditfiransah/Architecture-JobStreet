@@ -22,7 +22,7 @@ class OtpVerificationTest extends TestCase
 
     public function test_otp_verification_page_requires_auth(): void
     {
-        $response = $this->get('/verifikasi-email');
+        $response = $this->get('/verify-email');
         $response->assertRedirect('/login');
     }
 
@@ -30,17 +30,18 @@ class OtpVerificationTest extends TestCase
     {
         $user = User::factory()->arsitek()->create();
 
-        $response = $this->actingAs($user)->get('/verifikasi-email');
-        $response->assertRedirect(route('arsitek.profile'));
+        $response = $this->actingAs($user)->get('/verify-email');
+        $response->assertRedirect(route('dashboard.arsitek'));
     }
 
     public function test_unverified_user_can_see_otp_page(): void
     {
         $user = User::factory()->unverified()->arsitek()->create();
 
-        $response = $this->actingAs($user)->get('/verifikasi-email');
+        $response = $this->actingAs($user)->get('/verify-email');
 
         $response->assertStatus(200);
+        $response->assertSee('Kode Verifikasi');
     }
 
     public function test_user_can_verify_with_valid_otp(): void
@@ -55,9 +56,9 @@ class OtpVerificationTest extends TestCase
 
         $response = $this->actingAs($user)
             ->withSession(['otp_email' => $user->email])
-            ->post('/verifikasi-email', ['code' => '123456']);
+            ->post('/verify-email', ['code' => '123456']);
 
-        $response->assertRedirect(route('arsitek.profile'));
+        $response->assertRedirect(route('dashboard.arsitek'));
 
         $user->refresh();
         $this->assertNotNull($user->email_verified_at);
@@ -75,7 +76,7 @@ class OtpVerificationTest extends TestCase
 
         $response = $this->actingAs($user)
             ->withSession(['otp_email' => $user->email])
-            ->post('/verifikasi-email', ['code' => '999999']);
+            ->post('/verify-email', ['code' => '999999']);
 
         $response->assertSessionHasErrors('code');
     }
@@ -92,7 +93,7 @@ class OtpVerificationTest extends TestCase
 
         $response = $this->actingAs($user)
             ->withSession(['otp_email' => $user->email])
-            ->post('/verifikasi-email', ['code' => '123456']);
+            ->post('/verify-email', ['code' => '123456']);
 
         $response->assertSessionHasErrors('code');
     }
@@ -114,7 +115,7 @@ class OtpVerificationTest extends TestCase
 
         $response = $this->actingAs($user)
             ->withSession(['otp_email' => $user->email])
-            ->post('/verifikasi-email/resend');
+            ->post('/resend-otp');
 
         // Should succeed (not be blocked by cooldown)
         $response->assertSessionDoesntHaveErrors('email');
@@ -139,7 +140,7 @@ class OtpVerificationTest extends TestCase
         $user = User::factory()->unverified()->arsitek()->create();
 
         // No otp_email in session — should fallback to auth user
-        $response = $this->actingAs($user)->get('/verifikasi-email');
+        $response = $this->actingAs($user)->get('/verify-email');
 
         $response->assertStatus(200);
     }

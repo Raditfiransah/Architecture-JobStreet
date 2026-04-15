@@ -19,6 +19,7 @@ class AuthenticationTest extends TestCase
         $this->withoutMiddleware(ThrottleRequests::class);
 
         // Clear the login rate limiter for test IP
+        // LoginRequest uses email|ip as the throttle key
         RateLimiter::clear(md5(''));
     }
 
@@ -32,6 +33,7 @@ class AuthenticationTest extends TestCase
     {
         $user = User::factory()->arsitek()->create(['is_active' => true]);
 
+        // Clear any rate limiter for this specific email
         RateLimiter::clear(strtolower($user->email).'|127.0.0.1');
 
         $response = $this->post('/login', [
@@ -40,7 +42,7 @@ class AuthenticationTest extends TestCase
         ]);
 
         $this->assertAuthenticated();
-        $response->assertRedirect(route('arsitek.profile'));
+        $response->assertRedirect(route('dashboard.arsitek'));
     }
 
     public function test_verified_active_perusahaan_can_login(): void
@@ -55,7 +57,7 @@ class AuthenticationTest extends TestCase
         ]);
 
         $this->assertAuthenticated();
-        $response->assertRedirect(route('perusahaan.profile'));
+        $response->assertRedirect(route('dashboard.perusahaan'));
     }
 
     public function test_verified_active_client_can_login(): void
@@ -70,7 +72,7 @@ class AuthenticationTest extends TestCase
         ]);
 
         $this->assertAuthenticated();
-        $response->assertRedirect(route('client.profile'));
+        $response->assertRedirect(route('dashboard.client'));
     }
 
     public function test_unverified_user_is_redirected_to_otp_page(): void

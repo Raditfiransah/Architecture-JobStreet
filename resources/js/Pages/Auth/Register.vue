@@ -28,6 +28,16 @@ const roles = [
   { value: 'client', label: 'Client' },
 ];
 
+import { computed } from 'vue';
+
+const isFormValid = computed(() => {
+  return form.name.trim() !== '' &&
+         form.email.trim() !== '' &&
+         form.password !== '' &&
+         form.password_confirmation !== '' &&
+         form.agree_to_terms === true;
+});
+
 const submit = () => {
   form.post(route('register'), {
     onFinish: () => form.reset('password', 'password_confirmation'),
@@ -151,8 +161,7 @@ const submit = () => {
       <div class="flex items-center space-x-2 py-1">
         <Checkbox
           id="agree_to_terms"
-          :checked="form.agree_to_terms"
-          @update:checked="(val) => form.agree_to_terms = val"
+          v-model="form.agree_to_terms"
           class="border-border/50 data-[state=checked]:bg-primary data-[state=checked]:border-primary"
           required
         />
@@ -166,7 +175,7 @@ const submit = () => {
       <Button 
         type="submit"
         class="w-full h-8 font-bold uppercase tracking-widest text-[10px] mt-1" 
-        :disabled="form.processing"
+        :disabled="form.processing || !isFormValid"
       >
         <span v-if="!form.processing">Daftar Sekarang</span>
         <span v-else>Memproses...</span>

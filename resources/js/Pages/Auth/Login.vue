@@ -18,6 +18,12 @@ const form = useForm({
   remember: false,
 });
 
+import { computed } from 'vue';
+
+const isFormValid = computed(() => {
+  return form.email.trim() !== '' && form.password !== '';
+});
+
 const submit = () => {
   form.post(route('login'), {
     onFinish: () => form.reset('password'),
@@ -98,7 +104,7 @@ const submit = () => {
       <Button 
         type="submit"
         class="w-full h-8 font-bold uppercase tracking-widest text-[10px] mt-1"
-        :disabled="form.processing"
+        :disabled="form.processing || !isFormValid"
       >
         <span v-if="!form.processing" class="flex items-center gap-2">
            Masuk Sekarang

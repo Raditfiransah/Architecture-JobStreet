@@ -72,9 +72,9 @@ const handleAction = (action) => {
   <PublicLayout :show-search="true" :show-footer="false">
     <Head :title="title" />
 
-    <main class="flex-1 w-full max-w-[1280px] mx-auto flex flex-col md:flex-row">
+    <main class="flex-1 w-full max-w-[1280px] mx-auto flex flex-col md:flex-row bg-white">
       <!-- Job List -->
-      <aside class="w-full md:w-80 lg:w-96 shrink-0 border-r border-border overflow-y-auto">
+      <aside class="w-full md:w-80 lg:w-96 shrink-0 border-r border-border md:h-[calc(100vh-134px)] md:min-h-[600px] overflow-y-auto">
         <div class="sticky top-0 bg-background/95 backdrop-blur z-20 px-4 py-3 border-b border-border flex items-center justify-between">
           <span class="text-xs font-bold uppercase tracking-widest text-muted-foreground">{{ jobs?.length || 0 }} lowongan</span>
           <Button variant="ghost" size="sm" class="text-xs h-7 px-2 font-medium text-primary">Terbaru</Button>
@@ -114,7 +114,7 @@ const handleAction = (action) => {
       </aside>
 
       <!-- Detail -->
-      <section class="flex-1 bg-background overflow-y-auto px-6 lg:px-8 py-8">
+      <section class="flex-1 bg-background md:h-[calc(100vh-134px)] md:min-h-[600px] overflow-y-auto px-6 lg:px-8 py-8">
         <div v-if="selectedJob" class="max-w-3xl mx-auto space-y-8">
           <div class="border border-border rounded-xl p-6 md:p-8">
             <div class="flex flex-col md:flex-row md:items-start gap-6 mb-8">

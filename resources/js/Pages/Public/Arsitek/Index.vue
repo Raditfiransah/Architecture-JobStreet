@@ -70,7 +70,7 @@ const handleContact = () => {
 
     <main class="flex-1 w-full max-w-[1280px] mx-auto flex flex-col md:flex-row bg-white">
       <!-- Architect List -->
-      <aside class="w-full md:w-80 lg:w-96 shrink-0 border-r border-border overflow-y-auto">
+      <aside class="w-full md:w-80 lg:w-96 shrink-0 border-r border-border md:h-[calc(100vh-134px)] md:min-h-[600px] overflow-y-auto">
         <div class="sticky top-0 bg-white/95 backdrop-blur z-20 px-4 py-3 border-b border-border flex items-center justify-between">
           <span class="text-xs font-bold uppercase tracking-widest text-muted-foreground">{{ arsiteks.total || 0 }} Arsitek</span>
           <Button variant="ghost" size="sm" class="text-xs h-7 px-2 font-medium text-primary">Direktori</Button>
@@ -113,7 +113,7 @@ const handleContact = () => {
       </aside>
 
       <!-- Detail View -->
-      <section class="flex-1 bg-slate-50/30 overflow-y-auto px-6 lg:px-10 py-10">
+      <section class="flex-1 bg-slate-50/30 md:h-[calc(100vh-134px)] md:min-h-[600px] overflow-y-auto px-6 lg:px-10 py-10">
         <div v-if="selectedArsitek" class="max-w-3xl mx-auto space-y-8">
           <Card class="border-border/60 shadow-sm overflow-hidden rounded-2xl bg-white">
              <!-- Banner Mockup -->

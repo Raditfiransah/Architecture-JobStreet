@@ -76,6 +76,16 @@ class User extends Authenticatable
         return $this->hasMany(EmailVerificationCode::class);
     }
 
+    public function portofolios(): HasMany
+    {
+        return $this->hasMany(Portofolio::class)->orderBy('order')->orderBy('created_at', 'desc');
+    }
+
+    public function lamarans(): HasMany
+    {
+        return $this->hasMany(Lamaran::class)->orderBy('created_at', 'desc');
+    }
+
     public function isAdmin(): bool
     {
         return $this->role === 'admin';

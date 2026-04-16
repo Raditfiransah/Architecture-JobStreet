@@ -11,7 +11,7 @@ class DashboardController extends Controller
         /** @var \App\Models\User $user */
         $user = \Illuminate\Support\Facades\Auth::user();
         $user->load('arsitekProfile');
-        return \Inertia\Inertia::render('Profile/Edit', [
+        return \Inertia\Inertia::render('Profile/EditArsitek', [
             'user' => $user,
             'arsitekProfile' => $user->arsitekProfile,
         ]);

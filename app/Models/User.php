@@ -66,6 +66,11 @@ class User extends Authenticatable
         return $this->hasOne(CompanyProfile::class);
     }
 
+    public function clientProfile(): HasOne
+    {
+        return $this->hasOne(ClientProfile::class);
+    }
+
     public function emailVerificationCodes(): HasMany
     {
         return $this->hasMany(EmailVerificationCode::class);
@@ -95,9 +100,9 @@ class User extends Authenticatable
     {
         return match ($this->role) {
             'admin' => 'admin.dashboard',
-            'arsitek' => 'arsitek.profile',
-            'perusahaan' => 'perusahaan.profile',
-            'client' => 'client.profile',
+            'arsitek' => 'arsitek.profil.edit',
+            'perusahaan' => 'perusahaan.profil.edit',
+            'client' => 'client.profil.edit',
             default => 'home',
         };
     }

@@ -11,9 +11,11 @@ Route::middleware(['auth', 'verified', 'role:client'])
     ->prefix('profile/client')
     ->name('client.')
     ->group(function () {
-
     Route::get('/', [DashboardController::class, 'index'])->name('profile');
-    Route::put('/profile', [\App\Http\Controllers\Client\ProfilController::class, 'update'])->name('profile.update');
+
+    Route::get('/profil', [\App\Http\Controllers\Client\ProfilController::class, 'edit'])->name('profil.edit');
+    Route::put('/profil', [\App\Http\Controllers\Client\ProfilController::class, 'update'])->name('profil.update');
+    Route::post('/avatar', [\App\Http\Controllers\Client\ProfilController::class, 'updateAvatar'])->name('profil.avatar');
 
     // Kelola proyek
     Route::get('/proyek', [ProyekController::class, 'index'])->name('proyek.index');

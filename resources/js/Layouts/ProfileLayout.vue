@@ -30,14 +30,19 @@ import {
 import { Card, CardContent } from "@/Components/UI/ui/card";
 import { Separator } from "@/Components/UI/ui/separator";
 import Navbar from "@/Components/Public/Navbar.vue";
+import VerificationBadge from '@/Components/Profile/VerificationBadge.vue';
 
 const page = usePage();
 const user = computed(() => page.props.auth.user || {});
 const profile = computed(() => {
-  if (user.value.role === 'arsitek') return user.value.arsitek_profile || user.value.profile || {};
-  if (user.value.role === 'perusahaan') return user.value.company_profile || user.value.profile || {};
-  return user.value.profile || {};
+  if (user.value.role === 'arsitek') return user.value.arsitek_profile || {};
+  if (user.value.role === 'perusahaan') return user.value.company_profile || {};
+  if (user.value.role === 'client') return user.value.client_profile || {};
+  return {};
 });
+
+const verificationStatus = computed(() => profile.value?.verification_status || 'unverified');
+const verificationNote = computed(() => profile.value?.verification_note || null);
 
 const userInitials = computed(() => {
   if (!user.value?.name) return 'U';
@@ -46,12 +51,16 @@ const userInitials = computed(() => {
 
 const jobTitle = computed(() => {
   if (user.value.role === 'arsitek') {
-    if (profile.value.is_student) return `Student at ${profile.value.school || 'Unspecified'}`;
+    if (profile.value.is_student) return `Student at ${profile.value.education_institution || 'Unspecified'}`;
     return profile.value.status_pekerjaan || 'Arsitek Profesional';
   } else if (user.value.role === 'perusahaan') {
     return profile.value.industry || 'Perusahaan';
+  } else if (user.value.role === 'client') {
+    return profile.value.client_type || 'Client';
+  } else if (user.value.role === 'admin') {
+    return user.value.location || 'Administrator'; // Using location field for jabatan
   }
-  return 'Client Terdaftar';
+  return 'Pengguna';
 });
 
 const locationText = computed(() => {
@@ -59,7 +68,7 @@ const locationText = computed(() => {
 });
 
 const editRoute = computed(() => {
-  if (user.value.role === 'client') return route('client.profile'); 
+  if (user.value.role === 'client') return route('client.profil.edit'); 
   return route(user.value.role + '.profil.edit');
 });
 
@@ -139,10 +148,19 @@ const logout = () => {
                      <p class="text-[11px] text-[#64748B] mt-0.5 leading-relaxed truncate">
                        {{ jobTitle }}
                      </p>
-                     <p class="text-[11px] text-[#64748B] flex items-center gap-1.5 mt-0.5" :title="locationText">
-                       <MapPin class="w-2.5 h-2.5 shrink-0" />
-                       <span class="truncate">{{ locationText }}</span>
-                     </p>
+                     <!-- Detail Info Mobile -->
+                    <div class="mt-4 flex flex-col gap-2 md:hidden">
+                      <div v-if="user.role !== 'client' && user.role !== 'admin'" class="flex items-center gap-2 overflow-hidden">
+                        <VerificationBadge :status="verificationStatus" :note="verificationNote" />
+                      </div>
+                      
+                      <div class="flex items-center gap-2 text-slate-600 text-sm overflow-hidden">
+                        <MapPin class="w-4 h-4 text-slate-400 shrink-0" />
+                        <span class="truncate block w-full" :title="user.location || profile.location || 'Lokasi belum diatur'">
+                            {{ user.location || profile.location || 'Lokasi belum diatur' }}
+                        </span>
+                      </div>
+                    </div>
                    </div>
                  </div>
                  <Link :href="editRoute">
@@ -151,6 +169,19 @@ const logout = () => {
                    </Button>
                  </Link>
                </div>
+
+                <!-- Action Button & Detail Desktop -->
+                <div class="hidden md:flex flex-col items-end gap-3 shrink-0 mt-4">
+                  <div v-if="user.role !== 'client' && user.role !== 'admin'" class="flex items-center justify-end w-full">
+                    <VerificationBadge :status="verificationStatus" :note="verificationNote" />
+                  </div>
+                  <div class="flex items-center gap-2 text-slate-600 text-xs">
+                    <MapPin class="w-3.5 h-3.5 text-slate-400" />
+                    <span class="truncate block max-w-[200px]" :title="locationText">
+                        {{ locationText }}
+                    </span>
+                  </div>
+                </div>
              </CardContent>
            </Card>
 

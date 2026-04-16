@@ -46,7 +46,7 @@ const fullName = computed(() => {
 
 const jobTitle = computed(() => {
   if (isArsitek.value) {
-    if (arsitekProfile.value.is_student) return `Student at ${arsitekProfile.value.school || 'Unspecified'}`;
+    if (arsitekProfile.value.is_student) return `Student at ${arsitekProfile.value.education_institution || 'Unspecified'}`;
     return arsitekProfile.value.status_pekerjaan || 'Arsitek Profesional';
   } else if (isPerusahaan.value) {
     return companyProfile.value.industry || 'Perusahaan';
@@ -61,7 +61,6 @@ const locationText = computed(() => {
 });
 
 const editRoute = computed(() => {
-  if (isClient.value) return route('client.profile'); // Client edits on standard profile view
   return route(props.user.role + '.profil.edit');
 });
 </script>
@@ -107,7 +106,7 @@ const editRoute = computed(() => {
           </div>
           <div class="space-y-1">
             <span class="text-[10px] uppercase tracking-wider font-semibold text-muted-foreground">Edukasi</span>
-            <p class="text-sm font-medium text-foreground line-clamp-1">{{ arsitekProfile.school || '-' }}</p>
+            <p class="text-sm font-medium text-foreground line-clamp-1">{{ arsitekProfile.education_institution || '-' }}</p>
           </div>
         </div>
       </template>

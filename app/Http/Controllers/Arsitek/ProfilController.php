@@ -3,54 +3,49 @@
 namespace App\Http\Controllers\Arsitek;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
+use App\Http\Requests\Arsitek\UpdateProfilRequest;
 use App\Models\ArsitekProfile;
+use App\Services\ProfileFileUploadService;
+use Illuminate\Http\Request;
 use Inertia\Inertia;
-use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\DB;
 
 class ProfilController extends Controller
 {
+    public function __construct(
+        private readonly ProfileFileUploadService $fileUploadService
+    ) {}
+
     public function edit(Request $request)
     {
         /** @var \App\Models\User $user */
         $user = $request->user();
         $user->load('arsitekProfile');
         
-        return Inertia::render('Profile/Edit', [
+        return Inertia::render('Profile/EditArsitek', [
             'user' => $user,
             'arsitekProfile' => $user->arsitekProfile,
         ]);
     }
 
-    public function update(Request $request)
+    public function update(UpdateProfilRequest $request)
     {
-        $request->validate([
-            'first_name' => 'required|string|max:100',
-            'last_name' => 'required|string|max:100',
-            'status_pekerjaan' => 'nullable|string|max:100',
-            'is_student' => 'boolean',
-            'location' => 'nullable|string|max:200',
-            'school' => 'nullable|string|max:200',
-            'degree_type' => 'nullable|string|max:100',
-            'preferences' => 'nullable|array',
-        ]);
+        DB::transaction(function () use ($request) {
+            /** @var \App\Models\User $user */
+            $user = $request->user();
+            
+            // Update User table for generic columns
+            $user->update([
+                'name' => trim($request->first_name . ' ' . $request->last_name),
+                'location' => $request->location,
+            ]);
 
-        /** @var \App\Models\User $user */
-        $user = $request->user();
-        
-        ArsitekProfile::updateOrCreate(
-            ['user_id' => $user->id],
-            $request->only([
-                'first_name',
-                'last_name',
-                'status_pekerjaan',
-                'is_student',
-                'location',
-                'school',
-                'degree_type',
-                'preferences',
-            ])
-        );
+            // Update Profile table
+            ArsitekProfile::updateOrCreate(
+                ['user_id' => $user->id],
+                $request->validated()
+            );
+        });
 
         return back()->with('message', 'Profil berhasil diperbarui.');
     }
@@ -61,8 +56,8 @@ class ProfilController extends Controller
         $user = $request->user();
         $user->load('arsitekProfile');
         
-        return Inertia::render('Dashboard/Arsitek/ProfilPreview', [
-            'player' => $user, // Using 'player' or 'user' as per project convention if exists
+        return Inertia::render('Public/Arsitek/Show', [
+            'arsitek' => $user,
         ]);
     }
 
@@ -75,13 +70,45 @@ class ProfilController extends Controller
         /** @var \App\Models\User $user */
         $user = $request->user();
         
-        if ($user->avatar_url) {
-            Storage::disk('public')->delete(str_replace('/storage/', '', $user->avatar_url));
+        $url = $this->fileUploadService->uploadAvatar(
+            $request->file('avatar'), 
+            'avatars', 
+            $user->avatar_url
+        );
+
+        $user->update(['avatar_url' => $url]);
+
+        return back()->with('message', 'Foto profil berhasil diperbarui.');
+    }
+
+    public function uploadDocument(Request $request)
+    {
+        $request->validate([
+            'type' => 'required|in:identity,license',
+            'document' => 'required|file|mimes:pdf,jpg,jpeg,png|max:5120',
+        ]);
+
+        /** @var \App\Models\User $user */
+        $user = $request->user();
+        $profile = $user->arsitekProfile ?? new ArsitekProfile(['user_id' => $user->id]);
+        
+        $type = $request->input('type');
+        $oldFile = $type === 'identity' ? $profile->identity_document_url : $profile->license_document_url;
+        
+        $path = $this->fileUploadService->uploadSecureDocument(
+            $request->file('document'), 
+            "documents/arsitek/{$user->id}/{$type}",
+            $oldFile
+        );
+
+        if ($type === 'identity') {
+            $profile->identity_document_url = $path;
+        } else {
+            $profile->license_document_url = $path;
         }
+        
+        $profile->save();
 
-        $path = $request->file('avatar')->store('avatars', 'public');
-        $user->update(['avatar_url' => Storage::url($path)]);
-
-        return back()->with('message', 'Avatar berhasil diperbarui.');
+        return back()->with('message', 'Dokumen berhasil diunggah.');
     }
 }

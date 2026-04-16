@@ -11,7 +11,7 @@ class DashboardController extends Controller
         /** @var \App\Models\User $user */
         $user = \Illuminate\Support\Facades\Auth::user();
         $user->load('companyProfile');
-        return \Inertia\Inertia::render('Profile/Edit', [
+        return \Inertia\Inertia::render('Profile/EditPerusahaan', [
             'user' => $user,
             'companyProfile' => $user->companyProfile,
             'companyName' => $user->companyProfile->company_name ?? $user->name,

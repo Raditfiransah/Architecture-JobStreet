@@ -22,7 +22,8 @@ Route::middleware(['auth', 'verified', 'role:arsitek'])
     Route::get('/profil', [ProfilController::class, 'edit'])->name('profil.edit');
     Route::put('/profil', [ProfilController::class, 'update'])->name('profil.update');
     Route::get('/profil/preview', [ProfilController::class, 'preview'])->name('profil.preview');
-    Route::put('/avatar', [ProfilController::class, 'updateAvatar'])->name('profil.avatar');
+    Route::post('/avatar', [ProfilController::class, 'updateAvatar'])->name('profil.avatar');
+    Route::post('/profil/document', [ProfilController::class, 'uploadDocument'])->name('profil.document');
 
     // Portofolio
     Route::get('/portofolio', [PortofolioController::class, 'index'])->name('portofolio.index');

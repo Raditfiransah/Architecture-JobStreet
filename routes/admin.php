@@ -13,6 +13,10 @@ Route::middleware(['auth', 'verified', 'role:admin'])
     ->name('admin.')
     ->group(function () {
 
+    Route::get('/profil', [\App\Http\Controllers\Admin\ProfilController::class, 'edit'])->name('profil.edit');
+    Route::put('/profil', [\App\Http\Controllers\Admin\ProfilController::class, 'update'])->name('profil.update');
+    Route::post('/avatar', [\App\Http\Controllers\Admin\ProfilController::class, 'updateAvatar'])->name('profil.avatar');
+    
     Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
     Route::get('/antrian', [DashboardController::class, 'antrian'])->name('antrian');
 

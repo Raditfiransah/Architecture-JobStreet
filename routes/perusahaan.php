@@ -18,6 +18,8 @@ Route::middleware(['auth', 'verified', 'role:perusahaan'])
     // Profil perusahaan
     Route::get('/profil', [ProfilController::class, 'edit'])->name('profil.edit');
     Route::put('/profil', [ProfilController::class, 'update'])->name('profil.update');
+    Route::post('/logo', [ProfilController::class, 'updateLogo'])->name('profil.logo');
+    Route::post('/profil/document', [ProfilController::class, 'uploadDocument'])->name('profil.document');
 
     // Kelola lowongan
     Route::get('/lowongan', [LowonganController::class, 'index'])->name('lowongan.index');

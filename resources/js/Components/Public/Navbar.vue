@@ -159,7 +159,7 @@ const navLinks = computed(() => {
                 <p class="font-bold text-foreground">{{ user.name }}</p>
                 <p class="text-xs text-muted-foreground">{{ user.email }}</p>
                 <DropdownMenuSeparator class="my-3" />
-                <Link :href="route(user.role === 'admin' ? 'admin.dashboard' : (user.role === 'client' ? 'client.profile' : user.role + '.profile'))" class="flex items-center py-2 text-sm font-medium hover:text-primary transition-colors">
+                <Link :href="route(user.role === 'admin' ? 'admin.dashboard' : user.role + '.profil.edit')" class="flex items-center py-2 text-sm font-medium hover:text-primary transition-colors">
                   <User class="mr-3 h-4 w-4" />
                   <span>Profil Saya</span>
                 </Link>

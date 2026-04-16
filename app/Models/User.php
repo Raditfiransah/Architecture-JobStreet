@@ -86,6 +86,11 @@ class User extends Authenticatable
         return $this->hasMany(Lamaran::class)->orderBy('created_at', 'desc');
     }
 
+    public function lowongans(): HasMany
+    {
+        return $this->hasMany(Lowongan::class);
+    }
+
     public function isAdmin(): bool
     {
         return $this->role === 'admin';

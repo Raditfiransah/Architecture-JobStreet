@@ -90,10 +90,13 @@ const menuItems = computed(() => {
   
   if (role === 'perusahaan') {
     return [
-      { group: 'Perusahaan', items: [
-        { label: 'Edit Profil Bisnis', icon: Edit2, href: route('perusahaan.profil.edit') },
+      { group: 'Rekrutmen', items: [
+        { label: 'Hiring Dashboard', icon: LayoutDashboard, href: route('perusahaan.profile') },
         { label: 'Kelola Lowongan', icon: Briefcase, href: route('perusahaan.lowongan.index') },
-        { label: 'Pesan & Kandidat', icon: MessageSquare, href: route('perusahaan.inbox.index') },
+        { label: 'Kandidat', icon: Target, href: route('perusahaan.pelamar.all') },
+      ]},
+      { group: 'Perusahaan', items: [
+        { label: 'Edit Profil Bisnis', icon: Building2, href: route('perusahaan.profil.edit') },
       ]},
       { group: 'Mengelola Akun', items: [
         { label: 'Pengaturan Akun', icon: Settings, href: route('perusahaan.pengaturan.index') },

@@ -9,6 +9,7 @@ class Lowongan extends Model
     protected $table = 'lowongan';
 
     protected $fillable = [
+        'user_id',
         'posisi',
         'perusahaan',
         'kota',
@@ -19,6 +20,8 @@ class Lowongan extends Model
         'deskripsi',
         'syarat',
         'tanggung_jawab',
+        'status',
+        'deadline',
     ];
 
     protected function casts(): array
@@ -27,6 +30,17 @@ class Lowongan extends Model
             'syarat' => 'array',
             'tanggung_jawab' => 'array',
             'rating' => 'decimal:1',
+            'deadline' => 'date',
         ];
+    }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+
+    public function lamarans()
+    {
+        return $this->hasMany(Lamaran::class);
     }
 }

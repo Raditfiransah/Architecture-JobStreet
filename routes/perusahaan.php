@@ -32,6 +32,7 @@ Route::middleware(['auth', 'verified', 'role:perusahaan'])
     Route::delete('/lowongan/{id}', [LowonganController::class, 'destroy'])->name('lowongan.destroy');
 
     // Kelola pelamar
+    Route::get('/kandidat', [PelamarController::class, 'all'])->name('pelamar.all');
     Route::get('/lowongan/{id}/pelamar', [PelamarController::class, 'index'])->name('pelamar.index');
     Route::get('/lowongan/{id}/pelamar/{appId}', [PelamarController::class, 'show'])->name('pelamar.show');
     Route::put('/lamaran/{appId}/status', [PelamarController::class, 'updateStatus'])->name('lamaran.status');

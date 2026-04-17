@@ -29,7 +29,7 @@ class DashboardController extends Controller
             ->limit(5)
             ->get();
 
-        return \Inertia\Inertia::render('Perusahaan/Dashboard', [
+        return \Inertia\Inertia::render('Dashboard/Perusahaan', [
             'stats' => $stats,
             'recentApplications' => $recentApplications,
             'companyName' => $user->companyProfile->company_name ?? $user->name,

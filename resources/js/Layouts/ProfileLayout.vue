@@ -77,8 +77,10 @@ const menuItems = computed(() => {
   
   if (role === 'arsitek') {
     return [
+      { group: 'Utama', items: [
+        { label: 'Dashboard', icon: LayoutDashboard, href: route('arsitek.profile') },
+      ]},
       { group: 'Profil Karir', items: [
-        { label: 'Profile', icon: Edit2, href: route('arsitek.profil.edit') },
         { label: 'Portofolio', icon: Briefcase, href: route('arsitek.portofolio.index') },
         { label: 'Aktivitas Lamaran', icon: History, href: route('arsitek.lamaran.index') },
       ]},
@@ -90,13 +92,10 @@ const menuItems = computed(() => {
   
   if (role === 'perusahaan') {
     return [
-      { group: 'Rekrutmen', items: [
-        { label: 'Hiring Dashboard', icon: LayoutDashboard, href: route('perusahaan.profile') },
+      { group: 'Manajemen Rekrutmen', items: [
+        { label: 'Dashboard', icon: LayoutDashboard, href: route('perusahaan.profile') },
         { label: 'Kelola Lowongan', icon: Briefcase, href: route('perusahaan.lowongan.index') },
         { label: 'Kandidat', icon: Target, href: route('perusahaan.pelamar.all') },
-      ]},
-      { group: 'Perusahaan', items: [
-        { label: 'Edit Profil Bisnis', icon: Building2, href: route('perusahaan.profil.edit') },
       ]},
       { group: 'Mengelola Akun', items: [
         { label: 'Pengaturan Akun', icon: Settings, href: route('perusahaan.pengaturan.index') },
@@ -106,9 +105,9 @@ const menuItems = computed(() => {
   
   if (role === 'client') {
     return [
-      { group: 'Client', items: [
-        { label: 'Proyek Saya', icon: Building2, href: route('client.proyek.index') },
-        { label: 'Pesan Masuk', icon: MessageSquare, href: route('client.inbox.index') },
+      { group: 'Client Dashboard', items: [
+        { label: 'Dashboard', icon: LayoutDashboard, href: route('client.profile') },
+        { label: 'Kelola Proyek', icon: Building2, href: route('client.proyek.index') },
       ]},
       { group: 'Mengelola Akun', items: [
         { label: 'Pengaturan Akun', icon: Settings, href: route('client.pengaturan.index') },

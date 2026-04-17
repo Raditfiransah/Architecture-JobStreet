@@ -9,7 +9,9 @@ class ProyekController extends Controller
 {
     public function index()
     {
-        return view('client.proyek.index');
+        return \Inertia\Inertia::render('Client/Proyek/Index', [
+            'projects' => [] // TODO: Fetch from actual model once implemented
+        ]);
     }
 
     public function create()

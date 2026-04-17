@@ -16,6 +16,7 @@ import { Badge } from "@/Components/UI/ui/badge";
 
 const props = defineProps({
   user: Object,
+  stats: Object,
 });
 </script>
 
@@ -46,13 +47,13 @@ const props = defineProps({
     </div>
 
     <div class="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-12">
-      <StatCard title="Lamaran Dikirim" value="0" color="blue">
+      <StatCard title="Lamaran Dikirim" :value="stats?.lamaran_dikirim || '0'" color="blue">
         <template #icon><Mail class="w-5 h-5" /></template>
       </StatCard>
-      <StatCard title="Proposal Aktif" value="0" color="green">
+      <StatCard title="Proposal Aktif" :value="stats?.proposal_aktif || '0'" color="green">
         <template #icon><Activity class="w-5 h-5" /></template>
       </StatCard>
-      <StatCard title="Profil Dilihat" value="0" color="purple">
+      <StatCard title="Profil Dilihat" :value="stats?.profil_dilihat || '0'" color="purple">
         <template #icon><Eye class="w-5 h-5" /></template>
       </StatCard>
     </div>

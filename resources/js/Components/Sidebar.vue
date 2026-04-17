@@ -61,59 +61,45 @@ const logout = () => {
       <!-- Arsitek Menu -->
       <template v-if="role === 'arsitek'">
         <div class="px-3 py-2 text-[11px] font-bold uppercase tracking-widest text-muted-foreground mt-4 mb-1">Utama</div>
-        <Button asChild variant="ghost" :class="[isRoute('arsitek.profil.edit') ? 'bg-primary/10 text-primary' : 'text-muted-foreground hover:text-foreground hover:bg-muted']" class="w-full justify-start rounded-lg font-medium mb-1">
-          <Link :href="route('arsitek.profil.edit')">
+        <Button asChild variant="ghost" :class="[isRoute('arsitek.profile') ? 'bg-primary/10 text-primary' : 'text-muted-foreground hover:text-foreground hover:bg-muted']" class="w-full justify-start rounded-lg font-medium mb-1">
+          <Link :href="route('arsitek.profile')">
             <LayoutDashboard class="mr-3 h-4 w-4" />
             Dashboard
           </Link>
         </Button>
-        <Button asChild variant="ghost" class="w-full justify-start rounded-lg font-medium text-muted-foreground mb-1 hover:bg-muted hover:text-foreground">
-          <Link :href="route('arsitek.profil.edit')">
-             <User class="mr-3 h-4 w-4" />
-            Profil Saya
-          </Link>
-        </Button>
 
         <div class="px-3 py-2 text-[11px] font-bold uppercase tracking-widest text-muted-foreground mt-4 mb-1">Karir & Kerja</div>
-        <Button asChild variant="ghost" class="w-full justify-start rounded-lg font-medium text-muted-foreground mb-1 hover:bg-muted hover:text-foreground">
-          <Link href="#">
+        <Button asChild variant="ghost" :class="[isRoute('arsitek.portofolio.*') ? 'bg-primary/10 text-primary' : 'text-muted-foreground hover:text-foreground hover:bg-muted']" class="w-full justify-start rounded-lg font-medium mb-1">
+          <Link :href="route('arsitek.portofolio.index')">
             <Folder class="mr-3 h-4 w-4" />
             Portofolio
           </Link>
         </Button>
-        <Button asChild variant="ghost" class="w-full justify-start rounded-lg font-medium text-muted-foreground mb-1 hover:bg-muted hover:text-foreground">
-          <Link href="#">
+        <Button asChild variant="ghost" :class="[isRoute('arsitek.lamaran.*') ? 'bg-primary/10 text-primary' : 'text-muted-foreground hover:text-foreground hover:bg-muted']" class="w-full justify-start rounded-lg font-medium mb-1">
+          <Link :href="route('arsitek.lamaran.index')">
              <Briefcase class="mr-3 h-4 w-4" />
             Lamaran Kerja
-          </Link>
-        </Button>
-        <Button asChild variant="ghost" class="w-full justify-start rounded-lg font-medium text-muted-foreground mb-1 hover:bg-muted hover:text-foreground">
-          <Link href="#">
-            <FileText class="mr-3 h-4 w-4" />
-            Proposal Proyek
           </Link>
         </Button>
       </template>
 
       <!-- Perusahaan Menu -->
       <template v-else-if="role === 'perusahaan'">
-        <div class="px-3 py-2 text-[11px] font-bold uppercase tracking-widest text-muted-foreground mt-4 mb-1">Dashboard</div>
-        <Button asChild variant="ghost" :class="[isRoute('perusahaan.profil.edit') ? 'bg-primary/10 text-primary' : 'text-muted-foreground hover:text-foreground hover:bg-muted']" class="w-full justify-start rounded-lg font-medium mb-1">
-          <Link :href="route('perusahaan.profil.edit')">
+        <div class="px-3 py-2 text-[11px] font-bold uppercase tracking-widest text-muted-foreground mt-4 mb-1">Manajemen</div>
+        <Button asChild variant="ghost" :class="[isRoute('perusahaan.profile') ? 'bg-primary/10 text-primary' : 'text-muted-foreground hover:text-foreground hover:bg-muted']" class="w-full justify-start rounded-lg font-medium mb-1">
+          <Link :href="route('perusahaan.profile')">
             <LayoutDashboard class="mr-3 h-4 w-4" />
-            Ringkasan
+            Dashboard
           </Link>
         </Button>
-        
-        <div class="px-3 py-2 text-[11px] font-bold uppercase tracking-widest text-muted-foreground mt-4 mb-1">Manajemen</div>
-        <Button asChild variant="ghost" class="w-full justify-start rounded-lg font-medium text-muted-foreground mb-1 hover:bg-muted hover:text-foreground">
-          <Link href="#">
-            <FileText class="mr-3 h-4 w-4" />
+        <Button asChild variant="ghost" :class="[isRoute('perusahaan.lowongan.*') ? 'bg-primary/10 text-primary' : 'text-muted-foreground hover:text-foreground hover:bg-muted']" class="w-full justify-start rounded-lg font-medium mb-1">
+          <Link :href="route('perusahaan.lowongan.index')">
+            <Briefcase class="mr-3 h-4 w-4" />
             Kelola Lowongan
           </Link>
         </Button>
-        <Button asChild variant="ghost" class="w-full justify-start rounded-lg font-medium text-muted-foreground mb-1 hover:bg-muted hover:text-foreground">
-          <Link href="#">
+        <Button asChild variant="ghost" :class="[isRoute('perusahaan.pelamar.*') ? 'bg-primary/10 text-primary' : 'text-muted-foreground hover:text-foreground hover:bg-muted']" class="w-full justify-start rounded-lg font-medium mb-1">
+          <Link :href="route('perusahaan.pelamar.all')">
             <Users class="mr-3 h-4 w-4" />
             Kandidat Masuk
           </Link>
@@ -122,16 +108,16 @@ const logout = () => {
 
       <!-- Client Menu -->
       <template v-else-if="role === 'client'">
-        <Button asChild variant="ghost" :class="[isRoute('client.profil.edit') ? 'bg-primary/10 text-primary' : 'text-muted-foreground hover:text-foreground hover:bg-muted']" class="w-full justify-start rounded-lg font-medium mb-1">
-          <Link :href="route('client.profil.edit')">
+        <Button asChild variant="ghost" :class="[isRoute('client.profile') ? 'bg-primary/10 text-primary' : 'text-muted-foreground hover:text-foreground hover:bg-muted']" class="w-full justify-start rounded-lg font-medium mb-1">
+          <Link :href="route('client.profile')">
             <LayoutDashboard class="mr-3 h-4 w-4" />
             Dashboard
           </Link>
         </Button>
-        <Button asChild variant="ghost" class="w-full justify-start rounded-lg font-medium text-muted-foreground mb-1 hover:bg-muted hover:text-foreground">
-          <Link href="#">
+        <Button asChild variant="ghost" :class="[isRoute('client.proyek.*') ? 'bg-primary/10 text-primary' : 'text-muted-foreground hover:text-foreground hover:bg-muted']" class="w-full justify-start rounded-lg font-medium mb-1">
+          <Link :href="route('client.proyek.index')">
             <Folder class="mr-3 h-4 w-4" />
-            Proyek Saya
+            Kelola Proyek
           </Link>
         </Button>
       </template>

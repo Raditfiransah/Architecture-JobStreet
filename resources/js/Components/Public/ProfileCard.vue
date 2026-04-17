@@ -9,7 +9,7 @@ import {
   Settings, 
   History,
   Building2,
-  MessageSquare
+  Target
 } from "lucide-vue-next";
 import { 
   Avatar, 
@@ -148,9 +148,9 @@ const editRoute = computed(() => {
           <Briefcase class="w-4 h-4 mr-3 text-muted-foreground group-hover:text-primary transition-colors" />
           <span class="text-sm font-semibold text-foreground/90 group-hover:text-primary">Kelola Lowongan</span>
         </Link>
-        <Link :href="route('perusahaan.inbox.index')" class="flex items-center px-4 py-2.5 rounded-lg hover:bg-primary/5 group transition-colors">
-          <MessageSquare class="w-4 h-4 mr-3 text-muted-foreground group-hover:text-primary transition-colors" />
-          <span class="text-sm font-semibold text-foreground/90 group-hover:text-primary">Pesan & Kandidat</span>
+        <Link :href="route('perusahaan.pelamar.all')" class="flex items-center px-4 py-2.5 rounded-lg hover:bg-primary/5 group transition-colors">
+          <Target class="w-4 h-4 mr-3 text-muted-foreground group-hover:text-primary transition-colors" />
+          <span class="text-sm font-semibold text-foreground/90 group-hover:text-primary">Kelola Kandidat</span>
         </Link>
       </template>
 
@@ -158,11 +158,7 @@ const editRoute = computed(() => {
       <template v-else-if="isClient">
         <Link :href="route('client.proyek.index')" class="flex items-center px-4 py-2.5 rounded-lg hover:bg-primary/5 group transition-colors">
           <Building2 class="w-4 h-4 mr-3 text-muted-foreground group-hover:text-primary transition-colors" />
-          <span class="text-sm font-semibold text-foreground/90 group-hover:text-primary">Proyek Saya</span>
-        </Link>
-        <Link :href="route('client.inbox.index')" class="flex items-center px-4 py-2.5 rounded-lg hover:bg-primary/5 group transition-colors">
-          <MessageSquare class="w-4 h-4 mr-3 text-muted-foreground group-hover:text-primary transition-colors" />
-          <span class="text-sm font-semibold text-foreground/90 group-hover:text-primary">Pesan Masuk</span>
+          <span class="text-sm font-semibold text-foreground/90 group-hover:text-primary">Kelola Proyek</span>
         </Link>
       </template>
 

@@ -33,10 +33,12 @@ Route::middleware(['auth', 'verified', 'role:client'])
     Route::post('/proposal/{propId}/terima', [ProposalController::class, 'terima'])->name('proposal.terima');
     Route::post('/proposal/{propId}/tolak', [ProposalController::class, 'tolak'])->name('proposal.tolak');
 
+    /*
     // Inbox
     Route::get('/inbox', [InboxController::class, 'index'])->name('inbox.index');
     Route::get('/inbox/{thread}', [InboxController::class, 'show'])->name('inbox.show');
     Route::post('/inbox/{thread}', [InboxController::class, 'reply'])->name('inbox.reply');
+    */
 
     // Pengaturan
     Route::get('/pengaturan', [PengaturanController::class, 'index'])->name('pengaturan.index');

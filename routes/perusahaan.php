@@ -38,10 +38,12 @@ Route::middleware(['auth', 'verified', 'role:perusahaan'])
     Route::put('/lamaran/{appId}/status', [PelamarController::class, 'updateStatus'])->name('lamaran.status');
     Route::post('/lamaran/{appId}/shortlist', [PelamarController::class, 'shortlist'])->name('lamaran.shortlist');
 
+    /*
     // Inbox
     Route::get('/inbox', [InboxController::class, 'index'])->name('inbox.index');
     Route::get('/inbox/{thread}', [InboxController::class, 'show'])->name('inbox.show');
     Route::post('/inbox/{thread}', [InboxController::class, 'reply'])->name('inbox.reply');
+    */
 
     // Pengaturan
     Route::get('/pengaturan', [PengaturanController::class, 'index'])->name('pengaturan.index');

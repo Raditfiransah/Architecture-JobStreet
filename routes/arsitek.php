@@ -44,10 +44,12 @@ Route::middleware(['auth', 'verified', 'role:arsitek'])
     Route::get('/proposal/{id}', [ProposalController::class, 'show'])->name('proposal.show');
     Route::put('/proposal/{id}', [ProposalController::class, 'update'])->name('proposal.update');
 
+    /*
     // Inbox async
     Route::get('/inbox', [InboxController::class, 'index'])->name('inbox.index');
     Route::get('/inbox/{thread}', [InboxController::class, 'show'])->name('inbox.show');
     Route::post('/inbox/{thread}', [InboxController::class, 'reply'])->name('inbox.reply');
+    */
 
     // Notifikasi
     Route::get('/notifikasi', [NotifikasiController::class, 'index'])->name('notifikasi.index');

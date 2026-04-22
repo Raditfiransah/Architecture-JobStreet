@@ -80,7 +80,7 @@ const menuItems = computed(() => {
       { group: 'Utama', items: [
         { label: 'Dashboard', icon: LayoutDashboard, href: route('arsitek.profile') },
       ]},
-      { group: 'Profil Karir', items: [
+      { group: 'Kelola Portofolio & Lamaran', items: [
         { label: 'Portofolio', icon: Briefcase, href: route('arsitek.portofolio.index') },
         { label: 'Aktivitas Lamaran', icon: History, href: route('arsitek.lamaran.index') },
       ]},
@@ -92,8 +92,10 @@ const menuItems = computed(() => {
   
   if (role === 'perusahaan') {
     return [
-      { group: 'Manajemen Rekrutmen', items: [
+      { group: 'Utama', items: [
         { label: 'Dashboard', icon: LayoutDashboard, href: route('perusahaan.profile') },
+      ]},
+      { group: 'Manajemen Rekrutmen', items: [
         { label: 'Kelola Lowongan', icon: Briefcase, href: route('perusahaan.lowongan.index') },
         { label: 'Kandidat', icon: Target, href: route('perusahaan.pelamar.all') },
       ]},
@@ -105,9 +107,11 @@ const menuItems = computed(() => {
   
   if (role === 'client') {
     return [
-      { group: 'Client Dashboard', items: [
+      { group: 'Utama', items: [
         { label: 'Dashboard', icon: LayoutDashboard, href: route('client.profile') },
-        { label: 'Kelola Proyek', icon: Building2, href: route('client.proyek.index') },
+      ]},
+      { group: 'Kelola Proyek', items: [
+        { label: 'Proyek', icon: Briefcase, href: route('client.proyek.index') },
       ]},
       { group: 'Mengelola Akun', items: [
         { label: 'Pengaturan Akun', icon: Settings, href: route('client.pengaturan.index') },

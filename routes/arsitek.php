@@ -22,7 +22,8 @@ Route::middleware(['auth', 'verified', 'role:arsitek'])
     Route::get('/profil', [ProfilController::class, 'edit'])->name('profil.edit');
     Route::put('/profil', [ProfilController::class, 'update'])->name('profil.update');
     Route::get('/profil/preview', [ProfilController::class, 'preview'])->name('profil.preview');
-    Route::put('/avatar', [ProfilController::class, 'updateAvatar'])->name('profil.avatar');
+    Route::post('/avatar', [ProfilController::class, 'updateAvatar'])->name('profil.avatar');
+    Route::post('/profil/document', [ProfilController::class, 'uploadDocument'])->name('profil.document');
 
     // Portofolio
     Route::get('/portofolio', [PortofolioController::class, 'index'])->name('portofolio.index');
@@ -43,10 +44,12 @@ Route::middleware(['auth', 'verified', 'role:arsitek'])
     Route::get('/proposal/{id}', [ProposalController::class, 'show'])->name('proposal.show');
     Route::put('/proposal/{id}', [ProposalController::class, 'update'])->name('proposal.update');
 
+    /*
     // Inbox async
     Route::get('/inbox', [InboxController::class, 'index'])->name('inbox.index');
     Route::get('/inbox/{thread}', [InboxController::class, 'show'])->name('inbox.show');
     Route::post('/inbox/{thread}', [InboxController::class, 'reply'])->name('inbox.reply');
+    */
 
     // Notifikasi
     Route::get('/notifikasi', [NotifikasiController::class, 'index'])->name('notifikasi.index');

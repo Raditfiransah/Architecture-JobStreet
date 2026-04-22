@@ -145,7 +145,7 @@ const handleContact = () => {
                          <p class="text-sm font-medium text-slate-500 flex items-center gap-2">
                             {{ selectedArsitek.status_pekerjaan || 'Arsitek Student' }}
                             <span class="w-1 h-1 rounded-full bg-slate-300"></span>
-                            {{ selectedArsitek.school || 'Politeknik Negeri Malang' }}
+                            {{ selectedArsitek.education_institution || 'Politeknik Negeri Malang' }}
                          </p>
                          <div class="flex items-center gap-4 text-xs text-slate-400 pt-1">
                             <span class="flex items-center gap-1.5"><MapPin class="w-3.5 h-3.5" /> {{ selectedArsitek.location || 'Malang, Indonesia' }}</span>
@@ -188,7 +188,7 @@ const handleContact = () => {
                          <GraduationCap class="w-6 h-6 text-primary" />
                       </div>
                       <div>
-                         <p class="font-bold text-sm text-[#1E293B]">{{ selectedArsitek.school || 'Politeknik Negeri Malang' }}</p>
+                         <p class="font-bold text-sm text-[#1E293B]">{{ selectedArsitek.education_institution || 'Politeknik Negeri Malang' }}</p>
                          <p class="text-xs text-slate-500 mt-0.5">{{ selectedArsitek.degree_type || 'Architecture Student' }}</p>
                       </div>
                    </div>

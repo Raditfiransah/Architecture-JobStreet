@@ -9,7 +9,7 @@ import {
   Settings, 
   History,
   Building2,
-  MessageSquare
+  Target
 } from "lucide-vue-next";
 import { 
   Avatar, 
@@ -46,7 +46,7 @@ const fullName = computed(() => {
 
 const jobTitle = computed(() => {
   if (isArsitek.value) {
-    if (arsitekProfile.value.is_student) return `Student at ${arsitekProfile.value.school || 'Unspecified'}`;
+    if (arsitekProfile.value.is_student) return `Student at ${arsitekProfile.value.education_institution || 'Unspecified'}`;
     return arsitekProfile.value.status_pekerjaan || 'Arsitek Profesional';
   } else if (isPerusahaan.value) {
     return companyProfile.value.industry || 'Perusahaan';
@@ -61,7 +61,6 @@ const locationText = computed(() => {
 });
 
 const editRoute = computed(() => {
-  if (isClient.value) return route('client.profile'); // Client edits on standard profile view
   return route(props.user.role + '.profil.edit');
 });
 </script>
@@ -107,7 +106,7 @@ const editRoute = computed(() => {
           </div>
           <div class="space-y-1">
             <span class="text-[10px] uppercase tracking-wider font-semibold text-muted-foreground">Edukasi</span>
-            <p class="text-sm font-medium text-foreground line-clamp-1">{{ arsitekProfile.school || '-' }}</p>
+            <p class="text-sm font-medium text-foreground line-clamp-1">{{ arsitekProfile.education_institution || '-' }}</p>
           </div>
         </div>
       </template>
@@ -149,9 +148,9 @@ const editRoute = computed(() => {
           <Briefcase class="w-4 h-4 mr-3 text-muted-foreground group-hover:text-primary transition-colors" />
           <span class="text-sm font-semibold text-foreground/90 group-hover:text-primary">Kelola Lowongan</span>
         </Link>
-        <Link :href="route('perusahaan.inbox.index')" class="flex items-center px-4 py-2.5 rounded-lg hover:bg-primary/5 group transition-colors">
-          <MessageSquare class="w-4 h-4 mr-3 text-muted-foreground group-hover:text-primary transition-colors" />
-          <span class="text-sm font-semibold text-foreground/90 group-hover:text-primary">Pesan & Kandidat</span>
+        <Link :href="route('perusahaan.pelamar.all')" class="flex items-center px-4 py-2.5 rounded-lg hover:bg-primary/5 group transition-colors">
+          <Target class="w-4 h-4 mr-3 text-muted-foreground group-hover:text-primary transition-colors" />
+          <span class="text-sm font-semibold text-foreground/90 group-hover:text-primary">Kelola Kandidat</span>
         </Link>
       </template>
 
@@ -159,11 +158,7 @@ const editRoute = computed(() => {
       <template v-else-if="isClient">
         <Link :href="route('client.proyek.index')" class="flex items-center px-4 py-2.5 rounded-lg hover:bg-primary/5 group transition-colors">
           <Building2 class="w-4 h-4 mr-3 text-muted-foreground group-hover:text-primary transition-colors" />
-          <span class="text-sm font-semibold text-foreground/90 group-hover:text-primary">Proyek Saya</span>
-        </Link>
-        <Link :href="route('client.inbox.index')" class="flex items-center px-4 py-2.5 rounded-lg hover:bg-primary/5 group transition-colors">
-          <MessageSquare class="w-4 h-4 mr-3 text-muted-foreground group-hover:text-primary transition-colors" />
-          <span class="text-sm font-semibold text-foreground/90 group-hover:text-primary">Pesan Masuk</span>
+          <span class="text-sm font-semibold text-foreground/90 group-hover:text-primary">Kelola Proyek</span>
         </Link>
       </template>
 

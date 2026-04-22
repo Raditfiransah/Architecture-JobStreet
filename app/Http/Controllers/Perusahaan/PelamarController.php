@@ -7,25 +7,62 @@ use Illuminate\Http\Request;
 
 class PelamarController extends Controller
 {
+    public function all()
+    {
+        $lowongans = auth()->user()->lowongans()->with(['lamarans.user', 'lamarans.lowongan'])->get();
+        
+        $allLamarans = $lowongans->flatMap->lamarans->sortByDesc('applied_at');
+
+        return \Inertia\Inertia::render('Perusahaan/Pelamar/All', [
+            'lamarans' => $allLamarans
+        ]);
+    }
+
     public function index(string $id)
     {
-        return view('perusahaan.pelamar.index', compact('id'));
+        $lowongan = auth()->user()->lowongans()->with('lamarans.user')->findOrFail($id);
+
+        return \Inertia\Inertia::render('Perusahaan/Pelamar/Index', [
+            'lowongan' => $lowongan,
+            'lamarans' => $lowongan->lamarans
+        ]);
     }
 
     public function show(string $id, string $appId)
     {
-        return view('perusahaan.pelamar.show', compact('id', 'appId'));
+        $lowongan = auth()->user()->lowongans()->findOrFail($id);
+        $lamaran = \App\Models\Lamaran::with(['user.arsitekProfile', 'lowongan'])
+            ->where('lowongan_id', $id)
+            ->findOrFail($appId);
+
+        return \Inertia\Inertia::render('Perusahaan/Pelamar/Show', [
+            'lamaran' => $lamaran
+        ]);
     }
 
     public function updateStatus(Request $request, string $appId)
     {
-        // TODO: Implement - update status lamaran
-        return back()->with('status', 'Status lamaran berhasil diperbarui.');
+        $validated = $request->validate([
+            'status' => 'required|in:pending,reviewing,shortlisted,interview,rejected,accepted'
+        ]);
+
+        $lamaran = \App\Models\Lamaran::whereHas('lowongan', function($q) {
+            $q->where('user_id', auth()->id());
+        })->findOrFail($appId);
+
+        $lamaran->update(['status' => $validated['status']]);
+
+        return back()->with('success', 'Status lamaran berhasil diperbarui.');
     }
 
     public function shortlist(string $appId)
     {
-        // TODO: Implement - shortlist pelamar
-        return back()->with('status', 'Pelamar berhasil di-shortlist.');
+        $lamaran = \App\Models\Lamaran::whereHas('lowongan', function($q) {
+            $q->where('user_id', auth()->id());
+        })->findOrFail($appId);
+
+        $lamaran->update(['status' => 'shortlisted']);
+
+        return back()->with('success', 'Pelamar berhasil di-shortlist.');
     }
 }

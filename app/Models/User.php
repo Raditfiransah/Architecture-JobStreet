@@ -66,9 +66,29 @@ class User extends Authenticatable
         return $this->hasOne(CompanyProfile::class);
     }
 
+    public function clientProfile(): HasOne
+    {
+        return $this->hasOne(ClientProfile::class);
+    }
+
     public function emailVerificationCodes(): HasMany
     {
         return $this->hasMany(EmailVerificationCode::class);
+    }
+
+    public function portofolios(): HasMany
+    {
+        return $this->hasMany(Portofolio::class)->orderBy('order')->orderBy('created_at', 'desc');
+    }
+
+    public function lamarans(): HasMany
+    {
+        return $this->hasMany(Lamaran::class)->orderBy('created_at', 'desc');
+    }
+
+    public function lowongans(): HasMany
+    {
+        return $this->hasMany(Lowongan::class);
     }
 
     public function isAdmin(): bool
@@ -91,14 +111,14 @@ class User extends Authenticatable
         return $this->role === 'client';
     }
 
-    public function dashboardRoute(): string
+    public function dashboardRoute()
     {
-        return match ($this->role) {
-            'admin' => 'admin.dashboard',
-            'arsitek' => 'arsitek.profile',
-            'perusahaan' => 'perusahaan.profile',
-            'client' => 'client.profile',
-            default => 'home',
+        return match($this->role) {
+            'admin' => route('admin.dashboard'),
+            'perusahaan' => route('perusahaan.profile'),
+            'client' => route('client.profile'),
+            'arsitek' => route('arsitek.profile'),
+            default => route('home'),
         };
     }
 

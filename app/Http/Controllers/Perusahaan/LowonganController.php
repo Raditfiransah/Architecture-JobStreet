@@ -9,46 +9,98 @@ class LowonganController extends Controller
 {
     public function index()
     {
-        return view('perusahaan.lowongan.index');
+        $lowongans = auth()->user()->lowongans()
+            ->withCount('lamarans')
+            ->latest()
+            ->get();
+
+        return \Inertia\Inertia::render('Perusahaan/Lowongan/Index', [
+            'lowongans' => $lowongans
+        ]);
     }
 
     public function create()
     {
-        return view('perusahaan.lowongan.create');
+        return \Inertia\Inertia::render('Perusahaan/Lowongan/Form', [
+            'isEdit' => false
+        ]);
     }
 
     public function store(Request $request)
     {
-        // TODO: Implement
-        return redirect()->route('perusahaan.lowongan.index')->with('status', 'Lowongan berhasil dibuat.');
+        $validated = $request->validate([
+            'posisi' => 'required|string|max:255',
+            'kota' => 'required|string|max:255',
+            'tipe' => 'required|in:Full Time,Part Time,Freelance,Contract,Internship',
+            'gaji' => 'nullable|string|max:255',
+            'deskripsi' => 'required|string',
+            'syarat' => 'required|array',
+            'tanggung_jawab' => 'required|array',
+            'deadline' => 'nullable|date',
+        ]);
+
+        $companyName = auth()->user()->companyProfile->company_name ?? auth()->user()->name;
+        
+        // Simple initial generation
+        $initials = strtoupper(substr($companyName, 0, 2));
+
+        auth()->user()->lowongans()->create(array_merge($validated, [
+            'perusahaan' => $companyName,
+            'inisial' => $initials,
+            'status' => 'aktif',
+        ]));
+
+        return redirect()->route('perusahaan.lowongan.index')->with('success', 'Lowongan berhasil diterbitkan.');
     }
 
     public function edit(string $id)
     {
-        return view('perusahaan.lowongan.edit', compact('id'));
+        $lowongan = auth()->user()->lowongans()->findOrFail($id);
+
+        return \Inertia\Inertia::render('Perusahaan/Lowongan/Form', [
+            'lowongan' => $lowongan,
+            'isEdit' => true
+        ]);
     }
 
     public function update(Request $request, string $id)
     {
-        // TODO: Implement
-        return redirect()->route('perusahaan.lowongan.index')->with('status', 'Lowongan berhasil diperbarui.');
+        $lowongan = auth()->user()->lowongans()->findOrFail($id);
+
+        $validated = $request->validate([
+            'posisi' => 'required|string|max:255',
+            'kota' => 'required|string|max:255',
+            'tipe' => 'required|in:Full Time,Part Time,Freelance,Contract,Internship',
+            'gaji' => 'nullable|string|max:255',
+            'deskripsi' => 'required|string',
+            'syarat' => 'required|array',
+            'tanggung_jawab' => 'required|array',
+            'deadline' => 'nullable|date',
+        ]);
+
+        $lowongan->update($validated);
+
+        return redirect()->route('perusahaan.lowongan.index')->with('success', 'Lowongan berhasil diperbarui.');
     }
 
     public function tutup(string $id)
     {
-        // TODO: Implement - tutup lowongan
-        return back()->with('status', 'Lowongan berhasil ditutup.');
+        $lowongan = auth()->user()->lowongans()->findOrFail($id);
+        $lowongan->update(['status' => 'ditutup']);
+        return back()->with('success', 'Lowongan telah ditutup.');
     }
 
     public function perpanjang(string $id)
     {
-        // TODO: Implement - perpanjang lowongan
-        return back()->with('status', 'Lowongan berhasil diperpanjang.');
+        $lowongan = auth()->user()->lowongans()->findOrFail($id);
+        $lowongan->update(['status' => 'aktif']);
+        return back()->with('success', 'Lowongan telah diaktifkan kembali.');
     }
 
     public function destroy(string $id)
     {
-        // TODO: Implement
-        return redirect()->route('perusahaan.lowongan.index')->with('status', 'Lowongan berhasil dihapus.');
+        $lowongan = auth()->user()->lowongans()->findOrFail($id);
+        $lowongan->delete();
+        return redirect()->route('perusahaan.lowongan.index')->with('success', 'Lowongan berhasil dihapus.');
     }
 }

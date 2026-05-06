@@ -30,10 +30,10 @@ class ProfileFileUploadService
         $path = $directory . '/' . $filename;
 
         // Compress and convert to webp using Intervention Image v4
-        $image = $this->imageManager->read($file->getRealPath());
+        $image = $this->imageManager->decodePath($file->getRealPath());
         $image->scale(width: 400); // Scale keeping aspect ratio
         
-        $encodedImage = $image->toWebp(quality: 80);
+        $encodedImage = $image->encode(new \Intervention\Image\Encoders\WebpEncoder(quality: 80));
         
         Storage::disk('public')->put($path, (string) $encodedImage);
 

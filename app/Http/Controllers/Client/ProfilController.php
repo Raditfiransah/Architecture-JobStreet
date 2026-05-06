@@ -55,7 +55,7 @@ class ProfilController extends Controller
     public function updateAvatar(Request $request)
     {
         $request->validate([
-            'avatar' => 'required|image|max:2048',
+            'avatar' => 'required|image|max:51200',
         ]);
 
         /** @var \App\Models\User $user */

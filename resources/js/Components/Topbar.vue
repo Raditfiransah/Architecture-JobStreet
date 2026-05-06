@@ -8,7 +8,11 @@ import {
   Bell, 
   Search, 
   Menu,
-  ChevronDown
+  ChevronDown,
+  LayoutDashboard,
+  Briefcase,
+  Folder,
+  Users
 } from "lucide-vue-next";
 import { Button } from "@/Components/UI/ui/button";
 import { Input } from "@/Components/UI/ui/input";
@@ -49,6 +53,43 @@ const form = useForm({});
 const logout = () => {
   form.post(route('logout'));
 };
+
+const dropdownLinks = computed(() => {
+  if (!props.user) return [];
+
+  const role = props.user.role;
+  const links = {
+    admin: [
+      { name: "Dashboard", href: route('admin.dashboard'), icon: LayoutDashboard },
+      { name: "Moderasi Lowongan", href: route('admin.lowongan.index'), icon: Briefcase },
+      { name: "Moderasi Proyek", href: route('admin.proyek.index'), icon: Folder },
+      { name: "Kelola User", href: route('admin.users.index'), icon: Users },
+      { name: "Profil & Akun", href: route('admin.profil.edit'), icon: User },
+    ],
+    perusahaan: [
+      { name: "Dashboard", href: route('perusahaan.profile'), icon: LayoutDashboard },
+      { name: "Lowongan Saya", href: route('perusahaan.lowongan.index'), icon: Briefcase },
+      { name: "Daftar Pelamar", href: route('perusahaan.pelamar.all'), icon: Users },
+      { name: "Profil Perusahaan", href: route('perusahaan.profil.edit'), icon: User },
+      { name: "Pengaturan", href: route('perusahaan.pengaturan.index'), icon: Settings },
+    ],
+    arsitek: [
+      { name: "Dashboard", href: route('arsitek.profile'), icon: LayoutDashboard },
+      { name: "Portofolio", href: route('arsitek.portofolio.index'), icon: Folder },
+      { name: "Lamaran Saya", href: route('arsitek.lamaran.index'), icon: Briefcase },
+      { name: "Profil Arsitek", href: route('arsitek.profil.edit'), icon: User },
+      { name: "Pengaturan", href: route('arsitek.pengaturan.index'), icon: Settings },
+    ],
+    client: [
+      { name: "Dashboard", href: route('client.profile'), icon: LayoutDashboard },
+      { name: "Proyek Saya", href: route('client.proyek.index'), icon: Folder },
+      { name: "Profil Client", href: route('client.profil.edit'), icon: User },
+      { name: "Pengaturan", href: route('client.pengaturan.index'), icon: Settings },
+    ],
+  };
+
+  return links[role] || [];
+});
 </script>
 
 <template>
@@ -104,12 +145,15 @@ const logout = () => {
             </div>
           </DropdownMenuLabel>
           <DropdownMenuSeparator />
-          <DropdownMenuItem asChild class="rounded-lg cursor-pointer py-2">
-            <Link :href="route(user.role === 'admin' ? 'admin.dashboard' : user.role + '.profil.edit')" class="flex items-center w-full">
-              <User class="mr-2 h-4 w-4 text-primary" />
-              <span>Profil Saya</span>
-            </Link>
-          </DropdownMenuItem>
+          
+          <div class="py-1">
+            <DropdownMenuItem v-for="link in dropdownLinks" :key="link.name" asChild class="rounded-lg cursor-pointer py-2">
+              <Link :href="link.href" class="flex items-center w-full">
+                <component :is="link.icon" class="mr-2 h-4 w-4 text-muted-foreground" />
+                <span>{{ link.name }}</span>
+              </Link>
+            </DropdownMenuItem>
+          </div>
           <DropdownMenuSeparator />
           <DropdownMenuItem @click="logout" class="rounded-lg cursor-pointer py-2 text-destructive focus:bg-destructive/10 focus:text-destructive">
             <LogOut class="mr-2 h-4 w-4" />

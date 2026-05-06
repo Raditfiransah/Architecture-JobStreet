@@ -6,6 +6,10 @@ use App\Http\Controllers\Admin\ProyekController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\InfoHubController;
 use App\Http\Controllers\Admin\LaporanController;
+use App\Http\Controllers\Admin\ProfileManagementController;
+use App\Http\Controllers\Admin\PortofolioController;
+use App\Http\Controllers\Admin\SystemController;
+use App\Http\Controllers\Admin\SecurityController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware(['auth', 'verified', 'role:admin'])
@@ -22,10 +26,10 @@ Route::middleware(['auth', 'verified', 'role:admin'])
 
     // Moderasi lowongan
     Route::get('/lowongan', [LowonganController::class, 'index'])->name('lowongan.index');
-    Route::get('/lowongan/{id}', [LowonganController::class, 'show'])->name('lowongan.show');
-    Route::post('/lowongan/{id}/setujui', [LowonganController::class, 'setujui'])->name('lowongan.setujui');
-    Route::post('/lowongan/{id}/tolak', [LowonganController::class, 'tolak'])->name('lowongan.tolak');
-    Route::post('/lowongan/{id}/tutup', [LowonganController::class, 'tutup'])->name('lowongan.tutup');
+    Route::get('/lowongan/{lowongan}', [LowonganController::class, 'show'])->name('lowongan.show');
+    Route::post('/lowongan/{lowongan}/setujui', [LowonganController::class, 'setujui'])->name('lowongan.setujui');
+    Route::post('/lowongan/{lowongan}/tolak', [LowonganController::class, 'tolak'])->name('lowongan.tolak');
+    Route::post('/lowongan/{lowongan}/tutup', [LowonganController::class, 'tutup'])->name('lowongan.tutup');
 
     // Moderasi proyek
     Route::get('/proyek', [ProyekController::class, 'index'])->name('proyek.index');
@@ -35,10 +39,10 @@ Route::middleware(['auth', 'verified', 'role:admin'])
 
     // Kelola user
     Route::get('/users', [UserController::class, 'index'])->name('users.index');
-    Route::get('/users/{id}', [UserController::class, 'show'])->name('users.show');
-    Route::post('/users/{id}/verifikasi', [UserController::class, 'verifikasi'])->name('users.verifikasi');
-    Route::post('/users/{id}/suspend', [UserController::class, 'suspend'])->name('users.suspend');
-    Route::post('/users/{id}/aktifkan', [UserController::class, 'aktifkan'])->name('users.aktifkan');
+    Route::get('/users/{user}', [UserController::class, 'show'])->name('users.show');
+    Route::post('/users/{user}/suspend', [UserController::class, 'suspend'])->name('users.suspend');
+    Route::post('/users/{user}/aktifkan', [UserController::class, 'aktifkan'])->name('users.aktifkan');
+    Route::delete('/users/{user}', [UserController::class, 'destroy'])->name('users.destroy');
 
     // Info Hub
     Route::get('/info', [InfoHubController::class, 'index'])->name('info.index');
@@ -48,4 +52,20 @@ Route::middleware(['auth', 'verified', 'role:admin'])
     // Laporan konten
     Route::get('/laporan', [LaporanController::class, 'index'])->name('laporan.index');
     Route::post('/laporan/{id}/tindak', [LaporanController::class, 'tindak'])->name('laporan.tindak');
+
+    // Profile Management
+    Route::get('/profiles', [ProfileManagementController::class, 'index'])->name('profiles.index');
+    Route::post('/profiles/{type}/{id}/verify', [ProfileManagementController::class, 'verify'])->name('profiles.verify');
+    Route::post('/profiles/{type}/{id}/reject', [ProfileManagementController::class, 'reject'])->name('profiles.reject');
+
+    // Portofolio Management
+    Route::get('/portofolio', [PortofolioController::class, 'index'])->name('portofolio.index');
+    Route::delete('/portofolio/{portofolio}', [PortofolioController::class, 'destroy'])->name('portofolio.destroy');
+
+    // System Monitoring
+    Route::get('/system', [SystemController::class, 'index'])->name('system.index');
+    Route::post('/system/clear-failed', [SystemController::class, 'clearFailedJobs'])->name('system.clear-failed');
+
+    // Security Monitoring
+    Route::get('/security', [SecurityController::class, 'index'])->name('security.index');
 });

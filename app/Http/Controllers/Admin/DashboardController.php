@@ -9,7 +9,13 @@ class DashboardController extends Controller
     public function index()
     {
         return \Inertia\Inertia::render('Dashboard/Admin', [
-            'user' => auth()->user(),
+            'stats' => [
+                'total_users' => \App\Models\User::count(),
+                'total_companies' => \App\Models\CompanyProfile::count(),
+                'total_arsiteks' => \App\Models\ArsitekProfile::count(),
+                'total_lowongan' => \App\Models\Lowongan::count(),
+                'total_lamaran' => \App\Models\Lamaran::count(),
+            ],
         ]);
     }
 

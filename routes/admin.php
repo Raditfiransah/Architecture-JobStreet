@@ -60,7 +60,11 @@ Route::middleware(['auth', 'verified', 'role:admin'])
 
     // Portofolio Management
     Route::get('/portofolio', [PortofolioController::class, 'index'])->name('portofolio.index');
+    Route::get('/portofolio/user/{user}', [PortofolioController::class, 'show'])->name('portofolio.show');
+    Route::get('/portofolio/{portofolio}/edit', [PortofolioController::class, 'edit'])->name('portofolio.edit');
+    Route::put('/portofolio/{portofolio}', [PortofolioController::class, 'update'])->name('portofolio.update');
     Route::delete('/portofolio/{portofolio}', [PortofolioController::class, 'destroy'])->name('portofolio.destroy');
+    Route::delete('/portofolio/{portofolio}/image', [PortofolioController::class, 'destroyImage'])->name('portofolio.destroy-image');
 
     // System Monitoring
     Route::get('/system', [SystemController::class, 'index'])->name('system.index');

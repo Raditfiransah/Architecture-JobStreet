@@ -114,8 +114,8 @@ const statCards = [
       </div>
 
       <!-- Quick Actions & Recent Activity -->
-      <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mt-8">
-        <Card class="lg:col-span-2 border-border/60 shadow-sm rounded-2xl overflow-hidden">
+      <div class="grid grid-cols-1 gap-8 mt-8">
+        <Card class="border-border/60 shadow-sm rounded-2xl overflow-hidden">
           <CardHeader class="border-b border-border/40 bg-muted/10 px-8 py-6">
             <div class="flex items-center justify-between">
                <CardTitle class="text-lg font-bold">Aktivitas Sistem Terbaru</CardTitle>
@@ -143,38 +143,7 @@ const statCards = [
           </CardContent>
         </Card>
 
-        <div class="space-y-6">
-          <Card class="border-border/60 shadow-sm rounded-2xl overflow-hidden">
-            <CardHeader class="border-b border-border/40 bg-muted/10 px-8 py-6">
-              <CardTitle class="text-lg font-bold">Quick Actions</CardTitle>
-            </CardHeader>
-            <CardContent class="p-6 space-y-3">
-              <Button variant="outline" class="w-full justify-start rounded-xl h-12 px-4 gap-3 border-border/60 hover:bg-muted/50">
-                <ShieldCheck class="w-5 h-5 text-primary" />
-                <span class="font-bold text-xs uppercase tracking-wider">Verifikasi Profil Massal</span>
-              </Button>
-              <Button variant="outline" class="w-full justify-start rounded-xl h-12 px-4 gap-3 border-border/60 hover:bg-muted/50">
-                <Monitor class="w-5 h-5 text-emerald-500" />
-                <span class="font-bold text-xs uppercase tracking-wider">Bersihkan Cache Sistem</span>
-              </Button>
-              <Button variant="outline" class="w-full justify-start rounded-xl h-12 px-4 gap-3 border-border/60 hover:bg-muted/50">
-                <FileText class="w-5 h-5 text-orange-500" />
-                <span class="font-bold text-xs uppercase tracking-wider">Generate Laporan Bulanan</span>
-              </Button>
-            </CardContent>
-          </Card>
 
-          <div class="bg-primary text-primary-foreground rounded-2xl p-8 relative overflow-hidden shadow-xl shadow-primary/20">
-            <div class="relative z-10">
-              <h4 class="text-xl font-bold mb-2">Pusat Bantuan Admin</h4>
-              <p class="text-xs font-medium opacity-80 leading-loose mb-6">Butuh bantuan teknis atau panduan penggunaan dashboard? Hubungi tim support.</p>
-              <Button variant="secondary" class="w-full rounded-xl font-bold text-[11px] uppercase tracking-wider h-11 bg-white text-primary hover:bg-slate-50">
-                Hubungi Support
-              </Button>
-            </div>
-            <div class="absolute -right-10 -bottom-10 w-40 h-40 bg-white/10 rounded-full blur-3xl"></div>
-          </div>
-        </div>
       </div>
     </div>
   </AuthenticatedLayout>

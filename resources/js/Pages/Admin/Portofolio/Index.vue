@@ -4,20 +4,31 @@ import { Head, Link, router } from "@inertiajs/vue3";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import { 
   Search, 
-  Trash2, 
-  ExternalLink,
-  Folder,
   Eye,
+  Folder,
   User,
-  Calendar
+  ArrowRight
 } from "lucide-vue-next";
+import { 
+  Table, 
+  TableBody, 
+  TableCell, 
+  TableHead, 
+  TableHeader, 
+  TableRow 
+} from "@/Components/UI/ui/table";
 import { Button } from "@/Components/UI/ui/button";
 import { Input } from "@/Components/UI/ui/input";
+import { 
+  Avatar, 
+  AvatarImage, 
+  AvatarFallback 
+} from "@/Components/UI/ui/avatar";
 import Pagination from "@/Components/Pagination.vue";
 import { debounce } from "@/Utils/helpers";
 
 const props = defineProps({
-  portofolios: Object,
+  users: Object,
   filters: Object,
 });
 
@@ -27,16 +38,11 @@ const updateSearch = debounce(() => {
   router.get(route('admin.portofolio.index'), { search: search.value }, {
     preserveState: true,
     preserveScroll: true,
+    replace: true
   });
 }, 500);
 
 watch(search, () => updateSearch());
-
-const handleDelete = (id) => {
-  if (confirm("Hapus portofolio ini karena tidak sesuai ketentuan?")) {
-    router.delete(route('admin.portofolio.destroy', id));
-  }
-};
 </script>
 
 <template>
@@ -48,72 +54,85 @@ const handleDelete = (id) => {
       <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <h1 class="text-3xl font-bold tracking-tight text-foreground">Moderasi Portofolio</h1>
-          <p class="text-muted-foreground mt-1">Pantau dan kelola portofolio arsitek yang dipublikasikan.</p>
+          <p class="text-muted-foreground mt-1">Kelola portofolio berdasarkan arsitek pemiliknya.</p>
         </div>
       </div>
 
       <!-- Filters & Search -->
-      <div class="bg-card border border-border/60 rounded-2xl p-4 shadow-sm">
-        <div class="relative w-full md:max-w-md">
+      <div class="bg-card border border-border/60 rounded-2xl p-4 shadow-sm flex flex-col md:flex-row gap-4 items-center">
+        <div class="relative flex-1 w-full md:max-w-md">
           <Search class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
           <Input 
             v-model="search" 
-            placeholder="Cari judul portofolio..." 
+            placeholder="Cari nama arsitek..." 
             class="pl-10 rounded-xl border-border/60 h-11 focus:ring-primary/20"
           />
         </div>
       </div>
 
-      <!-- Portofolio Grid -->
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-        <div v-for="item in portofolios.data" :key="item.id" class="bg-card border border-border/60 rounded-2xl overflow-hidden group hover:shadow-lg transition-all duration-300">
-           <!-- Thumbnail Mockup -->
-           <div class="aspect-video bg-muted relative overflow-hidden">
-              <img v-if="item.thumbnail_url" :src="item.thumbnail_url" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
-              <div v-else class="w-full h-full flex items-center justify-center bg-primary/5">
-                 <Folder class="w-10 h-10 text-primary/20" />
-              </div>
-              <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-4">
-                 <div class="flex gap-2 w-full">
-                    <Button variant="secondary" size="sm" class="flex-1 rounded-lg h-9 font-bold text-[10px] uppercase tracking-wider">
-                       <Eye class="w-3.5 h-3.5 mr-2" />
-                       Preview
-                    </Button>
-                    <Button @click="handleDelete(item.id)" variant="destructive" size="icon" class="rounded-lg h-9 w-9">
-                       <Trash2 class="w-3.5 h-3.5" />
-                    </Button>
-                 </div>
-              </div>
-           </div>
-           
-           <div class="p-5 space-y-3">
-              <h3 class="font-bold text-sm text-foreground line-clamp-1 group-hover:text-primary transition-colors">{{ item.title }}</h3>
-              <div class="flex items-center justify-between text-[11px] font-medium">
-                 <div class="flex items-center gap-2 text-muted-foreground">
-                    <User class="w-3.5 h-3.5" />
-                    <span class="truncate max-w-[100px]">{{ item.user?.name }}</span>
-                 </div>
-                 <div class="flex items-center gap-1.5 text-muted-foreground/60">
-                    <Calendar class="w-3.5 h-3.5" />
-                    {{ new Date(item.created_at).toLocaleDateString() }}
-                 </div>
-              </div>
-           </div>
+      <!-- Arsitek Table -->
+      <div class="bg-card border border-border/60 rounded-2xl shadow-sm overflow-hidden">
+        <Table>
+          <TableHeader class="bg-muted/30">
+            <TableRow>
+              <TableHead class="w-[400px] font-bold text-xs uppercase tracking-wider py-4">Arsitek</TableHead>
+              <TableHead class="font-bold text-xs uppercase tracking-wider">Jumlah Portofolio</TableHead>
+              <TableHead class="font-bold text-xs uppercase tracking-wider">Update Terakhir</TableHead>
+              <TableHead class="text-right font-bold text-xs uppercase tracking-wider">Aksi</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            <TableRow v-for="user in users.data" :key="user.id" class="group hover:bg-muted/5 transition-colors">
+              <TableCell class="py-4">
+                <div class="flex items-center gap-3">
+                  <Avatar class="h-10 w-10 rounded-xl border border-border/60">
+                    <AvatarImage :src="user.avatar_url" />
+                    <AvatarFallback class="bg-primary/5 text-primary font-bold text-xs">
+                      {{ user.name.charAt(0) }}
+                    </AvatarFallback>
+                  </Avatar>
+                  <div class="min-w-0">
+                    <p class="font-bold text-sm text-foreground truncate">{{ user.name }}</p>
+                    <p class="text-xs text-muted-foreground truncate">{{ user.email }}</p>
+                  </div>
+                </div>
+              </TableCell>
+              <TableCell>
+                <div class="flex items-center gap-2">
+                   <div class="px-2.5 py-1 bg-primary/10 text-primary rounded-lg text-xs font-black">
+                      {{ user.portofolios_count }}
+                   </div>
+                   <span class="text-xs font-medium text-muted-foreground">Karya</span>
+                </div>
+              </TableCell>
+              <TableCell class="text-sm text-muted-foreground">
+                {{ user.portofolios_count > 0 ? 'Aktif' : 'Belum ada data' }}
+              </TableCell>
+              <TableCell class="text-right">
+                 <Button asChild variant="ghost" size="sm" class="h-9 px-4 rounded-xl gap-2 hover:bg-primary/5 hover:text-primary group/btn transition-all">
+                    <Link :href="route('admin.portofolio.show', user.id)" class="flex items-center gap-2">
+                       <span class="font-bold text-[10px] uppercase tracking-wider">Lihat Porto</span>
+                       <ArrowRight class="w-4 h-4 group-hover/btn:translate-x-1 transition-transform" />
+                    </Link>
+                 </Button>
+              </TableCell>
+            </TableRow>
+            <TableRow v-if="users.data.length === 0">
+               <TableCell colspan="4" class="py-20 text-center">
+                  <div class="flex flex-col items-center justify-center space-y-3">
+                     <div class="p-4 bg-muted/50 rounded-full">
+                        <User class="w-10 h-10 text-muted-foreground/30" />
+                     </div>
+                     <p class="text-sm font-bold text-muted-foreground">Tidak ada arsitek ditemukan.</p>
+                  </div>
+               </TableCell>
+            </TableRow>
+          </TableBody>
+        </Table>
+        
+        <div v-if="users.links.length > 3" class="px-8 py-4 border-t border-border/40 bg-muted/5">
+           <Pagination :links="users.links" />
         </div>
-      </div>
-
-      <!-- Empty State -->
-      <div v-if="portofolios.data.length === 0" class="bg-card border border-border/60 rounded-2xl py-20 text-center">
-         <div class="flex flex-col items-center justify-center space-y-3">
-            <div class="p-4 bg-muted/50 rounded-full">
-               <Folder class="w-10 h-10 text-muted-foreground/30" />
-            </div>
-            <p class="text-sm font-bold text-muted-foreground">Tidak ada portofolio ditemukan.</p>
-         </div>
-      </div>
-
-      <div v-if="portofolios.links.length > 3" class="mt-8">
-         <Pagination :links="portofolios.links" />
       </div>
     </div>
   </AuthenticatedLayout>

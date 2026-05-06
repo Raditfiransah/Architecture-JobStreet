@@ -22,10 +22,19 @@ class LoginController extends Controller
             'password' => ['required'],
         ]);
 
-        if (Auth::attempt($credentials, $request->boolean('remember'))) {
+        // Tambahkan pengecekan is_active
+        if (Auth::attempt(array_merge($credentials, ['is_active' => true]), $request->boolean('remember'))) {
             $request->session()->regenerate();
 
-            return redirect()->intended(route('lowongan.index'));
+            return redirect()->intended($this->redirectAfterLogin($request));
+        }
+
+        // Cek apakah user ada tapi tidak aktif
+        $user = \App\Models\User::where('email', $request->email)->first();
+        if ($user && ! $user->is_active) {
+            return back()->withErrors([
+                'email' => 'Akun Anda telah dinonaktifkan. Silakan hubungi admin.',
+            ])->onlyInput('email');
         }
 
         return back()->withErrors([

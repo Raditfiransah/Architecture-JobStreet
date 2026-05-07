@@ -111,14 +111,14 @@ class User extends Authenticatable
         return $this->role === 'client';
     }
 
-    public function dashboardRoute()
+    public function dashboardRoute(): string
     {
         return match($this->role) {
-            'admin' => route('admin.dashboard'),
-            'perusahaan' => route('perusahaan.profile'),
-            'client' => route('client.profile'),
-            'arsitek' => route('arsitek.profile'),
-            default => route('home'),
+            'admin'      => 'admin.dashboard',
+            'perusahaan' => 'perusahaan.dashboard',
+            'client'     => 'client.dashboard',
+            'arsitek'    => 'arsitek.dashboard',
+            default      => 'home',
         };
     }
 

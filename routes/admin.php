@@ -12,15 +12,18 @@ use App\Http\Controllers\Admin\SystemController;
 use App\Http\Controllers\Admin\SecurityController;
 use Illuminate\Support\Facades\Route;
 
+// ─── Dashboard Admin (authenticated) ─────────────────────────────────────────
 Route::middleware(['auth', 'verified', 'role:admin'])
     ->prefix('dashboard/admin')
     ->name('admin.')
     ->group(function () {
 
+    // Profil admin
     Route::get('/profil', [\App\Http\Controllers\Admin\ProfilController::class, 'edit'])->name('profil.edit');
     Route::put('/profil', [\App\Http\Controllers\Admin\ProfilController::class, 'update'])->name('profil.update');
     Route::post('/avatar', [\App\Http\Controllers\Admin\ProfilController::class, 'updateAvatar'])->name('profil.avatar');
-    
+
+    // Dashboard utama
     Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
     Route::get('/antrian', [DashboardController::class, 'antrian'])->name('antrian');
 
@@ -33,9 +36,9 @@ Route::middleware(['auth', 'verified', 'role:admin'])
 
     // Moderasi proyek
     Route::get('/proyek', [ProyekController::class, 'index'])->name('proyek.index');
-    Route::get('/proyek/{id}', [ProyekController::class, 'show'])->name('proyek.show');
-    Route::post('/proyek/{id}/setujui', [ProyekController::class, 'setujui'])->name('proyek.setujui');
-    Route::post('/proyek/{id}/tolak', [ProyekController::class, 'tolak'])->name('proyek.tolak');
+    Route::get('/proyek/{proyek}', [ProyekController::class, 'show'])->name('proyek.show');
+    Route::post('/proyek/{proyek}/setujui', [ProyekController::class, 'setujui'])->name('proyek.setujui');
+    Route::post('/proyek/{proyek}/tolak', [ProyekController::class, 'tolak'])->name('proyek.tolak');
 
     // Kelola user
     Route::get('/users', [UserController::class, 'index'])->name('users.index');
@@ -46,17 +49,17 @@ Route::middleware(['auth', 'verified', 'role:admin'])
 
     // Info Hub
     Route::get('/info', [InfoHubController::class, 'index'])->name('info.index');
-    Route::post('/info/{id}/setujui', [InfoHubController::class, 'setujui'])->name('info.setujui');
-    Route::post('/info/{id}/tolak', [InfoHubController::class, 'tolak'])->name('info.tolak');
+    Route::post('/info/{infoHub}/setujui', [InfoHubController::class, 'setujui'])->name('info.setujui');
+    Route::post('/info/{infoHub}/tolak', [InfoHubController::class, 'tolak'])->name('info.tolak');
 
     // Laporan konten
     Route::get('/laporan', [LaporanController::class, 'index'])->name('laporan.index');
-    Route::post('/laporan/{id}/tindak', [LaporanController::class, 'tindak'])->name('laporan.tindak');
+    Route::post('/laporan/{laporan}/tindak', [LaporanController::class, 'tindak'])->name('laporan.tindak');
 
     // Profile Management
     Route::get('/profiles', [ProfileManagementController::class, 'index'])->name('profiles.index');
-    Route::post('/profiles/{type}/{id}/verify', [ProfileManagementController::class, 'verify'])->name('profiles.verify');
-    Route::post('/profiles/{type}/{id}/reject', [ProfileManagementController::class, 'reject'])->name('profiles.reject');
+    Route::post('/profiles/{type}/{profile}/verify', [ProfileManagementController::class, 'verify'])->name('profiles.verify');
+    Route::post('/profiles/{type}/{profile}/reject', [ProfileManagementController::class, 'reject'])->name('profiles.reject');
 
     // Portofolio Management
     Route::get('/portofolio', [PortofolioController::class, 'index'])->name('portofolio.index');

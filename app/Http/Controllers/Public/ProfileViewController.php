@@ -9,60 +9,59 @@ use Inertia\Inertia;
 
 class ProfileViewController extends Controller
 {
-    public function showArsitek(Request $request, string $id)
+    public function showArsitek(Request $request, User $user)
     {
-        $arsitek = User::with('arsitekProfile')
-            ->where('id', $id)
-            ->where('role', 'arsitek')
-            ->firstOrFail();
+        // Pastikan user yang diminta memang role arsitek
+        abort_if($user->role !== 'arsitek', 404);
 
-        // Control what data is sent to the frontend based on the visitor's authentication and role
+        $user->load('arsitekProfile');
+
         $visitor = $request->user();
         $isPublic = !$visitor;
-        $isAdmin = $visitor && $visitor->isAdmin();
+        $isAdmin  = $visitor && $visitor->isAdmin();
 
         // Strip sensitive info if visitor is not logged in
         if ($isPublic) {
-            $arsitek->makeHidden(['email', 'phone', 'location']);
-            if ($arsitek->arsitekProfile) {
-                $arsitek->arsitekProfile->makeHidden(['identity_document_url', 'license_document_url']);
+            $user->makeHidden(['email', 'phone', 'location']);
+            if ($user->arsitekProfile) {
+                $user->arsitekProfile->makeHidden(['identity_document_url', 'license_document_url']);
             }
-        } elseif (!$isAdmin && $arsitek->arsitekProfile) {
+        } elseif (!$isAdmin && $user->arsitekProfile) {
             // Hide sensitive documents from regular users too
-            $arsitek->arsitekProfile->makeHidden(['identity_document_url', 'license_document_url']);
+            $user->arsitekProfile->makeHidden(['identity_document_url', 'license_document_url']);
         }
 
         return Inertia::render('Public/Arsitek/Show', [
-            'arsitek' => $arsitek,
+            'arsitek'  => $user,
             'isPublic' => $isPublic,
-            'isAdmin' => $isAdmin,
+            'isAdmin'  => $isAdmin,
         ]);
     }
 
-    public function showPerusahaan(Request $request, string $id)
+    public function showPerusahaan(Request $request, User $user)
     {
-        $perusahaan = User::with('companyProfile')
-            ->where('id', $id)
-            ->where('role', 'perusahaan')
-            ->firstOrFail();
+        // Pastikan user yang diminta memang role perusahaan
+        abort_if($user->role !== 'perusahaan', 404);
+
+        $user->load('companyProfile');
 
         $visitor = $request->user();
         $isPublic = !$visitor;
-        $isAdmin = $visitor && $visitor->isAdmin();
+        $isAdmin  = $visitor && $visitor->isAdmin();
 
         if ($isPublic) {
-            $perusahaan->makeHidden(['email', 'phone']);
-            if ($perusahaan->companyProfile) {
-                $perusahaan->companyProfile->makeHidden(['identity_document_url']);
+            $user->makeHidden(['email', 'phone']);
+            if ($user->companyProfile) {
+                $user->companyProfile->makeHidden(['identity_document_url']);
             }
-        } elseif (!$isAdmin && $perusahaan->companyProfile) {
-            $perusahaan->companyProfile->makeHidden(['identity_document_url']);
+        } elseif (!$isAdmin && $user->companyProfile) {
+            $user->companyProfile->makeHidden(['identity_document_url']);
         }
 
         return Inertia::render('Public/Perusahaan/Show', [
-            'perusahaan' => $perusahaan,
-            'isPublic' => $isPublic,
-            'isAdmin' => $isAdmin,
+            'perusahaan' => $user,
+            'isPublic'   => $isPublic,
+            'isAdmin'    => $isAdmin,
         ]);
     }
 }

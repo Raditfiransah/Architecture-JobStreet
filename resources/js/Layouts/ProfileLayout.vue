@@ -19,7 +19,8 @@ import {
   History,
   Building2,
   MessageSquare,
-  LayoutDashboard
+  LayoutDashboard,
+  ShieldCheck
 } from "lucide-vue-next";
 import { Button } from "@/Components/UI/ui/button";
 import { 
@@ -85,6 +86,7 @@ const menuItems = computed(() => {
         { label: 'Aktivitas Lamaran', icon: History, href: route('arsitek.lamaran.index') },
       ]},
       { group: 'Mengelola Akun', items: [
+        { label: 'Verifikasi', icon: ShieldCheck, href: route('arsitek.verifikasi.index') },
         { label: 'Pengaturan Akun', icon: Settings, href: route('arsitek.pengaturan.index') },
       ]}
     ];
@@ -100,6 +102,7 @@ const menuItems = computed(() => {
         { label: 'Kandidat', icon: Target, href: route('perusahaan.pelamar.all') },
       ]},
       { group: 'Mengelola Akun', items: [
+        { label: 'Verifikasi', icon: ShieldCheck, href: route('perusahaan.verifikasi.index') },
         { label: 'Pengaturan Akun', icon: Settings, href: route('perusahaan.pengaturan.index') },
       ]}
     ];
@@ -114,6 +117,7 @@ const menuItems = computed(() => {
         { label: 'Proyek', icon: Briefcase, href: route('client.proyek.index') },
       ]},
       { group: 'Mengelola Akun', items: [
+        { label: 'Verifikasi', icon: ShieldCheck, href: route('client.verifikasi.index') },
         { label: 'Pengaturan Akun', icon: Settings, href: route('client.pengaturan.index') },
       ]}
     ];

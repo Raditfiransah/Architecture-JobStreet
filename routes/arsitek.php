@@ -55,6 +55,8 @@ Route::middleware(['auth', 'verified', 'role:arsitek'])
     // Notifikasi
     Route::get('/notifikasi', [NotifikasiController::class, 'index'])->name('notifikasi.index');
     Route::post('/notifikasi/baca-semua', [NotifikasiController::class, 'markAllRead'])->name('notifikasi.readAll');
+    // Verifikasi
+    Route::inertia('/verifikasi', 'Arsitek/Verifikasi')->name('verifikasi.index');
 
     // Pengaturan
     Route::get('/pengaturan', [PengaturanController::class, 'index'])->name('pengaturan.index');

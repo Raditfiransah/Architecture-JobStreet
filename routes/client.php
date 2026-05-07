@@ -43,6 +43,8 @@ Route::middleware(['auth', 'verified', 'role:client'])
     Route::get('/inbox/{thread}', [InboxController::class, 'show'])->name('inbox.show');
     Route::post('/inbox/{thread}', [InboxController::class, 'reply'])->name('inbox.reply');
     */
+    // Verifikasi
+    Route::inertia('/verifikasi', 'Client/Verifikasi')->name('verifikasi.index');
 
     // Pengaturan
     Route::get('/pengaturan', [PengaturanController::class, 'index'])->name('pengaturan.index');

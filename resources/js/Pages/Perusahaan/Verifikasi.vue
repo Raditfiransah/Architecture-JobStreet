@@ -1,6 +1,6 @@
 <script setup>
 import { ref, computed, onMounted, watch } from 'vue';
-import { Head, usePage } from '@inertiajs/vue3';
+import { Head, usePage, router } from '@inertiajs/vue3';
 import ProfileLayout from '@/Layouts/ProfileLayout.vue';
 import { Button } from '@/Components/UI/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/Components/UI/ui/card';
@@ -15,13 +15,14 @@ const user = computed(() => page.props.auth.user);
 const profile = computed(() => user.value.profile || {});
 const isVerified = computed(() => profile.value.verification_status === 'verified');
 const verificationStatus = computed(() => profile.value.verification_status || 'unverified');
+const verificationNote = computed(() => profile.value.verification_note || null);
 
 const isLoading = ref(false);
 
 const form = ref({
     phone: user.value.phone || profile.value.phone || '',
     address: profile.value.location || '',
-    nib_document_url: null,
+    identity_document_url: null,
     npwp_document_url: null,
     akta_document_url: null,
     siup_document_url: null,
@@ -29,7 +30,7 @@ const form = ref({
 });
 
 const fileNames = ref({
-    nib_document_url: '',
+    identity_document_url: '',
     npwp_document_url: '',
     akta_document_url: '',
     siup_document_url: '',
@@ -66,12 +67,13 @@ const handleFileUpload = (e, field) => {
 };
 
 const isFormValid = computed(() => {
+    const hasIdentity = form.value.identity_document_url !== null || profile.value.identity_document_url;
+    const hasNpwp = form.value.npwp_document_url !== null || profile.value.npwp_document_url;
+    const hasAkta = form.value.akta_document_url !== null || profile.value.akta_document_url;
+    const hasSiup = form.value.siup_document_url !== null || profile.value.siup_document_url;
     return form.value.phone.trim() !== '' && 
            form.value.address.trim() !== '' &&
-           form.value.nib_document_url !== null &&
-           form.value.npwp_document_url !== null &&
-           form.value.akta_document_url !== null &&
-           form.value.siup_document_url !== null;
+           hasIdentity && hasNpwp && hasAkta && hasSiup;
 });
 
 const submit = () => {
@@ -82,11 +84,37 @@ const submit = () => {
     
     if (confirm("Pastikan data sudah benar, pengajuan tidak bisa diubah setelah dikirim")) {
         isLoading.value = true;
-        setTimeout(() => {
-            alert("Pengajuan verifikasi perusahaan berhasil dikirim!");
-            localStorage.removeItem('perusahaan_verifikasi_draft');
-            isLoading.value = false;
-        }, 1500);
+        
+        const formData = new FormData();
+        formData.append('phone', form.value.phone);
+        if (form.value.identity_document_url) {
+            formData.append('identity_document', form.value.identity_document_url);
+        }
+        if (form.value.npwp_document_url) {
+            formData.append('npwp_document', form.value.npwp_document_url);
+        }
+        if (form.value.akta_document_url) {
+            formData.append('akta_document', form.value.akta_document_url);
+        }
+        if (form.value.siup_document_url) {
+            formData.append('siup_document', form.value.siup_document_url);
+        }
+        if (form.value.pic_document_url) {
+            formData.append('pic_document', form.value.pic_document_url);
+        }
+
+        router.post(route('perusahaan.verifikasi.submit'), formData, {
+            onSuccess: () => {
+                alert("Pengajuan verifikasi perusahaan berhasil dikirim!");
+                localStorage.removeItem('perusahaan_verifikasi_draft');
+                isLoading.value = false;
+            },
+            onError: (err) => {
+                console.error(err);
+                alert("Terjadi kesalahan saat mengirim pengajuan!");
+                isLoading.value = false;
+            }
+        });
     }
 };
 </script>
@@ -116,6 +144,16 @@ const submit = () => {
                 <AlertTitle>Menunggu Verifikasi</AlertTitle>
                 <AlertDescription>
                     Pengajuan verifikasi perusahaan sedang ditinjau oleh admin. Harap menunggu maksimal 2x24 jam.
+                </AlertDescription>
+            </Alert>
+
+            <Alert v-else-if="verificationStatus === 'rejected'" class="bg-rose-50 text-rose-600 border-rose-200">
+                <AlertCircle class="h-4 w-4 stroke-rose-600" />
+                <AlertTitle>Pengajuan Perusahaan Ditolak</AlertTitle>
+                <AlertDescription>
+                    <p>Pengajuan verifikasi perusahaan Anda ditolak oleh admin.</p>
+                    <p v-if="verificationNote" class="mt-1 font-semibold">Alasan: {{ verificationNote }}</p>
+                    <p class="mt-2">Silakan perbaiki data dan ajukan kembali dokumen legalitas perusahaan Anda di bawah ini.</p>
                 </AlertDescription>
             </Alert>
 
@@ -154,8 +192,8 @@ const submit = () => {
                         <div class="space-y-3">
                             <Label>NIB (Nomor Induk Berusaha) <span class="text-rose-500">*</span></Label>
                             <div class="border-2 border-dashed rounded-xl p-6 text-center hover:bg-muted/50 transition-colors" :class="{'opacity-50 pointer-events-none': isVerified || verificationStatus === 'pending'}">
-                                <input type="file" id="nib" class="hidden" accept=".pdf,.jpg,.jpeg,.png" @change="(e) => handleFileUpload(e, 'nib_document_url')" :disabled="isVerified || verificationStatus === 'pending'">
-                                <label for="nib" class="cursor-pointer flex flex-col items-center gap-3">
+                                <input type="file" id="identity" class="hidden" accept=".pdf,.jpg,.jpeg,.png" @change="(e) => handleFileUpload(e, 'identity_document_url')" :disabled="isVerified || verificationStatus === 'pending'">
+                                <label for="identity" class="cursor-pointer flex flex-col items-center gap-3">
                                     <div class="w-12 h-12 bg-primary/10 text-primary rounded-full flex items-center justify-center">
                                         <Upload class="w-6 h-6" />
                                     </div>
@@ -164,7 +202,7 @@ const submit = () => {
                                         <p class="text-xs text-muted-foreground">PDF, JPG, PNG (Max. 5MB)</p>
                                     </div>
                                 </label>
-                                <p v-if="fileNames.nib_document_url" class="mt-4 text-sm font-bold text-primary">{{ fileNames.nib_document_url }}</p>
+                                <p v-if="fileNames.identity_document_url" class="mt-4 text-sm font-bold text-primary">{{ fileNames.identity_document_url }}</p>
                             </div>
                         </div>
 

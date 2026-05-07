@@ -1,6 +1,6 @@
 <script setup>
 import { ref, computed, onMounted, watch } from 'vue';
-import { Head, usePage } from '@inertiajs/vue3';
+import { Head, usePage, router } from '@inertiajs/vue3';
 import ProfileLayout from '@/Layouts/ProfileLayout.vue';
 import { Button } from '@/Components/UI/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/Components/UI/ui/card';
@@ -14,6 +14,7 @@ const user = computed(() => page.props.auth.user);
 const profile = computed(() => user.value.profile || {});
 const isVerified = computed(() => profile.value.verification_status === 'verified');
 const verificationStatus = computed(() => profile.value.verification_status || 'unverified');
+const verificationNote = computed(() => profile.value.verification_note || null);
 
 const isLoading = ref(false);
 
@@ -57,9 +58,9 @@ const handleFileUpload = (e, field) => {
 };
 
 const isFormValid = computed(() => {
-    return form.value.phone.trim() !== '' && 
-           form.value.identity_document_url !== null && 
-           form.value.license_document_url !== null;
+    const hasIdentity = form.value.identity_document_url !== null || profile.value.identity_document_url;
+    const hasLicense = form.value.license_document_url !== null || profile.value.license_document_url;
+    return form.value.phone.trim() !== '' && hasIdentity && hasLicense;
 });
 
 const submit = () => {
@@ -70,11 +71,28 @@ const submit = () => {
     
     if (confirm("Pastikan data sudah benar, pengajuan tidak bisa diubah setelah dikirim")) {
         isLoading.value = true;
-        setTimeout(() => {
-            alert("Pengajuan verifikasi berhasil dikirim!");
-            localStorage.removeItem('arsitek_verifikasi_draft');
-            isLoading.value = false;
-        }, 1500);
+        
+        const formData = new FormData();
+        formData.append('phone', form.value.phone);
+        if (form.value.identity_document_url) {
+            formData.append('identity_document', form.value.identity_document_url);
+        }
+        if (form.value.license_document_url) {
+            formData.append('license_document', form.value.license_document_url);
+        }
+
+        router.post(route('arsitek.verifikasi.submit'), formData, {
+            onSuccess: () => {
+                alert("Pengajuan verifikasi berhasil dikirim!");
+                localStorage.removeItem('arsitek_verifikasi_draft');
+                isLoading.value = false;
+            },
+            onError: (err) => {
+                console.error(err);
+                alert("Terjadi kesalahan saat mengirim pengajuan!");
+                isLoading.value = false;
+            }
+        });
     }
 };
 </script>
@@ -104,6 +122,16 @@ const submit = () => {
                 <AlertTitle>Menunggu Verifikasi</AlertTitle>
                 <AlertDescription>
                     Pengajuan verifikasi Anda sedang ditinjau oleh admin. Harap menunggu maksimal 2x24 jam.
+                </AlertDescription>
+            </Alert>
+
+            <Alert v-else-if="verificationStatus === 'rejected'" class="bg-rose-50 text-rose-600 border-rose-200">
+                <AlertCircle class="h-4 w-4 stroke-rose-600" />
+                <AlertTitle>Pengajuan Ditolak</AlertTitle>
+                <AlertDescription>
+                    <p>Pengajuan verifikasi Anda ditolak oleh admin.</p>
+                    <p v-if="verificationNote" class="mt-1 font-semibold">Alasan: {{ verificationNote }}</p>
+                    <p class="mt-2">Silakan perbaiki data dan ajukan kembali dokumen verifikasi Anda di bawah ini.</p>
                 </AlertDescription>
             </Alert>
 

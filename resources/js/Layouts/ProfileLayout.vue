@@ -36,10 +36,7 @@ import VerificationBadge from '@/Components/Profile/VerificationBadge.vue';
 const page = usePage();
 const user = computed(() => page.props.auth.user || {});
 const profile = computed(() => {
-  if (user.value.role === 'arsitek') return user.value.arsitek_profile || {};
-  if (user.value.role === 'perusahaan') return user.value.company_profile || {};
-  if (user.value.role === 'client') return user.value.client_profile || {};
-  return {};
+  return user.value.profile || {};
 });
 
 const verificationStatus = computed(() => profile.value?.verification_status || 'unverified');
@@ -160,7 +157,7 @@ const logout = () => {
                      </p>
                      <!-- Detail Info Mobile -->
                     <div class="mt-4 flex flex-col gap-2 md:hidden">
-                      <div v-if="user.role !== 'client' && user.role !== 'admin'" class="flex items-center gap-2 overflow-hidden">
+                      <div v-if="user.role !== 'admin'" class="flex items-center gap-2 overflow-hidden">
                         <VerificationBadge :status="verificationStatus" :note="verificationNote" />
                       </div>
                       
@@ -182,7 +179,7 @@ const logout = () => {
 
                 <!-- Action Button & Detail Desktop -->
                 <div class="hidden md:flex flex-col items-end gap-3 shrink-0 mt-4">
-                  <div v-if="user.role !== 'client' && user.role !== 'admin'" class="flex items-center justify-end w-full">
+                  <div v-if="user.role !== 'admin'" class="flex items-center justify-end w-full">
                     <VerificationBadge :status="verificationStatus" :note="verificationNote" />
                   </div>
                   <div class="flex items-center gap-2 text-slate-600 text-xs">

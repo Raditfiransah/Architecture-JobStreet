@@ -32,6 +32,7 @@ class ProfileManagementController extends Controller
         $profile = match($type) {
             'company' => CompanyProfile::findOrFail($id),
             'arsitek' => ArsitekProfile::findOrFail($id),
+            'client' => ClientProfile::findOrFail($id),
             default => abort(404),
         };
 
@@ -41,20 +42,53 @@ class ProfileManagementController extends Controller
             'verification_note' => $request->note
         ]);
 
+        // Audit Log
+        \App\Models\AuditLog::create([
+            'admin_id' => auth()->id(),
+            'action' => 'verify_profile',
+            'user_id' => $profile->user_id,
+            'details' => json_encode([
+                'profile_type' => $type,
+                'profile_id' => $profile->id,
+                'verification_note' => $request->note,
+            ]),
+            'ip_address' => $request->ip(),
+            'user_agent' => $request->userAgent(),
+        ]);
+
         return back()->with('message', 'Profil berhasil diverifikasi.');
     }
 
     public function reject(Request $request, $type, $id)
     {
+        $request->validate([
+            'note' => 'required|string|min:5'
+        ]);
+
         $profile = match($type) {
             'company' => CompanyProfile::findOrFail($id),
             'arsitek' => ArsitekProfile::findOrFail($id),
+            'client' => ClientProfile::findOrFail($id),
             default => abort(404),
         };
 
         $profile->update([
             'verification_status' => 'rejected',
             'verification_note' => $request->note
+        ]);
+
+        // Audit Log
+        \App\Models\AuditLog::create([
+            'admin_id' => auth()->id(),
+            'action' => 'reject_profile',
+            'user_id' => $profile->user_id,
+            'details' => json_encode([
+                'profile_type' => $type,
+                'profile_id' => $profile->id,
+                'verification_note' => $request->note,
+            ]),
+            'ip_address' => $request->ip(),
+            'user_agent' => $request->userAgent(),
         ]);
 
         return back()->with('message', 'Profil berhasil ditolak.');

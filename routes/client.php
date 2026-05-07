@@ -45,6 +45,7 @@ Route::middleware(['auth', 'verified', 'role:client'])
     */
     // Verifikasi
     Route::inertia('/verifikasi', 'Client/Verifikasi')->name('verifikasi.index');
+    Route::post('/verifikasi', [\App\Http\Controllers\User\VerificationController::class, 'submitClient'])->name('verifikasi.submit');
 
     // Pengaturan
     Route::get('/pengaturan', [PengaturanController::class, 'index'])->name('pengaturan.index');

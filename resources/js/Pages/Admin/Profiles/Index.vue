@@ -55,19 +55,56 @@ const getStatusBadge = (status) => {
   return statuses[status] || { label: status, class: "bg-muted text-muted-foreground" };
 };
 
+const viewedDocuments = ref({});
+
+const isDocViewed = (profileId, docType) => {
+  return !!(viewedDocuments.value[profileId] && viewedDocuments.value[profileId][docType]);
+};
+
+const viewDoc = (profileId, docType, url) => {
+  if (!viewedDocuments.value[profileId]) {
+    viewedDocuments.value[profileId] = {};
+  }
+  viewedDocuments.value[profileId][docType] = true;
+  window.open(url, '_blank');
+};
+
+const allDocumentsViewed = (profile) => {
+  // If already verified or rejected, no need to check
+  if (profile.verification_status === 'verified') return true;
+
+  const profileId = profile.id;
+  const viewed = viewedDocuments.value[profileId] || {};
+  
+  if (type.value === 'arsitek') {
+    return !!(viewed['identity'] && viewed['license']);
+  } else if (type.value === 'company') {
+    const reqs = ['identity', 'npwp', 'akta', 'siup'];
+    if (profile.pic_document_url) reqs.push('pic');
+    return reqs.every(r => !!viewed[r]);
+  } else if (type.value === 'client') {
+    const reqs = ['identity'];
+    if (profile.domicile_document_url) reqs.push('domicile');
+    if (profile.project_ownership_document_url) reqs.push('project_ownership');
+    return reqs.every(r => !!viewed[r]);
+  }
+  return false;
+};
+
 const handleVerify = (id) => {
   if (confirm("Verifikasi profil ini?")) {
-    router.post(route('admin.profiles.verify', { type: type.value, id }));
+    router.post(route('admin.profiles.verify', { type: type.value, profile: id }));
   }
 };
 
 const handleReject = (id) => {
-  const note = prompt("Alasan penolakan:");
-  if (note) {
-    router.post(route('admin.profiles.reject', { type: type.value, id }), { note });
+  const note = prompt("Alasan penolakan (wajib diisi, minimal 5 karakter):");
+  if (note && note.trim().length >= 5) {
+    router.post(route('admin.profiles.reject', { type: type.value, profile: id }), { note });
+  } else if (note) {
+    alert("Alasan penolakan wajib diisi minimal 5 karakter!");
   }
-};
-</script>
+};</script>
 
 <template>
   <Head title="Moderasi Profil" />
@@ -141,12 +178,128 @@ const handleReject = (id) => {
                 </Badge>
               </TableCell>
               <TableCell>
-                 <div class="flex items-center gap-2">
-                    <a v-if="profile.identity_document_url" :href="profile.identity_document_url" target="_blank" class="flex items-center gap-1.5 text-xs font-bold text-primary hover:underline">
-                       <ExternalLink class="w-3.5 h-3.5" />
-                       Lihat Dokumen
-                    </a>
-                    <span v-else class="text-xs text-muted-foreground font-medium italic">Belum Diunggah</span>
+                 <div class="flex flex-col gap-1.5 py-1">
+                    <!-- Arsitek documents -->
+                    <template v-if="type === 'arsitek'">
+                       <button 
+                         v-if="profile.identity_document_url"
+                         @click="viewDoc(profile.id, 'identity', profile.identity_document_url)"
+                         class="flex items-center gap-2 text-xs font-bold text-left hover:underline text-primary"
+                       >
+                          <ExternalLink class="w-3.5 h-3.5" />
+                          KTP / Identitas Diri
+                          <Badge v-if="isDocViewed(profile.id, 'identity')" variant="outline" class="text-[9px] px-1.5 py-0 bg-emerald-50 text-emerald-600 border-emerald-200">Dilihat</Badge>
+                          <Badge v-else variant="outline" class="text-[9px] px-1.5 py-0 bg-orange-50 text-orange-600 border-orange-200">Belum Dilihat</Badge>
+                       </button>
+                       <span v-else class="text-xs text-muted-foreground italic">KTP: Belum Diunggah</span>
+
+                       <button 
+                         v-if="profile.license_document_url"
+                         @click="viewDoc(profile.id, 'license', profile.license_document_url)"
+                         class="flex items-center gap-2 text-xs font-bold text-left hover:underline text-primary"
+                       >
+                          <ExternalLink class="w-3.5 h-3.5" />
+                          Sertifikat STRA / Profesi
+                          <Badge v-if="isDocViewed(profile.id, 'license')" variant="outline" class="text-[9px] px-1.5 py-0 bg-emerald-50 text-emerald-600 border-emerald-200">Dilihat</Badge>
+                          <Badge v-else variant="outline" class="text-[9px] px-1.5 py-0 bg-orange-50 text-orange-600 border-orange-200">Belum Dilihat</Badge>
+                       </button>
+                       <span v-else class="text-xs text-muted-foreground italic">Sertifikat Profesi: Belum Diunggah</span>
+                    </template>
+
+                    <!-- Perusahaan documents -->
+                    <template v-else-if="type === 'company'">
+                       <button 
+                         v-if="profile.identity_document_url"
+                         @click="viewDoc(profile.id, 'identity', profile.identity_document_url)"
+                         class="flex items-center gap-2 text-xs font-bold text-left hover:underline text-primary"
+                       >
+                          <ExternalLink class="w-3.5 h-3.5" />
+                          KTP / Identitas Diri
+                          <Badge v-if="isDocViewed(profile.id, 'identity')" variant="outline" class="text-[9px] px-1.5 py-0 bg-emerald-50 text-emerald-600 border-emerald-200">Dilihat</Badge>
+                          <Badge v-else variant="outline" class="text-[9px] px-1.5 py-0 bg-orange-50 text-orange-600 border-orange-200">Belum Dilihat</Badge>
+                       </button>
+
+                       <button 
+                         v-if="profile.npwp_document_url"
+                         @click="viewDoc(profile.id, 'npwp', profile.npwp_document_url)"
+                         class="flex items-center gap-2 text-xs font-bold text-left hover:underline text-primary"
+                       >
+                          <ExternalLink class="w-3.5 h-3.5" />
+                          NPWP Perusahaan
+                          <Badge v-if="isDocViewed(profile.id, 'npwp')" variant="outline" class="text-[9px] px-1.5 py-0 bg-emerald-50 text-emerald-600 border-emerald-200">Dilihat</Badge>
+                          <Badge v-else variant="outline" class="text-[9px] px-1.5 py-0 bg-orange-50 text-orange-600 border-orange-200">Belum Dilihat</Badge>
+                       </button>
+
+                       <button 
+                         v-if="profile.akta_document_url"
+                         @click="viewDoc(profile.id, 'akta', profile.akta_document_url)"
+                         class="flex items-center gap-2 text-xs font-bold text-left hover:underline text-primary"
+                       >
+                          <ExternalLink class="w-3.5 h-3.5" />
+                          Akta Pendirian
+                          <Badge v-if="isDocViewed(profile.id, 'akta')" variant="outline" class="text-[9px] px-1.5 py-0 bg-emerald-50 text-emerald-600 border-emerald-200">Dilihat</Badge>
+                          <Badge v-else variant="outline" class="text-[9px] px-1.5 py-0 bg-orange-50 text-orange-600 border-orange-200">Belum Dilihat</Badge>
+                       </button>
+
+                       <button 
+                         v-if="profile.siup_document_url"
+                         @click="viewDoc(profile.id, 'siup', profile.siup_document_url)"
+                         class="flex items-center gap-2 text-xs font-bold text-left hover:underline text-primary"
+                       >
+                          <ExternalLink class="w-3.5 h-3.5" />
+                          SIUP / Izin Usaha
+                          <Badge v-if="isDocViewed(profile.id, 'siup')" variant="outline" class="text-[9px] px-1.5 py-0 bg-emerald-50 text-emerald-600 border-emerald-200">Dilihat</Badge>
+                          <Badge v-else variant="outline" class="text-[9px] px-1.5 py-0 bg-orange-50 text-orange-600 border-orange-200">Belum Dilihat</Badge>
+                       </button>
+
+                       <button 
+                         v-if="profile.pic_document_url"
+                         @click="viewDoc(profile.id, 'pic', profile.pic_document_url)"
+                         class="flex items-center gap-2 text-xs font-bold text-left hover:underline text-primary"
+                       >
+                          <ExternalLink class="w-3.5 h-3.5" />
+                          Surat Penunjukan PIC
+                          <Badge v-if="isDocViewed(profile.id, 'pic')" variant="outline" class="text-[9px] px-1.5 py-0 bg-emerald-50 text-emerald-600 border-emerald-200">Dilihat</Badge>
+                          <Badge v-else variant="outline" class="text-[9px] px-1.5 py-0 bg-orange-50 text-orange-600 border-orange-200">Belum Dilihat</Badge>
+                       </button>
+                    </template>
+
+                    <!-- Client documents -->
+                    <template v-else-if="type === 'client'">
+                       <button 
+                         v-if="profile.identity_document_url"
+                         @click="viewDoc(profile.id, 'identity', profile.identity_document_url)"
+                         class="flex items-center gap-2 text-xs font-bold text-left hover:underline text-primary"
+                       >
+                          <ExternalLink class="w-3.5 h-3.5" />
+                          KTP / Identitas Diri
+                          <Badge v-if="isDocViewed(profile.id, 'identity')" variant="outline" class="text-[9px] px-1.5 py-0 bg-emerald-50 text-emerald-600 border-emerald-200">Dilihat</Badge>
+                          <Badge v-else variant="outline" class="text-[9px] px-1.5 py-0 bg-orange-50 text-orange-600 border-orange-200">Belum Dilihat</Badge>
+                       </button>
+                       <span v-else class="text-xs text-muted-foreground italic">KTP: Belum Diunggah</span>
+
+                       <button 
+                         v-if="profile.domicile_document_url"
+                         @click="viewDoc(profile.id, 'domicile', profile.domicile_document_url)"
+                         class="flex items-center gap-2 text-xs font-bold text-left hover:underline text-primary"
+                       >
+                          <ExternalLink class="w-3.5 h-3.5" />
+                          Domisili
+                          <Badge v-if="isDocViewed(profile.id, 'domicile')" variant="outline" class="text-[9px] px-1.5 py-0 bg-emerald-50 text-emerald-600 border-emerald-200">Dilihat</Badge>
+                          <Badge v-else variant="outline" class="text-[9px] px-1.5 py-0 bg-orange-50 text-orange-600 border-orange-200">Belum Dilihat</Badge>
+                       </button>
+
+                       <button 
+                         v-if="profile.project_ownership_document_url"
+                         @click="viewDoc(profile.id, 'project_ownership', profile.project_ownership_document_url)"
+                         class="flex items-center gap-2 text-xs font-bold text-left hover:underline text-primary"
+                       >
+                          <ExternalLink class="w-3.5 h-3.5" />
+                          Bukti Kepemilikan Lahan
+                          <Badge v-if="isDocViewed(profile.id, 'project_ownership')" variant="outline" class="text-[9px] px-1.5 py-0 bg-emerald-50 text-emerald-600 border-emerald-200">Dilihat</Badge>
+                          <Badge v-else variant="outline" class="text-[9px] px-1.5 py-0 bg-orange-50 text-orange-600 border-orange-200">Belum Dilihat</Badge>
+                       </button>
+                    </template>
                  </div>
               </TableCell>
               <TableCell>
@@ -161,12 +314,16 @@ const handleReject = (id) => {
               </TableCell>
               <TableCell class="text-right">
                 <div class="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                   <div v-if="profile.verification_status !== 'verified' && !allDocumentsViewed(profile)" class="text-[10px] text-orange-500 font-bold uppercase tracking-wider px-2 py-1">
+                      Wajib Buka Semua Dokumen
+                   </div>
                    <Button 
                     v-if="profile.verification_status !== 'verified'"
+                    :disabled="!allDocumentsViewed(profile)"
                     @click="handleVerify(profile.id)"
                     variant="ghost" 
                     size="sm" 
-                    class="h-9 px-3 rounded-xl gap-2 text-emerald-600 hover:bg-emerald-50 hover:text-emerald-700"
+                    class="h-9 px-3 rounded-xl gap-2 text-emerald-600 hover:bg-emerald-50 hover:text-emerald-700 disabled:opacity-50 disabled:cursor-not-allowed"
                    >
                       <CheckCircle2 class="w-4 h-4" />
                       <span class="font-bold text-[10px] uppercase tracking-wider">Setujui</span>

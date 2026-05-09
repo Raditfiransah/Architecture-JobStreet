@@ -20,9 +20,14 @@ class VerificationController extends Controller
         $hasExistingLicense = $profile && $profile->license_document_url;
 
         $request->validate([
-            'phone' => 'required|string|max:20',
+            'phone' => [
+                'required', 'string', 'max:20',
+                \Illuminate\Validation\Rule::unique('users', 'phone')->ignore($user->id),
+            ],
             'identity_document' => ($hasExistingIdentity ? 'nullable' : 'required') . '|file|mimes:pdf,jpg,jpeg,png|max:5120',
             'license_document' => ($hasExistingLicense ? 'nullable' : 'required') . '|file|mimes:pdf,jpg,jpeg,png|max:5120',
+        ], [
+            'phone.unique' => 'Nomor telepon ini sudah digunakan oleh akun lain.',
         ]);
 
         $user->update(['phone' => $request->phone]);
@@ -64,12 +69,17 @@ class VerificationController extends Controller
         $hasSiup = $profile && $profile->siup_document_url;
 
         $request->validate([
-            'phone' => 'required|string|max:20',
+            'phone' => [
+                'required', 'string', 'max:20',
+                \Illuminate\Validation\Rule::unique('users', 'phone')->ignore($user->id),
+            ],
             'identity_document' => ($hasIdentity ? 'nullable' : 'required') . '|file|mimes:pdf,jpg,jpeg,png|max:5120',
             'npwp_document' => ($hasNpwp ? 'nullable' : 'required') . '|file|mimes:pdf,jpg,jpeg,png|max:5120',
             'akta_document' => ($hasAkta ? 'nullable' : 'required') . '|file|mimes:pdf,jpg,jpeg,png|max:5120',
             'siup_document' => ($hasSiup ? 'nullable' : 'required') . '|file|mimes:pdf,jpg,jpeg,png|max:5120',
             'pic_document' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:5120',
+        ], [
+            'phone.unique' => 'Nomor telepon ini sudah digunakan oleh akun lain.',
         ]);
 
         $user->update(['phone' => $request->phone]);
@@ -129,10 +139,15 @@ class VerificationController extends Controller
         $hasIdentity = $profile && $profile->identity_document_url;
 
         $request->validate([
-            'phone' => 'required|string|max:20',
+            'phone' => [
+                'required', 'string', 'max:20',
+                \Illuminate\Validation\Rule::unique('users', 'phone')->ignore($user->id),
+            ],
             'identity_document' => ($hasIdentity ? 'nullable' : 'required') . '|file|mimes:pdf,jpg,jpeg,png|max:5120',
             'domicile_document' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:5120',
             'project_ownership_document' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:5120',
+        ], [
+            'phone.unique' => 'Nomor telepon ini sudah digunakan oleh akun lain.',
         ]);
 
         $user->update(['phone' => $request->phone]);

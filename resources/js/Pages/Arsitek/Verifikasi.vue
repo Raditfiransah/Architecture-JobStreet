@@ -8,6 +8,7 @@ import { Label } from '@/Components/UI/ui/label';
 import { Input } from '@/Components/UI/ui/input';
 import { AlertCircle, CheckCircle2, Upload, Loader2, Save } from 'lucide-vue-next';
 import { Alert, AlertTitle, AlertDescription } from '@/Components/UI/ui/alert';
+import PhoneInput from '@/Components/PhoneInput.vue';
 
 const page = usePage();
 const user = computed(() => page.props.auth.user);
@@ -17,6 +18,7 @@ const verificationStatus = computed(() => profile.value.verification_status || '
 const verificationNote = computed(() => profile.value.verification_note || null);
 
 const isLoading = ref(false);
+const errors = ref({});
 
 const form = ref({
     phone: user.value.phone || '',
@@ -47,6 +49,7 @@ watch(() => form.value.phone, (newVal) => {
     if (!isVerified.value) {
         localStorage.setItem('arsitek_verifikasi_draft', JSON.stringify({ phone: newVal }));
     }
+    errors.value.phone = null;
 });
 
 const handleFileUpload = (e, field) => {
@@ -71,6 +74,7 @@ const submit = () => {
     
     if (confirm("Pastikan data sudah benar, pengajuan tidak bisa diubah setelah dikirim")) {
         isLoading.value = true;
+        errors.value = {};
         
         const formData = new FormData();
         formData.append('phone', form.value.phone);
@@ -83,13 +87,11 @@ const submit = () => {
 
         router.post(route('arsitek.verifikasi.submit'), formData, {
             onSuccess: () => {
-                alert("Pengajuan verifikasi berhasil dikirim!");
                 localStorage.removeItem('arsitek_verifikasi_draft');
                 isLoading.value = false;
             },
             onError: (err) => {
-                console.error(err);
-                alert("Terjadi kesalahan saat mengirim pengajuan!");
+                errors.value = err;
                 isLoading.value = false;
             }
         });
@@ -145,11 +147,10 @@ const submit = () => {
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div class="space-y-3">
                             <Label for="phone">Nomor Kontak Aktif <span class="text-rose-500">*</span></Label>
-                            <Input 
-                                id="phone" 
-                                v-model="form.phone" 
-                                placeholder="Contoh: 081234567890" 
+                            <PhoneInput
+                                v-model="form.phone"
                                 :disabled="isVerified || verificationStatus === 'pending'"
+                                :error="errors.phone"
                             />
                         </div>
                         <div class="space-y-3">

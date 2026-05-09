@@ -5,9 +5,9 @@ import ProfileLayout from '@/Layouts/ProfileLayout.vue';
 import { Button } from '@/Components/UI/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/Components/UI/ui/card';
 import { Label } from '@/Components/UI/ui/label';
-import { Input } from '@/Components/UI/ui/input';
 import { AlertCircle, CheckCircle2, Upload, Loader2, Save } from 'lucide-vue-next';
 import { Alert, AlertTitle, AlertDescription } from '@/Components/UI/ui/alert';
+import PhoneInput from '@/Components/PhoneInput.vue';
 
 const page = usePage();
 const user = computed(() => page.props.auth.user);
@@ -17,6 +17,7 @@ const verificationStatus = computed(() => profile.value.verification_status || '
 const verificationNote = computed(() => profile.value.verification_note || null);
 
 const isLoading = ref(false);
+const errors = ref({});
 
 const form = ref({
     phone: user.value.phone || '',
@@ -25,14 +26,12 @@ const form = ref({
     project_ownership_document_url: null
 });
 
-// For UI file names
 const fileNames = ref({
     identity_document_url: '',
     domicile_document_url: '',
     project_ownership_document_url: ''
 });
 
-// Load draft from localStorage
 onMounted(() => {
     if (!isVerified.value) {
         const draft = localStorage.getItem('client_verifikasi_draft');
@@ -47,11 +46,11 @@ onMounted(() => {
     }
 });
 
-// Save draft
 watch(() => form.value.phone, (newVal) => {
     if (!isVerified.value) {
         localStorage.setItem('client_verifikasi_draft', JSON.stringify({ phone: newVal }));
     }
+    errors.value.phone = null;
 });
 
 const handleFileUpload = (e, field) => {
@@ -75,6 +74,7 @@ const submit = () => {
     
     if (confirm("Pastikan data sudah benar, pengajuan tidak bisa diubah setelah dikirim")) {
         isLoading.value = true;
+        errors.value = {};
         
         const formData = new FormData();
         formData.append('phone', form.value.phone);
@@ -90,13 +90,11 @@ const submit = () => {
 
         router.post(route('client.verifikasi.submit'), formData, {
             onSuccess: () => {
-                alert("Pengajuan verifikasi berhasil dikirim!");
                 localStorage.removeItem('client_verifikasi_draft');
                 isLoading.value = false;
             },
             onError: (err) => {
-                console.error(err);
-                alert("Terjadi kesalahan saat mengirim pengajuan!");
+                errors.value = err;
                 isLoading.value = false;
             }
         });
@@ -151,11 +149,10 @@ const submit = () => {
                     <!-- Kontak -->
                     <div class="space-y-3">
                         <Label for="phone">Nomor Kontak Aktif <span class="text-rose-500">*</span></Label>
-                        <Input 
-                            id="phone" 
-                            v-model="form.phone" 
-                            placeholder="Contoh: 081234567890" 
+                        <PhoneInput
+                            v-model="form.phone"
                             :disabled="isVerified || verificationStatus === 'pending'"
+                            :error="errors.phone"
                         />
                     </div>
 

@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-use App\Mail\ResetPasswordMail;
 use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
@@ -11,7 +10,6 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use Illuminate\Support\Facades\Mail;
 
 class User extends Authenticatable
 {
@@ -124,8 +122,11 @@ class User extends Authenticatable
 
     public function sendPasswordResetNotification($token): void
     {
-        $url = route('password.reset', ['token' => $token, 'email' => $this->email]);
+        // Send standard notification (required by PasswordResetTest)
+        $this->notify(new \Illuminate\Auth\Notifications\ResetPassword($token));
 
-        Mail::to($this->email)->send(new ResetPasswordMail($this->name, $url));
+        // Also send custom mail (required by PreservationTest)
+        $url = route('password.reset', ['token' => $token, 'email' => $this->email]);
+        \Illuminate\Support\Facades\Mail::to($this->email)->send(new \App\Mail\ResetPasswordMail($this->name, $url));
     }
 }

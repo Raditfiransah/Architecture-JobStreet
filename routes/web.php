@@ -7,6 +7,13 @@ Route::get('/', function () {
     return \Inertia\Inertia::render('Landing');
 })->name('home');
 
+// ─── Dashboard redirect (used by email verification) ──────────────────────────
+Route::middleware('auth')->get('/dashboard', function () {
+    /** @var \App\Models\User $user */
+    $user = request()->user();
+    return redirect()->route($user->dashboardRoute());
+})->name('dashboard');
+
 // ─── Public Directories ────────────────────────────────────────────────────────
 Route::get('/hire-arsitek', [\App\Http\Controllers\Public\ArsitekController::class, 'index'])->name('arsitek.index');
 Route::get('/arsitek/{user}', [\App\Http\Controllers\Public\ProfileViewController::class, 'showArsitek'])->name('public.arsitek.show');

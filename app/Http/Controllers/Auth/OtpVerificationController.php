@@ -23,6 +23,7 @@ class OtpVerificationController extends Controller
         return \Inertia\Inertia::render('Auth/VerifyEmail', [
             'status' => session('status'),
             'email' => $request->user()->email,
+            'title' => 'Kode Verifikasi',
         ]);
     }
 

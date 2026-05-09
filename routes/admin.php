@@ -46,6 +46,8 @@ Route::middleware(['auth', 'verified', 'role:admin'])
 
     // Info Hub
     Route::get('/info', [InfoHubController::class, 'index'])->name('info.index');
+    Route::get('/info/create', [InfoHubController::class, 'create'])->name('info.create');
+    Route::post('/info', [InfoHubController::class, 'store'])->name('info.store');
     Route::post('/info/{id}/setujui', [InfoHubController::class, 'setujui'])->name('info.setujui');
     Route::post('/info/{id}/tolak', [InfoHubController::class, 'tolak'])->name('info.tolak');
 

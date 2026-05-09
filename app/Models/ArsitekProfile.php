@@ -23,7 +23,7 @@ final class ArsitekProfile extends Model
         'years_experience',
         // Education
         'is_student',
-        'education_institution',
+        'school',
         'degree_type',
         // Location & employment
         'status_pekerjaan',

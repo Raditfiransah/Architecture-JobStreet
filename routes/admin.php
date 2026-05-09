@@ -58,6 +58,7 @@ Route::middleware(['auth', 'verified', 'role:admin'])
 
     // Profile Management
     Route::get('/profiles', [ProfileManagementController::class, 'index'])->name('profiles.index');
+    Route::get('/profiles/{type}/{profile}', [ProfileManagementController::class, 'show'])->name('profiles.show');
     Route::post('/profiles/{type}/{profile}/verify', [ProfileManagementController::class, 'verify'])->name('profiles.verify');
     Route::post('/profiles/{type}/{profile}/reject', [ProfileManagementController::class, 'reject'])->name('profiles.reject');
 

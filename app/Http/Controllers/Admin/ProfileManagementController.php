@@ -11,6 +11,21 @@ use Inertia\Inertia;
 
 class ProfileManagementController extends Controller
 {
+    public function show($type, $id)
+    {
+        $profile = match($type) {
+            'company' => CompanyProfile::with('user')->findOrFail($id),
+            'arsitek' => ArsitekProfile::with('user')->findOrFail($id),
+            'client'  => ClientProfile::with('user')->findOrFail($id),
+            default   => abort(404),
+        };
+
+        return Inertia::render('Admin/Profiles/Show', [
+            'profile' => $profile,
+            'type'    => $type,
+        ]);
+    }
+
     public function index(Request $request)
     {
         $type = $request->type ?: 'company';

@@ -181,6 +181,7 @@ const submit = () => {
                                 {{ fileNames.identity_document_url }}
                             </p>
                         </div>
+                        <p v-if="errors.identity_document" class="text-sm text-rose-500">{{ errors.identity_document }}</p>
                     </div>
 
                     <!-- Domisili -->
@@ -208,6 +209,7 @@ const submit = () => {
                                 {{ fileNames.domicile_document_url }}
                             </p>
                         </div>
+                        <p v-if="errors.domicile_document" class="text-sm text-rose-500">{{ errors.domicile_document }}</p>
                     </div>
 
                     <!-- Bukti Lahan -->
@@ -235,6 +237,7 @@ const submit = () => {
                                 {{ fileNames.project_ownership_document_url }}
                             </p>
                         </div>
+                        <p v-if="errors.project_ownership_document" class="text-sm text-rose-500">{{ errors.project_ownership_document }}</p>
                     </div>
 
                     <div class="pt-4 flex justify-end" v-if="!isVerified && verificationStatus !== 'pending'">

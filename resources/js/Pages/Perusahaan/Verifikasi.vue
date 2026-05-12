@@ -205,6 +205,7 @@ const submit = () => {
                                 </label>
                                 <p v-if="fileNames.identity_document_url" class="mt-4 text-sm font-bold text-primary">{{ fileNames.identity_document_url }}</p>
                             </div>
+                            <p v-if="errors.identity_document" class="text-sm text-rose-500 mt-1">{{ errors.identity_document }}</p>
                         </div>
 
                         <!-- NPWP -->
@@ -223,6 +224,7 @@ const submit = () => {
                                 </label>
                                 <p v-if="fileNames.npwp_document_url" class="mt-4 text-sm font-bold text-primary">{{ fileNames.npwp_document_url }}</p>
                             </div>
+                            <p v-if="errors.npwp_document" class="text-sm text-rose-500 mt-1">{{ errors.npwp_document }}</p>
                         </div>
 
                         <!-- Akta Pendirian -->
@@ -241,6 +243,7 @@ const submit = () => {
                                 </label>
                                 <p v-if="fileNames.akta_document_url" class="mt-4 text-sm font-bold text-primary">{{ fileNames.akta_document_url }}</p>
                             </div>
+                            <p v-if="errors.akta_document" class="text-sm text-rose-500 mt-1">{{ errors.akta_document }}</p>
                         </div>
 
                         <!-- SIUP -->
@@ -259,6 +262,7 @@ const submit = () => {
                                 </label>
                                 <p v-if="fileNames.siup_document_url" class="mt-4 text-sm font-bold text-primary">{{ fileNames.siup_document_url }}</p>
                             </div>
+                            <p v-if="errors.siup_document" class="text-sm text-rose-500 mt-1">{{ errors.siup_document }}</p>
                         </div>
                     </div>
 
@@ -278,6 +282,7 @@ const submit = () => {
                             </label>
                             <p v-if="fileNames.pic_document_url" class="mt-4 text-sm font-bold text-primary">{{ fileNames.pic_document_url }}</p>
                         </div>
+                        <p v-if="errors.pic_document" class="text-sm text-rose-500 mt-1 text-center">{{ errors.pic_document }}</p>
                     </div>
 
                     <div class="pt-4 flex justify-end" v-if="!isVerified && verificationStatus !== 'pending'">

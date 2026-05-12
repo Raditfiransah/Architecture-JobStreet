@@ -190,6 +190,7 @@ const submit = () => {
                                 {{ fileNames.identity_document_url }}
                             </p>
                         </div>
+                        <p v-if="errors.identity_document" class="text-sm text-rose-500">{{ errors.identity_document }}</p>
                     </div>
 
                     <!-- Sertifikat -->
@@ -217,6 +218,7 @@ const submit = () => {
                                 {{ fileNames.license_document_url }}
                             </p>
                         </div>
+                        <p v-if="errors.license_document" class="text-sm text-rose-500">{{ errors.license_document }}</p>
                     </div>
 
                     <div class="pt-4 flex justify-end" v-if="!isVerified && verificationStatus !== 'pending'">

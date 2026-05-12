@@ -10,10 +10,12 @@ return new class extends Migration
     {
         Schema::create('audit_logs', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('admin_id')->nullable()->constrained('users')->onDelete('set null');
             $table->foreignId('user_id')->nullable()->constrained('users')->onDelete('cascade');
-            $table->foreignId('target_user_id')->nullable()->constrained('users')->onDelete('cascade');
             $table->string('action');
             $table->text('details')->nullable();
+            $table->string('ip_address', 45)->nullable();
+            $table->text('user_agent')->nullable();
             $table->timestamps();
         });
     }

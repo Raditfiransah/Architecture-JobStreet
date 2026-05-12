@@ -31,6 +31,7 @@ import Pagination from "@/Components/Pagination.vue";
 
 const props = defineProps({
   profiles: Object,
+  pendingSubmissions: Array,
   filters: Object,
 });
 
@@ -71,6 +72,15 @@ const docCount = (profile) => {
   ];
   return fields.filter(Boolean).length;
 };
+
+const roleLabel = (type) => {
+  const map = {
+    company: "Perusahaan",
+    arsitek: "Arsitek",
+    client: "Client",
+  };
+  return map[type] || type;
+};
 </script>
 
 <template>
@@ -82,6 +92,76 @@ const docCount = (profile) => {
       <div>
         <h1 class="text-3xl font-bold tracking-tight text-foreground">Moderasi Profil</h1>
         <p class="text-muted-foreground mt-1">Klik nama pengguna untuk melihat dokumen dan melakukan verifikasi.</p>
+      </div>
+
+      <!-- Pengajuan Verifikasi Terbaru (New Table) -->
+      <div v-if="pendingSubmissions && pendingSubmissions.length > 0" class="space-y-4">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-2">
+            <div class="p-2 bg-orange-500/10 rounded-lg">
+              <Clock class="w-5 h-5 text-orange-500" />
+            </div>
+            <h2 class="text-xl font-bold tracking-tight text-foreground">Pengajuan Verifikasi Terbaru</h2>
+          </div>
+          <Badge variant="outline" class="bg-orange-500/10 text-orange-500 border-orange-500/20 font-bold px-3 py-1">
+            {{ pendingSubmissions.length }} Menunggu
+          </Badge>
+        </div>
+
+        <div class="bg-card border-2 border-orange-100 rounded-2xl shadow-sm overflow-hidden">
+          <Table>
+            <TableHeader class="bg-orange-50/50">
+              <TableRow>
+                <TableHead class="font-bold text-xs uppercase tracking-wider py-4">Profil & Peran</TableHead>
+                <TableHead class="font-bold text-xs uppercase tracking-wider">Update Terakhir</TableHead>
+                <TableHead class="font-bold text-xs uppercase tracking-wider">Dokumen</TableHead>
+                <TableHead class="w-10" />
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              <TableRow
+                v-for="submission in pendingSubmissions"
+                :key="submission.id + submission.type"
+                class="group hover:bg-orange-50/30 transition-colors cursor-pointer border-l-4 border-l-transparent hover:border-l-orange-500"
+                @click="$inertia.visit(route('admin.profiles.show', { type: submission.type, profile: submission.id }))"
+              >
+                <TableCell class="py-4">
+                  <div class="flex items-center gap-3">
+                    <Avatar class="h-10 w-10 rounded-xl border border-border/60">
+                      <AvatarImage :src="submission.company_logo_url || submission.user?.avatar_url" />
+                      <AvatarFallback class="bg-primary/5 text-primary font-bold text-xs">
+                        {{ displayName(submission).charAt(0) }}
+                      </AvatarFallback>
+                    </Avatar>
+                    <div>
+                      <p class="font-bold text-sm text-foreground group-hover:text-primary transition-colors">
+                        {{ displayName(submission) }}
+                      </p>
+                      <Badge variant="outline" class="text-[10px] px-1.5 py-0 h-4 mt-1 font-medium bg-muted text-muted-foreground uppercase tracking-tight">
+                        {{ roleLabel(submission.type) }}
+                      </Badge>
+                    </div>
+                  </div>
+                </TableCell>
+                <TableCell>
+                  <div class="text-xs text-muted-foreground font-medium flex items-center gap-1.5">
+                    <Clock class="w-3 h-3" />
+                    {{ new Date(submission.updated_at).toLocaleString('id-ID', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }) }}
+                  </div>
+                </TableCell>
+                <TableCell>
+                  <span class="text-sm font-semibold text-foreground">
+                    {{ docCount(submission) }}
+                  </span>
+                  <span class="text-xs text-muted-foreground ml-1">dokumen</span>
+                </TableCell>
+                <TableCell class="text-right pr-4">
+                  <ChevronRight class="w-4 h-4 text-muted-foreground/40 group-hover:text-primary transition-colors" />
+                </TableCell>
+              </TableRow>
+            </TableBody>
+          </Table>
+        </div>
       </div>
 
       <!-- Tabs / Type Switcher -->

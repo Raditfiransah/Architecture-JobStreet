@@ -36,8 +36,16 @@ class ProfileManagementController extends Controller
             'client' => ClientProfile::with('user')->latest()->paginate(10),
         };
 
+        $pendingSubmissions = collect()
+            ->concat(CompanyProfile::with('user')->where('verification_status', 'pending')->get()->each(fn($p) => $p->type = 'company'))
+            ->concat(ArsitekProfile::with('user')->where('verification_status', 'pending')->get()->each(fn($p) => $p->type = 'arsitek'))
+            ->concat(ClientProfile::with('user')->where('verification_status', 'pending')->get()->each(fn($p) => $p->type = 'client'))
+            ->sortByDesc('updated_at')
+            ->values();
+
         return Inertia::render('Admin/Profiles/Index', [
             'profiles' => $data,
+            'pendingSubmissions' => $pendingSubmissions,
             'filters' => ['type' => $type],
         ]);
     }

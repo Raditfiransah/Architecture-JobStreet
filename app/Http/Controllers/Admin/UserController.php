@@ -7,31 +7,54 @@ use Illuminate\Http\Request;
 
 class UserController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        return view('admin.users.index');
+        $query = \App\Models\User::query()
+            ->with(['arsitekProfile', 'companyProfile', 'clientProfile'])
+            ->where('role', '!=', 'admin');
+
+        if ($request->search) {
+            $query->where(function($q) use ($request) {
+                $q->where('name', 'like', "%{$request->search}%")
+                  ->orWhere('email', 'like', "%{$request->search}%");
+            });
+        }
+
+        if ($request->role) {
+            $query->where('role', $request->role);
+        }
+
+        $users = $query->latest()->paginate(10)->withQueryString();
+
+        return \Inertia\Inertia::render('Admin/Users/Index', [
+            'users' => $users,
+            'filters' => $request->only(['search', 'role']),
+        ]);
     }
 
-    public function show(string $id)
+    public function show(\App\Models\User $user)
     {
-        return view('admin.users.show', compact('id'));
+        $user->load(['arsitekProfile', 'companyProfile', 'clientProfile']);
+        return \Inertia\Inertia::render('Admin/Users/Show', [
+            'user' => $user
+        ]);
     }
 
-    public function verifikasi(string $id)
+    public function suspend(\App\Models\User $user)
     {
-        // TODO: Implement - verifikasi user
-        return back()->with('status', 'User berhasil diverifikasi.');
+        $user->update(['is_active' => false]);
+        return back()->with('message', 'User berhasil di-suspend.');
     }
 
-    public function suspend(string $id)
+    public function aktifkan(\App\Models\User $user)
     {
-        // TODO: Implement - suspend user
-        return back()->with('status', 'User berhasil di-suspend.');
+        $user->update(['is_active' => true]);
+        return back()->with('message', 'User berhasil diaktifkan kembali.');
     }
 
-    public function aktifkan(string $id)
+    public function destroy(\App\Models\User $user)
     {
-        // TODO: Implement - aktifkan user
-        return back()->with('status', 'User berhasil diaktifkan kembali.');
+        $user->delete();
+        return redirect()->route('admin.users.index')->with('message', 'User berhasil dihapus.');
     }
 }

@@ -25,7 +25,7 @@ const footerSections = [
     title: "Perusahaan",
     links: [
       { name: "Tentang Kami", route: "home" },
-      { name: "Pasang Lowongan", route: "perusahaan.profile" },
+      { name: "Pasang Lowongan", route: "perusahaan.dashboard" },
       { name: "Pricelist", route: "home" },
       { name: "Karir", route: "home" },
     ]

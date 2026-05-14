@@ -32,8 +32,8 @@ class PortofolioController extends Controller
             'description' => 'nullable|string',
             'project_date' => 'nullable|date',
             'link' => 'nullable|url',
-            'thumbnail' => 'nullable|image|max:2048',
-            'images.*' => 'nullable|image|max:2048',
+            'thumbnail' => 'nullable|image|max:51200',
+            'images.*' => 'nullable|image|max:51200',
         ]);
 
         $data = $request->only(['title', 'description', 'project_date', 'link']);
@@ -74,8 +74,8 @@ class PortofolioController extends Controller
             'description' => 'nullable|string',
             'project_date' => 'nullable|date',
             'link' => 'nullable|url',
-            'thumbnail' => 'nullable|image|max:2048',
-            'images.*' => 'nullable|image|max:2048',
+            'thumbnail' => 'nullable|image|max:51200',
+            'images.*' => 'nullable|image|max:51200',
         ]);
 
         $data = $request->only(['title', 'description', 'project_date', 'link']);

@@ -64,7 +64,7 @@ class ProfilController extends Controller
     public function updateAvatar(Request $request)
     {
         $request->validate([
-            'avatar' => 'required|image|max:2048',
+            'avatar' => 'required|image|max:51200',
         ]);
 
         /** @var \App\Models\User $user */
@@ -90,10 +90,10 @@ class ProfilController extends Controller
 
         /** @var \App\Models\User $user */
         $user = $request->user();
-        $profile = $user->arsitekProfile ?? new ArsitekProfile(['user_id' => $user->id]);
+        $profile = $user->arsitekProfile;
         
         $type = $request->input('type');
-        $oldFile = $type === 'identity' ? $profile->identity_document_url : $profile->license_document_url;
+        $oldFile = $type === 'identity' ? $profile?->identity_document_url : $profile?->license_document_url;
         
         $path = $this->fileUploadService->uploadSecureDocument(
             $request->file('document'), 
@@ -101,13 +101,14 @@ class ProfilController extends Controller
             $oldFile
         );
 
-        if ($type === 'identity') {
-            $profile->identity_document_url = $path;
-        } else {
-            $profile->license_document_url = $path;
-        }
-        
-        $profile->save();
+        $data = $type === 'identity' 
+            ? ['identity_document_url' => $path] 
+            : ['license_document_url' => $path];
+
+        ArsitekProfile::updateOrCreate(
+            ['user_id' => $user->id],
+            $data
+        );
 
         return back()->with('message', 'Dokumen berhasil diunggah.');
     }

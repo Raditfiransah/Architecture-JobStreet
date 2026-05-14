@@ -26,16 +26,30 @@ class ProfileFileUploadService
     {
         $this->deleteOldFilePublic($oldFilePath);
 
-        $filename = Str::uuid() . '-' . time() . '.webp';
-        $path = $directory . '/' . $filename;
+        // Cek dukungan format gambar di library GD server
+        if (function_exists('imagewebp')) {
+            $filename = Str::uuid() . '-' . time() . '.webp';
+            $path = $directory . '/' . $filename;
 
-        // Compress and convert to webp using Intervention Image v4
-        $image = $this->imageManager->read($file->getRealPath());
-        $image->scale(width: 400); // Scale keeping aspect ratio
-        
-        $encodedImage = $image->toWebp(quality: 80);
-        
-        Storage::disk('public')->put($path, (string) $encodedImage);
+            // Compress and convert to webp using Intervention Image v4
+            $image = $this->imageManager->decodePath($file->getRealPath());
+            $image->scale(width: 400); // Scale keeping aspect ratio
+            $encodedImage = $image->encode(new \Intervention\Image\Encoders\WebpEncoder(quality: 80));
+            Storage::disk('public')->put($path, (string) $encodedImage);
+        } elseif (function_exists('imagejpeg')) {
+            $filename = Str::uuid() . '-' . time() . '.jpg';
+            $path = $directory . '/' . $filename;
+
+            // Compress and convert to jpeg using Intervention Image v4
+            $image = $this->imageManager->decodePath($file->getRealPath());
+            $image->scale(width: 400); // Scale keeping aspect ratio
+            $encodedImage = $image->encode(new \Intervention\Image\Encoders\JpegEncoder(quality: 80));
+            Storage::disk('public')->put($path, (string) $encodedImage);
+        } else {
+            // Fallback total: simpan file asli langsung tanpa manipulasi gambar jika GD tidak didukung penuh
+            $filename = Str::uuid() . '-' . time() . '.' . $file->getClientOriginalExtension();
+            $path = $file->storeAs($directory, $filename, 'public');
+        }
 
         return Storage::url($path);
     }

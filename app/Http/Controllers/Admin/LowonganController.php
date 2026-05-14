@@ -7,31 +7,50 @@ use Illuminate\Http\Request;
 
 class LowonganController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        return view('admin.lowongan.index');
+        $query = \App\Models\Lowongan::query()->with(['user'])->withCount('lamarans');
+
+        if ($request->search) {
+            $query->where('posisi', 'like', "%{$request->search}%")
+                  ->orWhere('perusahaan', 'like', "%{$request->search}%");
+        }
+
+        if ($request->status) {
+            $query->where('status', $request->status);
+        }
+
+        $lowongans = $query->latest()->paginate(10)->withQueryString();
+
+        return \Inertia\Inertia::render('Admin/Lowongan/Index', [
+            'lowongans' => $lowongans,
+            'filters' => $request->only(['search', 'status']),
+        ]);
     }
 
-    public function show(string $id)
+    public function show(\App\Models\Lowongan $lowongan)
     {
-        return view('admin.lowongan.show', compact('id'));
+        $lowongan->load(['user', 'lamarans.user']);
+        return \Inertia\Inertia::render('Admin/Lowongan/Show', [
+            'lowongan' => $lowongan
+        ]);
     }
 
-    public function setujui(string $id)
+    public function setujui(\App\Models\Lowongan $lowongan)
     {
-        // TODO: Implement - setujui lowongan
-        return back()->with('status', 'Lowongan berhasil disetujui.');
+        $lowongan->update(['status' => 'aktif']);
+        return back()->with('message', 'Lowongan berhasil disetujui.');
     }
 
-    public function tolak(Request $request, string $id)
+    public function tolak(Request $request, \App\Models\Lowongan $lowongan)
     {
-        // TODO: Implement - tolak lowongan
-        return back()->with('status', 'Lowongan berhasil ditolak.');
+        $lowongan->update(['status' => 'ditolak']);
+        return back()->with('message', 'Lowongan berhasil ditolak.');
     }
 
-    public function tutup(string $id)
+    public function tutup(\App\Models\Lowongan $lowongan)
     {
-        // TODO: Implement - tutup lowongan
-        return back()->with('status', 'Lowongan berhasil ditutup.');
+        $lowongan->update(['status' => 'nonaktif']);
+        return back()->with('message', 'Lowongan berhasil ditutup.');
     }
 }

@@ -9,7 +9,11 @@ import {
   FileText, 
   Users, 
   MessageCircle,
-  LogOut
+  LogOut,
+  ShieldCheck,
+  Monitor,
+  CheckCircle2,
+  Lock
 } from "lucide-vue-next";
 import { Button } from "@/Components/UI/ui/button";
 
@@ -61,8 +65,8 @@ const logout = () => {
       <!-- Arsitek Menu -->
       <template v-if="role === 'arsitek'">
         <div class="px-3 py-2 text-[11px] font-bold uppercase tracking-widest text-muted-foreground mt-4 mb-1">Utama</div>
-        <Button asChild variant="ghost" :class="[isRoute('arsitek.profile') ? 'bg-primary/10 text-primary' : 'text-muted-foreground hover:text-foreground hover:bg-muted']" class="w-full justify-start rounded-lg font-medium mb-1">
-          <Link :href="route('arsitek.profile')">
+        <Button asChild variant="ghost" :class="[isRoute('arsitek.dashboard') ? 'bg-primary/10 text-primary' : 'text-muted-foreground hover:text-foreground hover:bg-muted']" class="w-full justify-start rounded-lg font-medium mb-1">
+          <Link :href="route('arsitek.dashboard')">
             <LayoutDashboard class="mr-3 h-4 w-4" />
             Dashboard
           </Link>
@@ -86,8 +90,8 @@ const logout = () => {
       <!-- Perusahaan Menu -->
       <template v-else-if="role === 'perusahaan'">
         <div class="px-3 py-2 text-[11px] font-bold uppercase tracking-widest text-muted-foreground mt-4 mb-1">Manajemen</div>
-        <Button asChild variant="ghost" :class="[isRoute('perusahaan.profile') ? 'bg-primary/10 text-primary' : 'text-muted-foreground hover:text-foreground hover:bg-muted']" class="w-full justify-start rounded-lg font-medium mb-1">
-          <Link :href="route('perusahaan.profile')">
+        <Button asChild variant="ghost" :class="[isRoute('perusahaan.dashboard') ? 'bg-primary/10 text-primary' : 'text-muted-foreground hover:text-foreground hover:bg-muted']" class="w-full justify-start rounded-lg font-medium mb-1">
+          <Link :href="route('perusahaan.dashboard')">
             <LayoutDashboard class="mr-3 h-4 w-4" />
             Dashboard
           </Link>
@@ -108,8 +112,8 @@ const logout = () => {
 
       <!-- Client Menu -->
       <template v-else-if="role === 'client'">
-        <Button asChild variant="ghost" :class="[isRoute('client.profile') ? 'bg-primary/10 text-primary' : 'text-muted-foreground hover:text-foreground hover:bg-muted']" class="w-full justify-start rounded-lg font-medium mb-1">
-          <Link :href="route('client.profile')">
+        <Button asChild variant="ghost" :class="[isRoute('client.dashboard') ? 'bg-primary/10 text-primary' : 'text-muted-foreground hover:text-foreground hover:bg-muted']" class="w-full justify-start rounded-lg font-medium mb-1">
+          <Link :href="route('client.dashboard')">
             <LayoutDashboard class="mr-3 h-4 w-4" />
             Dashboard
           </Link>
@@ -124,28 +128,58 @@ const logout = () => {
 
       <!-- Admin Menu -->
       <template v-else-if="role === 'admin'">
+        <div class="px-3 py-2 text-[11px] font-bold uppercase tracking-widest text-muted-foreground mt-4 mb-1">Utama</div>
         <Button asChild variant="ghost" :class="[isRoute('admin.dashboard') ? 'bg-primary/10 text-primary' : 'text-muted-foreground hover:text-foreground hover:bg-muted']" class="w-full justify-start rounded-lg font-medium mb-1">
           <Link :href="route('admin.dashboard')">
             <LayoutDashboard class="mr-3 h-4 w-4" />
             Dashboard
           </Link>
         </Button>
-        <Button asChild variant="ghost" class="w-full justify-start rounded-lg font-medium text-muted-foreground mb-1 hover:bg-muted hover:text-foreground">
-          <Link href="#">
+
+        <div class="px-3 py-2 text-[11px] font-bold uppercase tracking-widest text-muted-foreground mt-4 mb-1">Manajemen Data</div>
+        <Button asChild variant="ghost" :class="[isRoute('admin.users.*') ? 'bg-primary/10 text-primary' : 'text-muted-foreground hover:text-foreground hover:bg-muted']" class="w-full justify-start rounded-lg font-medium mb-1">
+          <Link :href="route('admin.users.index')">
             <Users class="mr-3 h-4 w-4" />
             Kelola User
+          </Link>
+        </Button>
+        <Button asChild variant="ghost" :class="[isRoute('admin.profiles.*') ? 'bg-primary/10 text-primary' : 'text-muted-foreground hover:text-foreground hover:bg-muted']" class="w-full justify-start rounded-lg font-medium mb-1">
+          <Link :href="route('admin.profiles.index')">
+            <User class="mr-3 h-4 w-4" />
+            Moderasi Profil
+          </Link>
+        </Button>
+        <Button asChild variant="ghost" :class="[isRoute('admin.lowongan.*') ? 'bg-primary/10 text-primary' : 'text-muted-foreground hover:text-foreground hover:bg-muted']" class="w-full justify-start rounded-lg font-medium mb-1">
+          <Link :href="route('admin.lowongan.index')">
+            <Briefcase class="mr-3 h-4 w-4" />
+            Lowongan & Lamaran
+          </Link>
+        </Button>
+        <Button asChild variant="ghost" :class="[isRoute('admin.portofolio.*') ? 'bg-primary/10 text-primary' : 'text-muted-foreground hover:text-foreground hover:bg-muted']" class="w-full justify-start rounded-lg font-medium mb-1">
+          <Link :href="route('admin.portofolio.index')">
+            <Folder class="mr-3 h-4 w-4" />
+            Portofolio
+          </Link>
+        </Button>
+
+        <div class="px-3 py-2 text-[11px] font-bold uppercase tracking-widest text-muted-foreground mt-4 mb-1">Sistem & Keamanan</div>
+        <Button asChild variant="ghost" :class="[isRoute('admin.system.index') ? 'bg-primary/10 text-primary' : 'text-muted-foreground hover:text-foreground hover:bg-muted']" class="w-full justify-start rounded-lg font-medium mb-1">
+          <Link :href="route('admin.system.index')">
+            <Monitor class="mr-3 h-4 w-4" />
+            Monitoring System
+          </Link>
+        </Button>
+        <Button asChild variant="ghost" :class="[isRoute('admin.security.index') ? 'bg-primary/10 text-primary' : 'text-muted-foreground hover:text-foreground hover:bg-muted']" class="w-full justify-start rounded-lg font-medium mb-1">
+          <Link :href="route('admin.security.index')">
+            <ShieldCheck class="mr-3 h-4 w-4" />
+            Security Log
           </Link>
         </Button>
       </template>
     </nav>
 
     <div class="px-6 py-6 border-t border-border">
-      <Button asChild variant="outline" class="w-full justify-start rounded-lg font-medium text-muted-foreground mb-2">
-        <Link :href="route('info.index')">
-           <MessageCircle class="mr-3 h-4 w-4" />
-          Info Hub
-        </Link>
-      </Button>
+
 
       <Button @click="logout" variant="ghost" class="w-full justify-start rounded-lg font-medium text-destructive hover:bg-destructive/10 hover:text-destructive">
         <LogOut class="mr-3 h-4 w-4" />

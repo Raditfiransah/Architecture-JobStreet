@@ -89,7 +89,7 @@ const handleContact = () => {
             ]"
           >
             <div class="flex gap-4">
-               <Avatar class="h-12 w-12 rounded-lg border border-border shadow-sm shrink-0">
+               <Avatar class="h-12 w-12 rounded-full border border-border shadow-sm shrink-0">
                   <AvatarImage :src="arsitek.user?.avatar_url" />
                   <AvatarFallback class="bg-primary/5 text-primary font-bold text-sm">
                      {{ userInitials(arsitek.user?.name || 'A') }}
@@ -128,7 +128,7 @@ const handleContact = () => {
                 <div class="px-8 pb-10">
                    <!-- Avatar -->
                    <div class="relative -mt-12 mb-6">
-                      <Avatar class="h-24 w-24 rounded-2xl border-4 border-white shadow-xl">
+                      <Avatar class="h-24 w-24 rounded-full border-4 border-white shadow-xl">
                          <AvatarImage :src="selectedArsitek.user?.avatar_url" />
                          <AvatarFallback class="bg-primary/5 text-primary text-2xl font-bold">
                             {{ userInitials(selectedArsitek.user?.name || 'A') }}

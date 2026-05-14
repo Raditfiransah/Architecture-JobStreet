@@ -54,21 +54,24 @@ class ProfilController extends Controller
     public function updateLogo(Request $request)
     {
         $request->validate([
-            'logo' => 'required|image|max:2048',
+            'avatar' => 'required|image|max:51200',
         ]);
 
         /** @var \App\Models\User $user */
         $user = $request->user();
-        $profile = $user->companyProfile ?? new CompanyProfile(['user_id' => $user->id]);
+        $profile = $user->companyProfile;
         
         $url = $this->fileUploadService->uploadAvatar(
-            $request->file('logo'), 
+            $request->file('avatar'), 
             'logos', 
-            $profile->company_logo_url
+            $profile?->company_logo_url
         );
 
-        $profile->company_logo_url = $url;
-        $profile->save();
+        CompanyProfile::updateOrCreate(
+            ['user_id' => $user->id],
+            ['company_logo_url' => $url]
+        );
+        
         $user->update(['avatar_url' => $url]);
 
         return back()->with('message', 'Logo perusahaan berhasil diperbarui.');
@@ -82,16 +85,18 @@ class ProfilController extends Controller
 
         /** @var \App\Models\User $user */
         $user = $request->user();
-        $profile = $user->companyProfile ?? new CompanyProfile(['user_id' => $user->id]);
+        $profile = $user->companyProfile;
         
         $path = $this->fileUploadService->uploadSecureDocument(
             $request->file('document'), 
             "documents/perusahaan/{$user->id}/identity",
-            $profile->identity_document_url
+            $profile?->identity_document_url
         );
 
-        $profile->identity_document_url = $path;
-        $profile->save();
+        CompanyProfile::updateOrCreate(
+            ['user_id' => $user->id],
+            ['identity_document_url' => $path]
+        );
 
         return back()->with('message', 'Dokumen identitas berhasil diunggah.');
     }

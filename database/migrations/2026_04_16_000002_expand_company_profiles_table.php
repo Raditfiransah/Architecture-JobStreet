@@ -21,7 +21,7 @@ return new class extends Migration
             $table->string('identity_document_url', 500)->nullable()->after('nib_number');
 
             // Verification
-            $table->string('verification_status', 20)->default('pending')->after('identity_document_url');
+            $table->string('verification_status', 20)->default('unverified')->after('identity_document_url');
             $table->text('verification_note')->nullable()->after('verification_status');
         });
     }

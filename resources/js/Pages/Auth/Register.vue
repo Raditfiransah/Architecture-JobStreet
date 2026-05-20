@@ -31,11 +31,17 @@ const roles = [
 import { computed } from 'vue';
 
 const isFormValid = computed(() => {
-  return form.name.trim() !== '' &&
-         form.email.trim() !== '' &&
-         form.password !== '' &&
-         form.password_confirmation !== '' &&
-         form.agree_to_terms === true;
+  const base = form.name.trim() !== '' &&
+               form.email.trim() !== '' &&
+               form.password !== '' &&
+               form.password_confirmation !== '' &&
+               form.agree_to_terms === true;
+
+  if (form.role === 'perusahaan') {
+    return base && form.company_name.trim() !== '';
+  }
+
+  return base;
 });
 
 const submit = () => {
@@ -127,6 +133,22 @@ const submit = () => {
             placeholder="nama@email.com"
           />
           <InputError class="mt-1" :message="form.errors.email" />
+        </div>
+
+        <!-- Company Name — hanya muncul saat role perusahaan -->
+        <div v-if="form.role === 'perusahaan'" class="grid gap-1">
+          <Label for="company_name" class="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
+            Nama Perusahaan (Resmi)
+          </Label>
+          <Input
+            id="company_name"
+            type="text"
+            class="h-8 text-xs bg-muted/20 border-border"
+            v-model="form.company_name"
+            required
+            placeholder="Contoh: PT Arsitek Indonesia"
+          />
+          <InputError class="mt-1" :message="form.errors.company_name" />
         </div>
 
         <div class="grid gap-4">

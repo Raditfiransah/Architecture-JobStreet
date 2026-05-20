@@ -10,13 +10,14 @@ use App\Http\Controllers\Arsitek\NotifikasiController;
 use App\Http\Controllers\Arsitek\PengaturanController;
 use Illuminate\Support\Facades\Route;
 
+// ─── Dashboard Arsitek (authenticated) ───────────────────────────────────────
 Route::middleware(['auth', 'verified', 'role:arsitek'])
-    ->prefix('profile/arsitek')
+    ->prefix('dashboard/arsitek')
     ->name('arsitek.')
     ->group(function () {
 
-    // Dashboard (now Profile)
-    Route::get('/', [DashboardController::class, 'index'])->name('profile');
+    // Dashboard utama
+    Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
 
     // Profil
     Route::get('/profil', [ProfilController::class, 'edit'])->name('profil.edit');
@@ -29,20 +30,20 @@ Route::middleware(['auth', 'verified', 'role:arsitek'])
     Route::get('/portofolio', [PortofolioController::class, 'index'])->name('portofolio.index');
     Route::get('/portofolio/tambah', [PortofolioController::class, 'create'])->name('portofolio.create');
     Route::post('/portofolio', [PortofolioController::class, 'store'])->name('portofolio.store');
-    Route::get('/portofolio/{id}/edit', [PortofolioController::class, 'edit'])->name('portofolio.edit');
-    Route::put('/portofolio/{id}', [PortofolioController::class, 'update'])->name('portofolio.update');
-    Route::delete('/portofolio/{id}', [PortofolioController::class, 'destroy'])->name('portofolio.destroy');
+    Route::get('/portofolio/{portofolio}/edit', [PortofolioController::class, 'edit'])->name('portofolio.edit');
+    Route::put('/portofolio/{portofolio}', [PortofolioController::class, 'update'])->name('portofolio.update');
+    Route::delete('/portofolio/{portofolio}', [PortofolioController::class, 'destroy'])->name('portofolio.destroy');
     Route::post('/portofolio/reorder', [PortofolioController::class, 'reorder'])->name('portofolio.reorder');
 
     // Lamaran kerja
     Route::get('/lamaran', [LamaranController::class, 'index'])->name('lamaran.index');
-    Route::get('/lamaran/{id}', [LamaranController::class, 'show'])->name('lamaran.show');
-    Route::delete('/lamaran/{id}', [LamaranController::class, 'withdraw'])->name('lamaran.withdraw');
+    Route::get('/lamaran/{lamaran}', [LamaranController::class, 'show'])->name('lamaran.show');
+    Route::delete('/lamaran/{lamaran}', [LamaranController::class, 'withdraw'])->name('lamaran.withdraw');
 
     // Proposal proyek
     Route::get('/proposal', [ProposalController::class, 'index'])->name('proposal.index');
-    Route::get('/proposal/{id}', [ProposalController::class, 'show'])->name('proposal.show');
-    Route::put('/proposal/{id}', [ProposalController::class, 'update'])->name('proposal.update');
+    Route::get('/proposal/{proposal}', [ProposalController::class, 'show'])->name('proposal.show');
+    Route::put('/proposal/{proposal}', [ProposalController::class, 'update'])->name('proposal.update');
 
     /*
     // Inbox async
@@ -54,6 +55,9 @@ Route::middleware(['auth', 'verified', 'role:arsitek'])
     // Notifikasi
     Route::get('/notifikasi', [NotifikasiController::class, 'index'])->name('notifikasi.index');
     Route::post('/notifikasi/baca-semua', [NotifikasiController::class, 'markAllRead'])->name('notifikasi.readAll');
+    // Verifikasi
+    Route::inertia('/verifikasi', 'Arsitek/Verifikasi')->name('verifikasi.index');
+    Route::post('/verifikasi', [\App\Http\Controllers\User\VerificationController::class, 'submitArsitek'])->name('verifikasi.submit');
 
     // Pengaturan
     Route::get('/pengaturan', [PengaturanController::class, 'index'])->name('pengaturan.index');
@@ -62,12 +66,12 @@ Route::middleware(['auth', 'verified', 'role:arsitek'])
     Route::delete('/pengaturan/akun', [PengaturanController::class, 'deleteAkun'])->name('pengaturan.delete');
 });
 
-// Route melamar — di luar prefix dashboard karena URL-nya dari halaman publik
-Route::post('/lowongan/{id}/lamar', [LamaranController::class, 'store'])
-    ->middleware(['auth', 'verified', 'role:arsitek'])
-    ->name('arsitek.lamaran.store');
+// ─── Aksi dari halaman publik — middleware sama, tanpa prefix dashboard ───────
+// (URL berasal dari halaman lowongan/proyek publik sehingga tidak perlu prefix dashboard)
+Route::middleware(['auth', 'verified', 'role:arsitek'])->group(function () {
+    Route::post('/lowongan/{lowongan}/lamar', [LamaranController::class, 'store'])
+        ->name('arsitek.lamaran.store');
 
-// Route kirim proposal — sama, dari halaman publik
-Route::post('/proyek/{id}/proposal', [ProposalController::class, 'store'])
-    ->middleware(['auth', 'verified', 'role:arsitek'])
-    ->name('arsitek.proposal.store');
+    Route::post('/proyek/{proyek}/proposal', [ProposalController::class, 'store'])
+        ->name('arsitek.proposal.store');
+});

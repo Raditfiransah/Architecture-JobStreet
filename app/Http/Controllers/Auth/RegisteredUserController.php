@@ -53,10 +53,12 @@ class RegisteredUserController extends Controller
                 'user_id' => $user->id,
                 'company_name' => $request->company_name,
                 'company_website' => $request->company_website,
+                'verification_status' => 'unverified',
             ]);
         } elseif ($request->role === 'arsitek') {
             ArsitekProfile::create([
                 'user_id' => $user->id,
+                'verification_status' => 'unverified',
             ]);
         }
 

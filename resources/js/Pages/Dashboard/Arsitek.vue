@@ -58,25 +58,6 @@ const props = defineProps({
       </StatCard>
     </div>
 
-    <div class="bg-primary/5 border border-primary/20 rounded-xl p-6 md:p-8 mb-12">
-      <div class="flex flex-col md:flex-row items-center justify-between gap-6">
-        <div class="space-y-4">
-          <Badge variant="secondary" class="bg-primary/20 text-primary rounded-full px-3 py-1 font-bold text-xs uppercase tracking-wider flex items-center w-fit gap-2">
-             <Zap class="w-3 h-3" />
-            Wujudkan Karir Profesional
-          </Badge>
-          <h3 class="text-xl font-display font-bold text-foreground">Profilmu belum lengkap, Arsitek!</h3>
-          <p class="text-sm text-muted-foreground leading-relaxed max-w-lg">
-            Lengkapi profil dan portofolio digital Anda untuk meningkatkan peluang mendapatkan proyek impian hingga 80% lebih besar.
-          </p>
-        </div>
-        <Button size="lg" class="rounded-lg font-medium w-full md:w-auto">
-          Lengkapi Sekarang
-          <ChevronRight class="ml-2 w-5 h-5" />
-        </Button>
-      </div>
-    </div>
-
     <section>
       <div class="flex items-center gap-3 mb-8">
         <div class="w-1.5 h-8 bg-primary rounded-full"></div>

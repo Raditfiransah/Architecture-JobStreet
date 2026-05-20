@@ -9,7 +9,9 @@ class UserController extends Controller
 {
     public function index(Request $request)
     {
-        $query = \App\Models\User::query()->where('role', '!=', 'admin');
+        $query = \App\Models\User::query()
+            ->with(['arsitekProfile', 'companyProfile', 'clientProfile'])
+            ->where('role', '!=', 'admin');
 
         if ($request->search) {
             $query->where(function($q) use ($request) {

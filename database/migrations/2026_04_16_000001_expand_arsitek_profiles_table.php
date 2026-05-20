@@ -26,7 +26,7 @@ return new class extends Migration
             $table->string('license_document_url', 500)->nullable()->after('identity_document_url');
 
             // Verification
-            $table->string('verification_status', 20)->default('pending')->after('license_document_url');
+            $table->string('verification_status', 20)->default('unverified')->after('license_document_url');
             $table->text('verification_note')->nullable()->after('verification_status');
             $table->timestamp('verified_at')->nullable()->after('verification_note');
         });

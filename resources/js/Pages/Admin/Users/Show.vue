@@ -36,6 +36,42 @@ const getRoleLabel = (role) => {
   };
   return roles[role] || role;
 };
+
+const getUserStatusInfo = (user) => {
+  if (!user.is_active) {
+    return {
+      label: 'Suspended',
+      textClass: 'text-rose-600',
+      dotClass: 'bg-rose-500'
+    };
+  }
+  
+  if (!user.email_verified_at) {
+    return {
+      label: 'Belum Verifikasi',
+      textClass: 'text-amber-600',
+      dotClass: 'bg-amber-500'
+    };
+  }
+  
+  const isDocumentVerified = 
+    (user.role === 'arsitek' && user.arsitek_profile?.verification_status === 'verified') ||
+    (user.role === 'perusahaan' && user.company_profile?.verification_status === 'verified');
+    
+  if (isDocumentVerified) {
+    return {
+      label: 'Aktif & Terverifikasi (Dokumen)',
+      textClass: 'text-blue-600',
+      dotClass: 'bg-blue-500'
+    };
+  }
+  
+  return {
+    label: 'Aktif (Email Verif)',
+    textClass: 'text-emerald-600',
+    dotClass: 'bg-emerald-500'
+  };
+};
 </script>
 
 <template>
@@ -93,9 +129,9 @@ const getRoleLabel = (role) => {
                   <div class="pt-4 flex items-center justify-between border-t border-border/40">
                      <span class="text-xs font-bold uppercase tracking-wider text-muted-foreground">Account Status</span>
                      <div class="flex items-center gap-2">
-                        <div :class="[user.is_active ? 'bg-emerald-500' : 'bg-rose-500', 'w-2 h-2 rounded-full']"></div>
-                        <span :class="[user.is_active ? 'text-emerald-600' : 'text-rose-600', 'text-xs font-black uppercase tracking-wider']">
-                           {{ user.is_active ? 'Aktif' : 'Suspended' }}
+                        <div :class="[getUserStatusInfo(user).dotClass, 'w-2 h-2 rounded-full']"></div>
+                        <span :class="[getUserStatusInfo(user).textClass, 'text-xs font-black uppercase tracking-wider']">
+                           {{ getUserStatusInfo(user).label }}
                         </span>
                      </div>
                   </div>

@@ -42,7 +42,7 @@ class AuthenticationTest extends TestCase
         ]);
 
         $this->assertAuthenticated();
-        $response->assertRedirect(route('dashboard.arsitek'));
+        $response->assertRedirect(route('arsitek.dashboard'));
     }
 
     public function test_verified_active_perusahaan_can_login(): void
@@ -57,7 +57,7 @@ class AuthenticationTest extends TestCase
         ]);
 
         $this->assertAuthenticated();
-        $response->assertRedirect(route('dashboard.perusahaan'));
+        $response->assertRedirect(route('perusahaan.dashboard'));
     }
 
     public function test_verified_active_client_can_login(): void
@@ -72,7 +72,7 @@ class AuthenticationTest extends TestCase
         ]);
 
         $this->assertAuthenticated();
-        $response->assertRedirect(route('dashboard.client'));
+        $response->assertRedirect(route('client.dashboard'));
     }
 
     public function test_unverified_user_is_redirected_to_otp_page(): void

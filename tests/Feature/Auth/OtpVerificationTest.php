@@ -31,7 +31,7 @@ class OtpVerificationTest extends TestCase
         $user = User::factory()->arsitek()->create();
 
         $response = $this->actingAs($user)->get('/verify-email');
-        $response->assertRedirect(route('dashboard.arsitek'));
+        $response->assertRedirect(route('arsitek.dashboard'));
     }
 
     public function test_unverified_user_can_see_otp_page(): void
@@ -58,7 +58,7 @@ class OtpVerificationTest extends TestCase
             ->withSession(['otp_email' => $user->email])
             ->post('/verify-email', ['code' => '123456']);
 
-        $response->assertRedirect(route('dashboard.arsitek'));
+        $response->assertRedirect(route('arsitek.dashboard'));
 
         $user->refresh();
         $this->assertNotNull($user->email_verified_at);

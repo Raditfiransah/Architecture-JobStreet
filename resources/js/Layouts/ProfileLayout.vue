@@ -19,7 +19,8 @@ import {
   History,
   Building2,
   MessageSquare,
-  LayoutDashboard
+  LayoutDashboard,
+  ShieldCheck
 } from "lucide-vue-next";
 import { Button } from "@/Components/UI/ui/button";
 import { 
@@ -35,10 +36,7 @@ import VerificationBadge from '@/Components/Profile/VerificationBadge.vue';
 const page = usePage();
 const user = computed(() => page.props.auth.user || {});
 const profile = computed(() => {
-  if (user.value.role === 'arsitek') return user.value.arsitek_profile || {};
-  if (user.value.role === 'perusahaan') return user.value.company_profile || {};
-  if (user.value.role === 'client') return user.value.client_profile || {};
-  return {};
+  return user.value.profile || {};
 });
 
 const verificationStatus = computed(() => profile.value?.verification_status || 'unverified');
@@ -78,13 +76,14 @@ const menuItems = computed(() => {
   if (role === 'arsitek') {
     return [
       { group: 'Utama', items: [
-        { label: 'Dashboard', icon: LayoutDashboard, href: route('arsitek.profile') },
+        { label: 'Dashboard', icon: LayoutDashboard, href: route('arsitek.dashboard') },
       ]},
       { group: 'Kelola Portofolio & Lamaran', items: [
         { label: 'Portofolio', icon: Briefcase, href: route('arsitek.portofolio.index') },
         { label: 'Aktivitas Lamaran', icon: History, href: route('arsitek.lamaran.index') },
       ]},
       { group: 'Mengelola Akun', items: [
+        { label: 'Verifikasi', icon: ShieldCheck, href: route('arsitek.verifikasi.index') },
         { label: 'Pengaturan Akun', icon: Settings, href: route('arsitek.pengaturan.index') },
       ]}
     ];
@@ -93,13 +92,14 @@ const menuItems = computed(() => {
   if (role === 'perusahaan') {
     return [
       { group: 'Utama', items: [
-        { label: 'Dashboard', icon: LayoutDashboard, href: route('perusahaan.profile') },
+        { label: 'Dashboard', icon: LayoutDashboard, href: route('perusahaan.dashboard') },
       ]},
       { group: 'Manajemen Rekrutmen', items: [
         { label: 'Kelola Lowongan', icon: Briefcase, href: route('perusahaan.lowongan.index') },
         { label: 'Kandidat', icon: Target, href: route('perusahaan.pelamar.all') },
       ]},
       { group: 'Mengelola Akun', items: [
+        { label: 'Verifikasi', icon: ShieldCheck, href: route('perusahaan.verifikasi.index') },
         { label: 'Pengaturan Akun', icon: Settings, href: route('perusahaan.pengaturan.index') },
       ]}
     ];
@@ -108,12 +108,13 @@ const menuItems = computed(() => {
   if (role === 'client') {
     return [
       { group: 'Utama', items: [
-        { label: 'Dashboard', icon: LayoutDashboard, href: route('client.profile') },
+        { label: 'Dashboard', icon: LayoutDashboard, href: route('client.dashboard') },
       ]},
       { group: 'Kelola Proyek', items: [
         { label: 'Proyek', icon: Briefcase, href: route('client.proyek.index') },
       ]},
       { group: 'Mengelola Akun', items: [
+        { label: 'Verifikasi', icon: ShieldCheck, href: route('client.verifikasi.index') },
         { label: 'Pengaturan Akun', icon: Settings, href: route('client.pengaturan.index') },
       ]}
     ];
@@ -156,7 +157,7 @@ const logout = () => {
                      </p>
                      <!-- Detail Info Mobile -->
                     <div class="mt-4 flex flex-col gap-2 md:hidden">
-                      <div v-if="user.role !== 'client' && user.role !== 'admin'" class="flex items-center gap-2 overflow-hidden">
+                      <div v-if="user.role !== 'admin'" class="flex items-center gap-2 overflow-hidden">
                         <VerificationBadge :status="verificationStatus" :note="verificationNote" />
                       </div>
                       
@@ -178,7 +179,7 @@ const logout = () => {
 
                 <!-- Action Button & Detail Desktop -->
                 <div class="hidden md:flex flex-col items-end gap-3 shrink-0 mt-4">
-                  <div v-if="user.role !== 'client' && user.role !== 'admin'" class="flex items-center justify-end w-full">
+                  <div v-if="user.role !== 'admin'" class="flex items-center justify-end w-full">
                     <VerificationBadge :status="verificationStatus" :note="verificationNote" />
                   </div>
                   <div class="flex items-center gap-2 text-slate-600 text-xs">

@@ -56,13 +56,17 @@ class LoginController extends Controller
     {
         /** @var \App\Models\User $user */
         $user = $request->user();
-        
+
+        if (! $user->email_verified_at) {
+            return route('verification.notice');
+        }
+
         return match ($user->role) {
-            'arsitek' => route('arsitek.dashboard'),
+            'arsitek'    => route('arsitek.dashboard'),
             'perusahaan' => route('perusahaan.dashboard'),
-            'client' => route('client.dashboard'),
-            'admin' => route('admin.dashboard'),
-            default => route('home'),
+            'client'     => route('client.dashboard'),
+            'admin'      => route('admin.dashboard'),
+            default      => route('home'),
         };
     }
 }

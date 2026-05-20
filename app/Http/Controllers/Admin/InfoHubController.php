@@ -4,7 +4,6 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -84,18 +83,6 @@ class InfoHubController extends Controller
         return redirect()
             ->route('admin.info.index')
             ->with('success', 'Postingan mading berhasil dihapus.');
-    }
-
-    public function setujui(string $id)
-    {
-        // TODO: Implement - setujui artikel
-        return back()->with('status', 'Artikel berhasil disetujui.');
-    }
-
-    public function tolak(Request $request, string $id)
-    {
-        // TODO: Implement - tolak artikel
-        return back()->with('status', 'Artikel berhasil ditolak.');
     }
 
     private function serializeInfoHub(InfoHub $infoHub): array

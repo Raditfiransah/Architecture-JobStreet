@@ -49,6 +49,11 @@ Route::middleware(['auth', 'verified', 'role:admin'])
 
     // Info Hub
     Route::get('/info', [InfoHubController::class, 'index'])->name('info.index');
+    Route::get('/info/create', [InfoHubController::class, 'create'])->name('info.create');
+    Route::post('/info', [InfoHubController::class, 'store'])->name('info.store');
+    Route::get('/info/{infoHub}/edit', [InfoHubController::class, 'edit'])->name('info.edit');
+    Route::put('/info/{infoHub}', [InfoHubController::class, 'update'])->name('info.update');
+    Route::delete('/info/{infoHub}', [InfoHubController::class, 'destroy'])->name('info.destroy');
     Route::post('/info/{infoHub}/setujui', [InfoHubController::class, 'setujui'])->name('info.setujui');
     Route::post('/info/{infoHub}/tolak', [InfoHubController::class, 'tolak'])->name('info.tolak');
 

@@ -14,6 +14,10 @@ Route::get('/lowongan', [LowonganController::class, 'index'])->name('lowongan.in
 Route::get('/lowongan/{lowongan}', [LowonganController::class, 'show'])->name('lowongan.show');
 
 // Proyek arsitektur
+// Info Hub
+Route::get('/info', [InfoHubController::class, 'index'])->name('info.index');
+Route::get('/info/{infoHub}', [InfoHubController::class, 'show'])->name('info.show');
+
 Route::middleware('auth')->group(function () {
     Route::get('/proyek', [ProyekController::class, 'index'])->name('proyek.index');
     Route::get('/proyek/{proyek}', [ProyekController::class, 'show'])->name('proyek.show');
@@ -21,8 +25,4 @@ Route::middleware('auth')->group(function () {
     // Direktori arsitek
     Route::get('/arsitek', [ArsitekController::class, 'index'])->name('arsitek.direktori');
     Route::get('/arsitek/{username}', [ArsitekController::class, 'show'])->name('arsitek.profil');
-
-    // Info Hub
-    Route::get('/info', [InfoHubController::class, 'index'])->name('info.index');
-    Route::get('/info/{slug}', [InfoHubController::class, 'show'])->name('info.show');
 });

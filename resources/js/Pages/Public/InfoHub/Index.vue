@@ -1,85 +1,127 @@
 <script setup>
-import { Head, Link } from '@inertiajs/vue3';
+import { computed, shallowRef } from 'vue';
+import { Head } from '@inertiajs/vue3';
 import PublicLayout from '@/Layouts/PublicLayout.vue';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/Components/UI/ui/card';
-import { Badge } from '@/Components/UI/ui/badge';
-import Pagination from '@/Components/Pagination.vue';
-import { Calendar, Info } from 'lucide-vue-next';
+import EmptyState from '@/Components/EmptyState.vue';
+import { Button } from '@/Components/UI/ui/button';
+import { Skeleton } from '@/Components/UI/ui/skeleton';
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from '@/Components/UI/ui/select';
+import { SlidersHorizontal } from 'lucide-vue-next';
+import InfoCard from './Components/InfoCard.vue';
 
-defineProps({
-    title: String,
-    infohubs: Object,
+const props = defineProps({
+    title: {
+        type: String,
+        default: 'Papan Informasi',
+    },
+    infohubs: {
+        type: Object,
+        default: null,
+    },
 });
 
-const getBadgeVariant = (kategori) => {
-    switch(kategori) {
-        case 'Event': return 'default';
-        case 'Sayembara': return 'destructive';
-        case 'Magang': return 'secondary';
-        default: return 'outline';
+const categories = ['Semua', 'Event', 'Magang', 'Sayembara'];
+const selectedCategory = shallowRef('Semua');
+const selectedSort = shallowRef('terbaru');
+const isLoading = shallowRef(false);
+
+const sourceItems = computed(() => {
+    if (Array.isArray(props.infohubs?.data)) {
+        return props.infohubs.data;
     }
-};
+
+    return [];
+});
+
+const filteredInfohubs = computed(() => {
+    return [...sourceItems.value]
+        .filter((info) => selectedCategory.value === 'Semua' || info.kategori === selectedCategory.value)
+        .sort((a, b) => {
+            const firstDate = new Date(a.created_at).getTime();
+            const secondDate = new Date(b.created_at).getTime();
+
+            return selectedSort.value === 'terbaru'
+                ? secondDate - firstDate
+                : firstDate - secondDate;
+        });
+});
+
+const featuredInfo = computed(() => filteredInfohubs.value[0] ?? null);
+const regularInfohubs = computed(() => filteredInfohubs.value.slice(1));
 </script>
 
 <template>
     <PublicLayout>
         <Head :title="title" />
 
-        <main class="flex-1 w-full max-w-[1280px] mx-auto px-6 py-12 md:py-16">
-            <!-- Header Section -->
-            <div class="text-center max-w-2xl mx-auto mb-16">
-                <h1 class="text-4xl md:text-5xl font-bold tracking-tight text-foreground mb-4">Papan Pengumuman</h1>
-                <p class="text-lg text-muted-foreground leading-relaxed">
+        <main class="flex-1 w-full max-w-[1280px] mx-auto px-6 py-10 md:py-14">
+            <section class="max-w-3xl mb-10 md:mb-12">
+                <p class="mb-3 text-xs font-bold uppercase tracking-[0.24em] text-primary">Info Hub</p>
+                <h1 class="text-4xl md:text-5xl font-bold tracking-tight text-foreground mb-4">Papan Informasi Arsitektur</h1>
+                <p class="text-base md:text-lg text-muted-foreground leading-relaxed">
                     Dapatkan informasi terbaru seputar Event Arsitektur, Info Magang, dan Sayembara Desain.
                 </p>
-            </div>
+            </section>
 
-            <!-- Grid Layout -->
-            <div v-if="infohubs.data.length > 0" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                <Card v-for="info in infohubs.data" :key="info.id" class="overflow-hidden border-border/50 hover:border-primary/30 transition-all hover:shadow-md flex flex-col group">
-                    <div class="relative w-full h-48 md:h-56 bg-muted overflow-hidden flex-shrink-0">
-                        <img v-if="info.gambar_poster" :src="`/storage/${info.gambar_poster}`" class="object-cover w-full h-full group-hover:scale-105 transition-transform duration-500" alt="Poster Info" />
-                        <div v-else class="w-full h-full flex items-center justify-center bg-primary/5 text-primary">
-                            <Info class="w-12 h-12 opacity-20" />
-                        </div>
-                        <div class="absolute top-4 right-4">
-                            <Badge :variant="getBadgeVariant(info.kategori)" class="shadow-sm font-bold uppercase tracking-wider text-[10px] px-2.5 py-1 backdrop-blur-md">
-                                {{ info.kategori }}
-                            </Badge>
-                        </div>
-                    </div>
-                    
-                    <CardHeader class="pb-3 flex-shrink-0">
-                        <div class="flex items-center gap-2 text-xs text-muted-foreground mb-2">
-                            <Calendar class="w-3.5 h-3.5" />
-                            <span>{{ new Date(info.created_at).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' }) }}</span>
-                        </div>
-                        <CardTitle class="text-xl font-bold line-clamp-2 leading-tight group-hover:text-primary transition-colors">
-                            {{ info.judul }}
-                        </CardTitle>
-                    </CardHeader>
-                    
-                    <CardContent class="flex-1">
-                        <p class="text-sm text-muted-foreground line-clamp-3 leading-relaxed">
-                            {{ info.deskripsi }}
-                        </p>
-                    </CardContent>
-                </Card>
-            </div>
-
-            <!-- Empty State -->
-            <div v-else class="text-center py-24 bg-muted/20 rounded-3xl border border-border/50">
-                <div class="w-20 h-20 bg-muted rounded-full flex items-center justify-center mx-auto mb-6">
-                    <Info class="w-10 h-10 text-muted-foreground/50" />
+            <section class="mb-8 flex flex-col gap-4 border-y border-border/70 py-4 md:flex-row md:items-center md:justify-between">
+                <div class="flex flex-wrap gap-2">
+                    <Button
+                        v-for="category in categories"
+                        :key="category"
+                        type="button"
+                        size="sm"
+                        :variant="selectedCategory === category ? 'default' : 'outline'"
+                        class="rounded-full"
+                        @click="selectedCategory = category"
+                    >
+                        {{ category }}
+                    </Button>
                 </div>
-                <h3 class="text-2xl font-bold mb-2">Belum Ada Informasi</h3>
-                <p class="text-muted-foreground">Saat ini belum ada pengumuman atau event yang diterbitkan.</p>
-            </div>
 
-            <!-- Pagination -->
-            <div v-if="infohubs.links && infohubs.links.length > 3" class="mt-12 flex justify-center">
-                <Pagination :links="infohubs.links" />
-            </div>
+                <div class="flex items-center gap-3 md:w-[260px]">
+                    <SlidersHorizontal class="h-4 w-4 text-muted-foreground" />
+                    <Select v-model="selectedSort">
+                        <SelectTrigger class="h-10 rounded-full">
+                            <SelectValue placeholder="Urutkan" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            <SelectItem value="terbaru">Terbaru</SelectItem>
+                            <SelectItem value="terlama">Terlama</SelectItem>
+                        </SelectContent>
+                    </Select>
+                </div>
+            </section>
+
+            <section v-if="isLoading" class="space-y-8">
+                <Skeleton class="aspect-video w-full rounded-xl md:h-[320px]" />
+                <div class="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+                    <Skeleton v-for="item in 3" :key="item" class="aspect-video rounded-xl" />
+                </div>
+            </section>
+
+            <section v-else-if="filteredInfohubs.length > 0" class="space-y-8">
+                <InfoCard v-if="featuredInfo" :info="featuredInfo" featured />
+
+                <div v-if="regularInfohubs.length > 0" class="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+                    <InfoCard
+                        v-for="info in regularInfohubs"
+                        :key="info.id"
+                        :info="info"
+                    />
+                </div>
+            </section>
+
+            <EmptyState
+                v-else
+                title="Belum Ada Informasi"
+                description="Tidak ada pengumuman yang cocok dengan filter saat ini. Coba pilih kategori lain atau ubah urutan daftar."
+            />
         </main>
     </PublicLayout>
 </template>

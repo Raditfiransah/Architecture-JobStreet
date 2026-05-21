@@ -1,6 +1,6 @@
 <script setup>
 import { ref, computed, watch } from "vue";
-import { Head, Link, usePage, router } from "@inertiajs/vue3";
+import { Head, Link, usePage, router, useForm } from "@inertiajs/vue3";
 import PublicLayout from "@/Layouts/PublicLayout.vue";
 import { 
   MapPin, 
@@ -20,6 +20,17 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/Components/UI/ui/car
 import { Button } from "@/Components/UI/ui/button";
 import { Badge } from "@/Components/UI/ui/badge";
 import { Separator } from "@/Components/UI/ui/separator";
+import { Input } from "@/Components/UI/ui/input";
+import { Label } from "@/Components/UI/ui/label";
+import { Textarea } from "@/Components/UI/ui/textarea";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/Components/UI/ui/dialog";
 
 const props = defineProps({
   title: String,
@@ -59,12 +70,63 @@ const selectJob = (job) => {
   selectedJob.value = job;
 };
 
-const handleAction = (action) => {
-  if (!user.value) {
-    router.get(route('login'));
+const applyModalOpen = ref(false);
+const cvInputKey = ref(0);
+const applyForm = useForm({
+  cv: null,
+  notes: '',
+});
+
+const handleFileChange = (e) => {
+  applyForm.cv = e.target.files?.[0] || null;
+  applyForm.clearErrors('cv');
+};
+
+const resetApplyForm = () => {
+  applyForm.reset();
+  applyForm.clearErrors();
+  cvInputKey.value += 1;
+};
+
+const closeApplyModal = () => {
+  applyModalOpen.value = false;
+  resetApplyForm();
+};
+
+const submitApply = () => {
+  if (!selectedJob.value) return;
+
+  if (!applyForm.cv) {
+    applyForm.setError('cv', 'CV wajib dipilih sebelum mengirim lamaran.');
     return;
   }
-  console.log(`${action} job:`, selectedJob.value?.posisi);
+  
+  applyForm.post(route('arsitek.lamaran.store', selectedJob.value.id), {
+    forceFormData: true,
+    preserveScroll: true,
+    onSuccess: () => {
+      closeApplyModal();
+    },
+  });
+};
+
+watch(applyModalOpen, (isOpen) => {
+  if (!isOpen) {
+    resetApplyForm();
+  }
+});
+
+const handleAction = (action) => {
+  if (!user.value) {
+    router.visit(route('login'));
+    return;
+  }
+
+  if (action === 'apply') {
+    if (user.value.role === 'arsitek') {
+      applyModalOpen.value = true;
+    }
+  }
 };
 </script>
 
@@ -262,6 +324,68 @@ const handleAction = (action) => {
         </div>
       </section>
     </main>
+
+    <!-- Apply Job Modal -->
+    <Dialog v-model:open="applyModalOpen">
+      <DialogContent class="sm:max-w-[500px]">
+        <form @submit.prevent="submitApply">
+          <DialogHeader>
+            <DialogTitle>Lamar Lowongan</DialogTitle>
+            <DialogDescription v-if="selectedJob">
+              Kirimkan lamaran Anda untuk posisi <strong>{{ selectedJob.posisi }}</strong> di <strong>{{ selectedJob.perusahaan }}</strong>.
+            </DialogDescription>
+          </DialogHeader>
+
+          <div v-if="selectedJob" class="mt-5 rounded-lg border border-border bg-muted/30 p-4">
+            <p class="text-xs font-bold uppercase tracking-wider text-muted-foreground">{{ selectedJob.perusahaan }}</p>
+            <p class="mt-1 text-sm font-semibold text-foreground">{{ selectedJob.posisi }}</p>
+            <div class="mt-3 flex flex-wrap gap-2 text-xs text-muted-foreground">
+              <span class="inline-flex items-center gap-1"><MapPin class="h-3 w-3" /> {{ selectedJob.kota }}</span>
+              <span class="inline-flex items-center gap-1"><Briefcase class="h-3 w-3" /> {{ selectedJob.tipe }}</span>
+            </div>
+          </div>
+          
+          <div class="grid gap-6 py-6">
+            <div class="grid gap-2">
+              <Label htmlFor="cv">Curriculum Vitae</Label>
+              <Input 
+                :key="cvInputKey"
+                id="cv" 
+                type="file" 
+                accept=".pdf,.doc,.docx"
+                @change="handleFileChange"
+                :class="{ 'border-destructive': applyForm.errors.cv }"
+              />
+              <p class="text-[11px] text-muted-foreground">Wajib diisi. Format yang didukung: PDF, DOC, DOCX. Maksimal 5MB.</p>
+              <p v-if="applyForm.errors.cv" class="text-xs text-destructive mt-1">{{ applyForm.errors.cv }}</p>
+            </div>
+            
+            <div class="grid gap-2">
+              <Label htmlFor="notes">Catatan Tambahan (Opsional)</Label>
+              <Textarea 
+                id="notes" 
+                v-model="applyForm.notes"
+                placeholder="Tuliskan catatan singkat, pengalaman relevan, atau mengapa Anda cocok untuk posisi ini..."
+                rows="4"
+                :class="{ 'border-destructive': applyForm.errors.notes }"
+              />
+              <p v-if="applyForm.errors.notes" class="text-xs text-destructive mt-1">{{ applyForm.errors.notes }}</p>
+            </div>
+          </div>
+          
+          <DialogFooter>
+            <Button type="button" variant="outline" @click="closeApplyModal" :disabled="applyForm.processing">
+              Batal
+            </Button>
+            <Button type="submit" :disabled="applyForm.processing || !selectedJob">
+              <span v-if="applyForm.processing">Mengirim...</span>
+              <span v-else>Kirim Lamaran</span>
+            </Button>
+          </DialogFooter>
+        </form>
+      </DialogContent>
+    </Dialog>
+
   </PublicLayout>
 </template>
 
@@ -269,4 +393,5 @@ const handleAction = (action) => {
 .font-display {
   font-family: 'Outfit', sans-serif;
 }
-</style>
+</style> 
+

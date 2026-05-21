@@ -55,6 +55,7 @@ class DatabaseSeeder extends Seeder
 
         // Data Dummy Lowongan Kerja
         $this->call([
+            UserSeeder::class,
             LowonganSeeder::class,
             InfoHubSeeder::class,
         ]);

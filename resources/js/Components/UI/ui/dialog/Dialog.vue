@@ -12,7 +12,11 @@ const forwarded = useForwardPropsEmits(props, emits);
 </script>
 
 <template>
-  <DialogRoot v-bind="forwarded">
+  <DialogRoot
+    v-bind="forwarded"
+    :open="props.open"
+    @update:open="emits('update:open', $event)"
+  >
     <slot />
   </DialogRoot>
 </template>

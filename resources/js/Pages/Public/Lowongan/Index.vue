@@ -393,4 +393,5 @@ const handleAction = (action) => {
 .font-display {
   font-family: 'Outfit', sans-serif;
 }
-</style>
+</style> 
+

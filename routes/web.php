@@ -8,6 +8,8 @@ Route::get('/', function () {
 
 // ─── Public Directories ───────────────────────────────
 Route::get('/hire-arsitek', [\App\Http\Controllers\Public\ArsitekController::class, 'index'])->name('arsitek.index');
+Route::get('/proyek', [\App\Http\Controllers\Public\ProyekController::class, 'index'])->name('proyek.index');
+Route::get('/proyek/{id}', [\App\Http\Controllers\Public\ProyekController::class, 'show'])->name('proyek.show');
 Route::get('/arsitek/{id}', [\App\Http\Controllers\Public\ProfileViewController::class, 'showArsitek'])->name('public.arsitek.show');
 Route::get('/perusahaan/{id}', [\App\Http\Controllers\Public\ProfileViewController::class, 'showPerusahaan'])->name('public.perusahaan.show');
 

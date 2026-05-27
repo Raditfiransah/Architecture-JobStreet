@@ -11,7 +11,8 @@ import {
   ChevronRight,
   Search,
   CheckCircle,
-  MessageSquare
+  MessageSquare,
+  Plus
 } from "lucide-vue-next";
 import { Card, CardContent, CardHeader, CardTitle } from "@/Components/UI/ui/card";
 import { Button } from "@/Components/UI/ui/button";
@@ -33,6 +34,8 @@ const locationQuery = ref(props.filters?.location || "");
 
 const page = usePage();
 const user = computed(() => page.props.auth.user);
+const isClient = computed(() => user.value?.role === 'client');
+const isLoggedIn = computed(() => !!user.value);
 
 const architects = computed(() => props.arsiteks.data);
 const selectedArsitek = ref(architects.value && architects.value.length > 0 ? architects.value[0] : null);
@@ -55,12 +58,18 @@ const userInitials = (name) => {
   return name.split(' ').map(n => n[0]).join('').toUpperCase().substring(0, 2);
 };
 
-const handleContact = () => {
-    if (!user.value) {
-        router.get(route('login'));
-        return;
-    }
-    // Logic for contact/hire
+const handleHire = () => {
+  if (!isLoggedIn.value) {
+    router.get(route('login'));
+    return;
+  }
+  if (isClient.value) {
+    // Client: redirect to post a new project so architects can bid
+    router.get(route('client.proyek.create'));
+  } else {
+    // Other roles: redirect to their dashboard
+    router.get(route('home'));
+  }
 };
 </script>
 
@@ -153,11 +162,9 @@ const handleContact = () => {
                       </div>
 
                       <div class="flex items-center gap-3 shrink-0">
-                         <Button @click="handleContact" class="rounded-xl px-10 h-12 font-bold text-xs uppercase tracking-wider">
+                         <Button @click="handleHire" class="rounded-xl px-10 h-12 font-bold text-xs uppercase tracking-wider gap-2">
+                            <Plus class="w-4 h-4" />
                             Hire Architect
-                         </Button>
-                         <Button variant="outline" size="icon" class="rounded-xl w-12 h-12 border-border/60 hover:bg-slate-50">
-                            <MessageSquare class="w-5 h-5 text-slate-500" />
                          </Button>
                       </div>
                    </div>
@@ -221,8 +228,8 @@ const handleContact = () => {
                 <div class="bg-primary text-primary-foreground rounded-2xl p-8 relative overflow-hidden shadow-xl shadow-primary/10">
                    <h4 class="text-lg font-bold mb-3 relative z-10">Mulai Proyekmu?</h4>
                    <p class="text-xs font-bold mb-8 opacity-70 leading-loose relative z-10 tracking-wide">Hire Arsitek profesional untuk mewujudkan desain impian Anda.</p>
-                   <Button variant="secondary" class="w-full rounded-xl font-bold text-[11px] uppercase tracking-wider h-11 bg-white text-primary hover:bg-slate-50 relative z-10">
-                      Hubungi Sekarang
+                   <Button @click="handleHire" variant="secondary" class="w-full rounded-xl font-bold text-[11px] uppercase tracking-wider h-11 bg-white text-primary hover:bg-slate-50 relative z-10">
+                      Posting Proyek Sekarang
                    </Button>
                 </div>
              </div>

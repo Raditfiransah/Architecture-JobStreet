@@ -29,6 +29,7 @@ Route::middleware(['auth', 'verified', 'role:client'])
 
     // Kelola proposal masuk
     Route::get('/proyek/{id}/proposal', [ProposalController::class, 'index'])->name('proposal.index');
+    Route::get('/proyek/{id}/compare', [ProposalController::class, 'compare'])->name('proposal.compare');
     Route::get('/proyek/{id}/proposal/{propId}', [ProposalController::class, 'show'])->name('proposal.show');
     Route::post('/proposal/{propId}/terima', [ProposalController::class, 'terima'])->name('proposal.terima');
     Route::post('/proposal/{propId}/tolak', [ProposalController::class, 'tolak'])->name('proposal.tolak');

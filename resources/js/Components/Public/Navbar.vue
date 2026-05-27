@@ -163,6 +163,10 @@ const navLinks = computed(() => {
                   <User class="mr-3 h-4 w-4" />
                   <span>Profil Saya</span>
                 </Link>
+                <Link v-if="user.role === 'client'" :href="route('client.proyek.create')" class="flex items-center py-2 text-sm font-medium hover:text-primary transition-colors">
+                  <Briefcase class="mr-3 h-4 w-4" />
+                  <span>Posting Proyek Baru</span>
+                </Link>
                 <Link :href="route('logout')" method="post" as="button" class="flex items-center w-full py-2 text-sm font-medium text-destructive mt-1 hover:text-destructive/80 transition-colors">
                   <LogOut class="mr-3 h-4 w-4" />
                   <span>Keluar</span>

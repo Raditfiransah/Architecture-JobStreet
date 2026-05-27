@@ -3,29 +3,100 @@
 namespace App\Http\Controllers\Client;
 
 use App\Http\Controllers\Controller;
+use App\Models\Proposal;
+use App\Models\Proyek;
 use Illuminate\Http\Request;
+use Inertia\Inertia;
+use Illuminate\Support\Facades\DB;
 
 class ProposalController extends Controller
 {
     public function index(string $id)
     {
-        return view('client.proposal.index', compact('id'));
+        return redirect()->route('client.proyek.show', $id);
     }
 
     public function show(string $id, string $propId)
     {
-        return view('client.proposal.show', compact('id', 'propId'));
+        $project = Proyek::where('user_id', auth()->id())->findOrFail($id);
+        
+        $proposal = Proposal::where('proyek_id', $id)
+            ->with(['user.arsitekProfile'])
+            ->findOrFail($propId);
+
+        return Inertia::render('Client/Proyek/ProposalShow', [
+            'project' => $project,
+            'proposal' => $proposal
+        ]);
     }
 
     public function terima(string $propId)
     {
-        // TODO: Implement - terima proposal
-        return back()->with('status', 'Proposal berhasil diterima.');
+        $proposal = Proposal::with('proyek')->findOrFail($propId);
+
+        if ($proposal->proyek->user_id !== auth()->id()) {
+            abort(403, 'Unauthorized action.');
+        }
+
+        DB::transaction(function () use ($proposal) {
+            // Update this proposal status to diterima
+            $proposal->update([
+                'status' => 'diterima'
+            ]);
+
+            // Update other proposals for this project to ditolak
+            Proposal::where('proyek_id', $proposal->proyek_id)
+                ->where('id', '!=', $proposal->id)
+                ->update([
+                    'status' => 'ditolak'
+                ]);
+
+            // Close the project
+            $proposal->proyek->update([
+                'status' => 'ditutup'
+            ]);
+        });
+
+        return redirect()->route('client.proyek.show', $proposal->proyek_id)
+            ->with('status', 'Proposal berhasil diterima. Arsitek telah dipilih dan proyek telah ditutup.');
     }
 
     public function tolak(string $propId)
     {
-        // TODO: Implement - tolak proposal
-        return back()->with('status', 'Proposal berhasil ditolak.');
+        $proposal = Proposal::with('proyek')->findOrFail($propId);
+
+        if ($proposal->proyek->user_id !== auth()->id()) {
+            abort(403, 'Unauthorized action.');
+        }
+
+        $proposal->update([
+            'status' => 'ditolak'
+        ]);
+
+        return redirect()->route('client.proyek.show', $proposal->proyek_id)
+            ->with('status', 'Proposal berhasil ditolak.');
+    }
+
+    public function compare(Request $request, string $id)
+    {
+        $project = Proyek::where('user_id', auth()->id())->findOrFail($id);
+
+        $idsString = $request->query('ids');
+        if (!$idsString) {
+            return redirect()->route('client.proyek.show', $id)
+                ->with('error', 'Silakan pilih proposal untuk dibandingkan.');
+        }
+
+        $ids = explode(',', $idsString);
+
+        $proposals = Proposal::where('proyek_id', $id)
+            ->whereIn('id', $ids)
+            ->with(['user.arsitekProfile'])
+            ->get();
+
+        return Inertia::render('Client/Proyek/Compare', [
+            'project' => $project,
+            'proposals' => $proposals
+        ]);
     }
 }

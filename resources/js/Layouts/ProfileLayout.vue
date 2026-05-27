@@ -83,6 +83,7 @@ const menuItems = computed(() => {
       { group: 'Kelola Portofolio & Lamaran', items: [
         { label: 'Portofolio', icon: Briefcase, href: route('arsitek.portofolio.index') },
         { label: 'Aktivitas Lamaran', icon: History, href: route('arsitek.lamaran.index') },
+        { label: 'Proposal Proyek', icon: FileText, href: route('arsitek.proposal.index') },
       ]},
       { group: 'Mengelola Akun', items: [
         { label: 'Pengaturan Akun', icon: Settings, href: route('arsitek.pengaturan.index') },

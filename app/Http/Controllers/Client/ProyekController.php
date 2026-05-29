@@ -3,8 +3,9 @@
 namespace App\Http\Controllers\Client;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Marketplace\StoreProyekRequest;
+use App\Http\Requests\Marketplace\UpdateProyekRequest;
 use App\Models\Proyek;
-use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Storage;
 
@@ -27,16 +28,9 @@ class ProyekController extends Controller
         return Inertia::render('Client/Proyek/Create');
     }
 
-    public function store(Request $request)
+    public function store(StoreProyekRequest $request)
     {
-        $request->validate([
-            'title' => 'required|string|max:255',
-            'description' => 'required|string',
-            'budget' => 'required|numeric|min:0',
-            'category' => 'required|string|max:100',
-            'location' => 'required|string|max:100',
-            'attachment' => 'nullable|file|mimes:pdf,zip,jpg,png,doc,docx|max:10240', // max 10MB
-        ]);
+        $validated = $request->validated();
 
         $attachment_path = null;
         if ($request->hasFile('attachment')) {
@@ -45,11 +39,11 @@ class ProyekController extends Controller
 
         Proyek::create([
             'user_id' => auth()->id(),
-            'title' => $request->title,
-            'description' => $request->description,
-            'budget' => $request->budget,
-            'category' => $request->category,
-            'location' => $request->location,
+            'title' => $validated['title'],
+            'description' => $validated['description'],
+            'budget' => $validated['budget'],
+            'category' => $validated['category'],
+            'location' => $validated['location'],
             'attachment_path' => $attachment_path,
             'status' => 'aktif',
         ]);
@@ -79,18 +73,15 @@ class ProyekController extends Controller
         ]);
     }
 
-    public function update(Request $request, string $id)
+    public function update(UpdateProyekRequest $request, string $id)
     {
         $project = Proyek::where('user_id', auth()->id())->findOrFail($id);
 
-        $request->validate([
-            'title' => 'required|string|max:255',
-            'description' => 'required|string',
-            'budget' => 'required|numeric|min:0',
-            'category' => 'required|string|max:100',
-            'location' => 'required|string|max:100',
-            'attachment' => 'nullable|file|mimes:pdf,zip,jpg,png,doc,docx|max:10240',
-        ]);
+        if ($project->status !== 'aktif') {
+            return back()->with('error', 'Proyek yang sudah ditutup tidak dapat diperbarui.');
+        }
+
+        $validated = $request->validated();
 
         $attachment_path = $project->attachment_path;
         if ($request->hasFile('attachment')) {
@@ -101,11 +92,11 @@ class ProyekController extends Controller
         }
 
         $project->update([
-            'title' => $request->title,
-            'description' => $request->description,
-            'budget' => $request->budget,
-            'category' => $request->category,
-            'location' => $request->location,
+            'title' => $validated['title'],
+            'description' => $validated['description'],
+            'budget' => $validated['budget'],
+            'category' => $validated['category'],
+            'location' => $validated['location'],
             'attachment_path' => $attachment_path,
         ]);
 
@@ -115,6 +106,10 @@ class ProyekController extends Controller
     public function tutup(string $id)
     {
         $project = Proyek::where('user_id', auth()->id())->findOrFail($id);
+
+        if ($project->status !== 'aktif') {
+            return back()->with('error', 'Proyek ini sudah tidak aktif.');
+        }
         
         $project->update([
             'status' => 'ditutup'

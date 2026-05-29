@@ -10,7 +10,7 @@ const error = computed(() => {
 });
 
 const success = computed(() => {
-    return page.props.flash?.success || page.props.status;
+    return page.props.flash?.success || page.props.flash?.status || page.props.status;
 });
 </script>
 

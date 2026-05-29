@@ -46,6 +46,8 @@ const getStatusIcon = (status) => {
     default: return Hourglass;
   }
 };
+
+const projectFor = (proposal) => proposal.proyek || {};
 </script>
 
 <template>
@@ -70,11 +72,12 @@ const getStatusIcon = (status) => {
                   <Building2 class="w-6 h-6" />
                 </div>
                 <div class="min-w-0">
-                  <span class="text-[9px] font-black text-primary uppercase tracking-wider bg-primary/5 px-2.5 py-0.5 rounded-md leading-none">{{ proposal.proyek.category }}</span>
-                  <Link :href="route('proyek.show', proposal.proyek.id)" class="hover:text-primary transition-colors block mt-2">
-                    <h3 class="font-bold text-slate-800 text-base leading-snug truncate">{{ proposal.proyek.title }}</h3>
+                  <span class="text-[9px] font-black text-primary uppercase tracking-wider bg-primary/5 px-2.5 py-0.5 rounded-md leading-none">{{ projectFor(proposal).category || 'Proyek' }}</span>
+                  <Link v-if="projectFor(proposal).id" :href="route('proyek.show', projectFor(proposal).id)" class="hover:text-primary transition-colors block mt-2">
+                    <h3 class="font-bold text-slate-800 text-base leading-snug truncate">{{ projectFor(proposal).title || 'Proyek tidak tersedia' }}</h3>
                   </Link>
-                  <p class="text-xs text-slate-400 font-semibold mt-1 flex items-center gap-1"><MapPin class="w-3.5 h-3.5" /> {{ proposal.proyek.location }}</p>
+                  <h3 v-else class="font-bold text-slate-800 text-base leading-snug truncate mt-2">Proyek tidak tersedia</h3>
+                  <p class="text-xs text-slate-400 font-semibold mt-1 flex items-center gap-1"><MapPin class="w-3.5 h-3.5" /> {{ projectFor(proposal).location || 'Lokasi tidak tersedia' }}</p>
                   
                   <div class="flex items-center gap-4 mt-3 text-xs text-slate-500 font-semibold">
                     <span class="flex items-center gap-1.5"><Clock class="w-3.5 h-3.5" /> Dikirim: {{ new Date(proposal.created_at).toLocaleDateString('id-ID', { month: 'short', day: 'numeric', year: 'numeric' }) }}</span>

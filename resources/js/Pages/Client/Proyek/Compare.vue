@@ -39,6 +39,16 @@ const formatCurrency = (value) => {
   }).format(value);
 };
 
+const architectUser = (proposal) => proposal.user || {};
+
+const architectProfile = (proposal) => architectUser(proposal).arsitek_profile || {};
+
+const architectName = (proposal) => architectUser(proposal).name || 'Arsitek';
+
+const architectInitials = (proposal) => {
+  return architectName(proposal).split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
+};
+
 const acceptProposal = (propId) => {
   if (confirm("Apakah Anda yakin ingin menerima proposal dari arsitek ini? Menerima proposal ini akan menutup pendaftaran dan secara otomatis menolak proposal lainnya.")) {
     router.post(route('client.proposal.terima', propId));
@@ -77,24 +87,24 @@ const acceptProposal = (propId) => {
             <!-- Architect Header Profile -->
             <div class="text-center space-y-3 pb-5 border-b border-slate-100">
               <Avatar class="h-16 w-16 mx-auto rounded-2xl border border-slate-100 shadow-sm">
-                <AvatarImage :src="proposal.user.avatar_url" />
+                <AvatarImage :src="architectUser(proposal).avatar_url" />
                 <AvatarFallback class="bg-primary/5 text-primary font-bold text-lg">
-                  {{ proposal.user.name.split(' ').map(n=>n[0]).join('').substring(0,2).toUpperCase() }}
+                  {{ architectInitials(proposal) }}
                 </AvatarFallback>
               </Avatar>
               
               <div class="space-y-1">
                 <div class="flex items-center justify-center gap-1.5 flex-wrap">
-                  <h3 class="font-bold text-slate-800 text-lg leading-tight">{{ proposal.user.name }}</h3>
+                  <h3 class="font-bold text-slate-800 text-lg leading-tight">{{ architectName(proposal) }}</h3>
                 </div>
-                <span v-if="proposal.user.arsitek_profile?.verification_status === 'verified'" class="inline-flex bg-emerald-50 text-emerald-700 text-[9px] font-black px-2 py-0.5 rounded-full border border-emerald-100 uppercase tracking-wider items-center gap-1">
+                <span v-if="architectProfile(proposal).verification_status === 'verified'" class="inline-flex bg-emerald-50 text-emerald-700 text-[9px] font-black px-2 py-0.5 rounded-full border border-emerald-100 uppercase tracking-wider items-center gap-1">
                   <CheckCircle class="w-2.5 h-2.5" /> Terverifikasi
                 </span>
                 <p class="text-xs text-slate-400 font-semibold">
-                  {{ proposal.user.arsitek_profile?.status_pekerjaan || 'Arsitek Profesional' }}
+                  {{ architectProfile(proposal).status_pekerjaan || 'Arsitek Profesional' }}
                 </p>
                 <p class="text-xs text-slate-500 font-medium flex items-center justify-center gap-1">
-                  <MapPin class="w-3.5 h-3.5 text-slate-400 shrink-0" /> {{ proposal.user.location || 'Lokasi belum diatur' }}
+                  <MapPin class="w-3.5 h-3.5 text-slate-400 shrink-0" /> {{ architectUser(proposal).location || 'Lokasi belum diatur' }}
                 </p>
               </div>
             </div>

@@ -38,6 +38,16 @@ class ProposalController extends Controller
             abort(403, 'Unauthorized action.');
         }
 
+        if ($proposal->proyek->status !== 'aktif') {
+            return redirect()->route('client.proyek.show', $proposal->proyek_id)
+                ->with('error', 'Proyek ini sudah ditutup.');
+        }
+
+        if ($proposal->status !== 'pending') {
+            return redirect()->route('client.proyek.show', $proposal->proyek_id)
+                ->with('error', 'Hanya proposal pending yang dapat diterima.');
+        }
+
         DB::transaction(function () use ($proposal) {
             // Update this proposal status to diterima
             $proposal->update([
@@ -67,6 +77,16 @@ class ProposalController extends Controller
 
         if ($proposal->proyek->user_id !== auth()->id()) {
             abort(403, 'Unauthorized action.');
+        }
+
+        if ($proposal->proyek->status !== 'aktif') {
+            return redirect()->route('client.proyek.show', $proposal->proyek_id)
+                ->with('error', 'Proyek ini sudah ditutup.');
+        }
+
+        if ($proposal->status !== 'pending') {
+            return redirect()->route('client.proyek.show', $proposal->proyek_id)
+                ->with('error', 'Hanya proposal pending yang dapat ditolak.');
         }
 
         $proposal->update([

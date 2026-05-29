@@ -31,6 +31,7 @@ import { Card, CardContent } from "@/Components/UI/ui/card";
 import { Separator } from "@/Components/UI/ui/separator";
 import Navbar from "@/Components/Public/Navbar.vue";
 import VerificationBadge from '@/Components/Profile/VerificationBadge.vue';
+import FlashMessage from "@/Components/Public/FlashMessage.vue";
 
 const page = usePage();
 const user = computed(() => page.props.auth.user || {});
@@ -231,6 +232,7 @@ const logout = () => {
 
          <!-- Main Content (2/3) -->
          <main class="flex-1 w-full space-y-6">
+           <FlashMessage />
            <slot />
          </main>
       </div>

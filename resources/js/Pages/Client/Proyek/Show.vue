@@ -37,6 +37,7 @@ const props = defineProps({
 });
 
 const selectedBids = ref([]);
+const projectProposals = computed(() => props.project.proposals || []);
 
 const formatCurrency = (value) => {
   return new Intl.NumberFormat('id-ID', {
@@ -61,6 +62,16 @@ const getProposalStatusColor = (status) => {
     case 'ditolak': return 'bg-rose-100 text-rose-800 border-rose-200';
     default: return 'bg-amber-100 text-amber-800 border-amber-200';
   }
+};
+
+const architectUser = (proposal) => proposal.user || {};
+
+const architectProfile = (proposal) => architectUser(proposal).arsitek_profile || {};
+
+const architectName = (proposal) => architectUser(proposal).name || 'Arsitek';
+
+const architectInitials = (proposal) => {
+  return architectName(proposal).split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
 };
 
 const toggleBidSelection = (bidId) => {
@@ -182,11 +193,11 @@ const closeProject = () => {
           <h2 class="text-xl font-display font-bold">Proposal Penawaran Masuk</h2>
           <p class="text-xs text-slate-500 mt-0.5">Berikut adalah arsitek yang mengajukan penawaran untuk proyek Anda.</p>
         </div>
-        <span class="bg-primary text-white font-bold text-xs px-3 py-1 rounded-full">{{ project.proposals ? project.proposals.length : 0 }} Proposal</span>
+        <span class="bg-primary text-white font-bold text-xs px-3 py-1 rounded-full">{{ projectProposals.length }} Proposal</span>
       </div>
 
       <!-- Proposal Cards Grid/List -->
-      <div v-if="project.proposals && project.proposals.length > 0" class="space-y-4">
+      <div v-if="projectProposals.length > 0" class="space-y-4">
         <!-- Select Bids Help Alert if comparing -->
         <div class="bg-primary/5 border border-primary/10 p-4 rounded-2xl flex items-center justify-between" v-if="project.status === 'aktif'">
           <div class="flex items-center gap-3 text-sm font-semibold text-slate-700">
@@ -196,7 +207,7 @@ const closeProject = () => {
           <span class="text-xs font-bold text-primary uppercase tracking-wider" v-if="selectedBids.length > 0">{{ selectedBids.length }} Terpilih</span>
         </div>
 
-        <div v-for="proposal in project.proposals" :key="proposal.id" 
+        <div v-for="proposal in projectProposals" :key="proposal.id" 
              :class="[
                'bg-white border rounded-3xl overflow-hidden transition-all duration-300 relative',
                selectedBids.includes(proposal.id) ? 'border-primary shadow-md' : 'border-slate-100 shadow-sm hover:shadow-md'
@@ -218,25 +229,25 @@ const closeProject = () => {
                 </button>
 
                 <Avatar class="h-12 w-12 rounded-xl border border-slate-100 shrink-0">
-                  <AvatarImage :src="proposal.user.avatar_url" />
+                  <AvatarImage :src="architectUser(proposal).avatar_url" />
                   <AvatarFallback class="bg-primary/5 text-primary font-bold text-sm">
-                    {{ proposal.user.name.split(' ').map(n=>n[0]).join('').substring(0,2).toUpperCase() }}
+                    {{ architectInitials(proposal) }}
                   </AvatarFallback>
                 </Avatar>
 
                 <div class="min-w-0">
                   <div class="flex items-center gap-2 flex-wrap">
-                    <h4 class="font-bold text-slate-800 truncate text-base leading-tight">{{ proposal.user.name }}</h4>
-                    <span v-if="proposal.user.arsitek_profile?.verification_status === 'verified'" class="bg-emerald-50 text-emerald-700 text-[10px] font-bold px-2 py-0.5 rounded-full border border-emerald-100 flex items-center gap-1 shrink-0">
+                    <h4 class="font-bold text-slate-800 truncate text-base leading-tight">{{ architectName(proposal) }}</h4>
+                    <span v-if="architectProfile(proposal).verification_status === 'verified'" class="bg-emerald-50 text-emerald-700 text-[10px] font-bold px-2 py-0.5 rounded-full border border-emerald-100 flex items-center gap-1 shrink-0">
                       <CheckCircle class="w-3 h-3" /> Terverifikasi
                     </span>
                   </div>
                   <p class="text-xs text-slate-400 mt-1 font-semibold truncate">
-                    {{ proposal.user.arsitek_profile?.status_pekerjaan || 'Arsitek Profesional' }}
+                    {{ architectProfile(proposal).status_pekerjaan || 'Arsitek Profesional' }}
                   </p>
                   
                   <div class="flex flex-wrap gap-x-4 gap-y-1 mt-3 items-center text-xs font-semibold text-slate-500">
-                    <span class="flex items-center gap-1"><MapPin class="w-3.5 h-3.5 text-slate-400" /> {{ proposal.user.location || 'Lokasi belum diatur' }}</span>
+                    <span class="flex items-center gap-1"><MapPin class="w-3.5 h-3.5 text-slate-400" /> {{ architectUser(proposal).location || 'Lokasi belum diatur' }}</span>
                     <span class="flex items-center gap-1"><Clock class="w-3.5 h-3.5 text-slate-400" /> Diajukan {{ new Date(proposal.created_at).toLocaleDateString('id-ID', { month: 'short', day: 'numeric', year: 'numeric' }) }}</span>
                   </div>
                 </div>

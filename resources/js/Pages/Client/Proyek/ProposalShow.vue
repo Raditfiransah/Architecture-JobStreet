@@ -34,6 +34,16 @@ const props = defineProps({
   }
 });
 
+const architectUser = () => props.proposal.user || {};
+
+const architectProfile = () => architectUser().arsitek_profile || {};
+
+const architectName = () => architectUser().name || 'Arsitek';
+
+const architectInitials = () => {
+  return architectName().split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
+};
+
 const formatCurrency = (value) => {
   return new Intl.NumberFormat('id-ID', {
     style: 'currency',
@@ -74,7 +84,7 @@ const rejectProposal = () => {
 
 <template>
   <ProfileLayout>
-    <Head :title="'Detail Proposal - ' + proposal.user.name" />
+    <Head :title="'Detail Proposal - ' + architectName()" />
 
     <div class="space-y-8 animate-in slide-in-from-bottom-4 duration-500">
 
@@ -125,29 +135,29 @@ const rejectProposal = () => {
             <CardContent class="p-6 md:p-8">
               <div class="flex items-start gap-5">
                 <Avatar class="h-16 w-16 rounded-2xl border border-slate-100 shadow-sm shrink-0">
-                  <AvatarImage :src="proposal.user.avatar_url" />
+                  <AvatarImage :src="architectUser().avatar_url" />
                   <AvatarFallback class="bg-primary/5 text-primary font-bold text-lg">
-                    {{ proposal.user.name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase() }}
+                    {{ architectInitials() }}
                   </AvatarFallback>
                 </Avatar>
 
                 <div class="flex-1 min-w-0 space-y-2">
                   <div class="flex items-center gap-2 flex-wrap">
-                    <h3 class="font-bold text-slate-800 text-lg leading-tight">{{ proposal.user.name }}</h3>
+                    <h3 class="font-bold text-slate-800 text-lg leading-tight">{{ architectName() }}</h3>
                     <span
-                      v-if="proposal.user.arsitek_profile?.verification_status === 'verified'"
+                      v-if="architectProfile().verification_status === 'verified'"
                       class="inline-flex items-center gap-1 bg-emerald-50 text-emerald-700 text-[9px] font-black px-2 py-0.5 rounded-full border border-emerald-100 uppercase tracking-wider"
                     >
                       <CheckCircle class="w-2.5 h-2.5" /> Terverifikasi
                     </span>
                   </div>
                   <p class="text-xs text-slate-500 font-semibold">
-                    {{ proposal.user.arsitek_profile?.status_pekerjaan || 'Arsitek Profesional' }}
+                    {{ architectProfile().status_pekerjaan || 'Arsitek Profesional' }}
                   </p>
                   <div class="flex flex-wrap gap-x-4 gap-y-1 text-xs font-semibold text-slate-400">
                     <span class="flex items-center gap-1.5">
                       <MapPin class="w-3.5 h-3.5" />
-                      {{ proposal.user.location || 'Lokasi belum diatur' }}
+                      {{ architectUser().location || 'Lokasi belum diatur' }}
                     </span>
                     <span class="flex items-center gap-1.5">
                       <Clock class="w-3.5 h-3.5" />
@@ -156,7 +166,8 @@ const rejectProposal = () => {
                   </div>
                   <div class="pt-2">
                     <a
-                      :href="route('public.arsitek.show', proposal.user.id)"
+                      v-if="architectUser().id"
+                      :href="route('public.arsitek.show', architectUser().id)"
                       target="_blank"
                       class="text-xs font-bold text-primary hover:underline inline-flex items-center gap-1"
                     >

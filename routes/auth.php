@@ -5,7 +5,6 @@ use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\Auth\OtpVerificationController;
 use App\Http\Controllers\Auth\PasswordResetController;
 use App\Http\Controllers\Public\LowonganController;
-use App\Http\Controllers\Public\ProyekController;
 use App\Http\Controllers\Public\ArsitekController;
 use App\Http\Controllers\Public\InfoHubController;
 use Illuminate\Support\Facades\Route;
@@ -30,10 +29,6 @@ Route::middleware('guest')->group(function () {
 
 // ─── Fitur Utama (butuh login) ────────────────────────────────────────
 Route::middleware('auth')->group(function () {
-    // Proyek
-    Route::get('/proyek', [ProyekController::class, 'index'])->name('proyek.index');
-    Route::get('/proyek/{id}', [ProyekController::class, 'show'])->name('proyek.show');
-
     // Arsitek
     Route::get('/arsitek', [ArsitekController::class, 'index'])->name('arsitek.direktori');
     Route::get('/arsitek/{username}', [ArsitekController::class, 'show'])->name('arsitek.profil');

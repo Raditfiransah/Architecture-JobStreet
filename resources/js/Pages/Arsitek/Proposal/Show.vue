@@ -68,6 +68,10 @@ const getStatusMessage = (status) => {
   }
 };
 
+const project = () => props.proposal.proyek || {};
+
+const projectOwner = () => project().user || {};
+
 const onFileChange = (e) => {
   const file = e.target.files[0];
   if (file) {
@@ -262,17 +266,18 @@ const updateProposal = () => {
             </CardHeader>
             <CardContent class="p-5 space-y-4">
               <div class="space-y-2">
-                <span class="text-[9px] font-black text-primary uppercase tracking-wider bg-primary/5 px-2.5 py-0.5 rounded-md inline-block leading-none">{{ proposal.proyek.category }}</span>
-                <Link :href="route('proyek.show', proposal.proyek.id)" class="hover:text-primary transition-colors block mt-2">
-                  <h3 class="font-extrabold text-slate-800 text-sm leading-snug">{{ proposal.proyek.title }}</h3>
+                <span class="text-[9px] font-black text-primary uppercase tracking-wider bg-primary/5 px-2.5 py-0.5 rounded-md inline-block leading-none">{{ project().category || 'Proyek' }}</span>
+                <Link v-if="project().id" :href="route('proyek.show', project().id)" class="hover:text-primary transition-colors block mt-2">
+                  <h3 class="font-extrabold text-slate-800 text-sm leading-snug">{{ project().title || 'Proyek tidak tersedia' }}</h3>
                 </Link>
+                <h3 v-else class="font-extrabold text-slate-800 text-sm leading-snug mt-2">Proyek tidak tersedia</h3>
               </div>
 
               <div class="flex items-center gap-3.5 pt-2">
                 <div class="w-8 h-8 rounded-lg bg-slate-50 flex items-center justify-center shrink-0 border border-slate-100"><User class="w-4 h-4 text-slate-400" /></div>
                 <div>
                   <p class="text-[9px] font-bold text-slate-400 uppercase tracking-wider">Pemilik Proyek</p>
-                  <p class="text-xs font-bold text-slate-700 truncate max-w-[130px]">{{ proposal.proyek.user?.name || 'Client Web-Architect' }}</p>
+                  <p class="text-xs font-bold text-slate-700 truncate max-w-[130px]">{{ projectOwner().name || 'Client Web-Architect' }}</p>
                 </div>
               </div>
 
@@ -280,7 +285,7 @@ const updateProposal = () => {
                 <div class="w-8 h-8 rounded-lg bg-slate-50 flex items-center justify-center shrink-0 border border-slate-100"><MapPin class="w-4 h-4 text-slate-400" /></div>
                 <div>
                   <p class="text-[9px] font-bold text-slate-400 uppercase tracking-wider">Lokasi Proyek</p>
-                  <p class="text-xs font-bold text-slate-700">{{ proposal.proyek.location }}</p>
+                  <p class="text-xs font-bold text-slate-700">{{ project().location || 'Lokasi tidak tersedia' }}</p>
                 </div>
               </div>
 
@@ -288,7 +293,7 @@ const updateProposal = () => {
                 <div class="w-8 h-8 rounded-lg bg-slate-50 flex items-center justify-center shrink-0 border border-slate-100"><Calendar class="w-4 h-4 text-slate-400" /></div>
                 <div>
                   <p class="text-[9px] font-bold text-slate-400 uppercase tracking-wider">Anggaran Klien</p>
-                  <p class="text-xs font-bold text-primary">{{ formatCurrency(proposal.proyek.budget) }}</p>
+                  <p class="text-xs font-bold text-primary">{{ formatCurrency(project().budget || 0) }}</p>
                 </div>
               </div>
             </CardContent>

@@ -3,9 +3,11 @@
 namespace App\Http\Controllers\Arsitek;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Marketplace\StoreProposalRequest;
+use App\Http\Requests\Marketplace\UpdateProposalRequest;
 use App\Models\Proposal;
 use App\Models\Proyek;
-use Illuminate\Http\Request;
+use Illuminate\Database\QueryException;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Storage;
 
@@ -34,12 +36,16 @@ class ProposalController extends Controller
         ]);
     }
 
-    public function store(Request $request, string $id)
+    public function store(StoreProposalRequest $request, string $id)
     {
         // Check if project exists and is active
         $project = Proyek::findOrFail($id);
         if ($project->status !== 'aktif') {
             return back()->with('error', 'Proyek ini sudah ditutup untuk proposal baru.');
+        }
+
+        if ((int) $project->user_id === (int) auth()->id()) {
+            return back()->with('error', 'Anda tidak dapat mengirim proposal ke proyek sendiri.');
         }
 
         // Check if already bid
@@ -51,43 +57,41 @@ class ProposalController extends Controller
             return back()->with('error', 'Anda sudah mengirimkan proposal untuk proyek ini.');
         }
 
-        $request->validate([
-            'bid_amount' => 'required|numeric|min:0',
-            'estimated_time' => 'required|integer|min:1', // hari
-            'description' => 'required|string', // pitch
-            'attachment' => 'nullable|file|mimes:pdf,zip,jpg,png,doc,docx|max:10240', // 10MB
-        ]);
+        $validated = $request->validated();
 
         $attachment_path = null;
         if ($request->hasFile('attachment')) {
             $attachment_path = $request->file('attachment')->store('proposal/attachments', 'public');
         }
 
-        Proposal::create([
-            'user_id' => auth()->id(),
-            'proyek_id' => $id,
-            'bid_amount' => $request->bid_amount,
-            'estimated_time' => $request->estimated_time,
-            'description' => $request->description,
-            'attachment_path' => $attachment_path,
-            'status' => 'pending',
-        ]);
+        try {
+            Proposal::create([
+                'user_id' => auth()->id(),
+                'proyek_id' => $id,
+                'bid_amount' => $validated['bid_amount'],
+                'estimated_time' => $validated['estimated_time'],
+                'description' => $validated['description'],
+                'attachment_path' => $attachment_path,
+                'status' => 'pending',
+            ]);
+        } catch (QueryException $exception) {
+            if ($attachment_path) {
+                Storage::disk('public')->delete($attachment_path);
+            }
+
+            return back()->with('error', 'Anda sudah mengirimkan proposal untuk proyek ini.');
+        }
 
         return redirect()->route('arsitek.proposal.index')->with('status', 'Proposal berhasil dikirim.');
     }
 
-    public function update(Request $request, string $id)
+    public function update(UpdateProposalRequest $request, string $id)
     {
         $proposal = Proposal::where('user_id', auth()->id())
             ->where('status', 'pending')
             ->findOrFail($id);
 
-        $request->validate([
-            'bid_amount' => 'required|numeric|min:0',
-            'estimated_time' => 'required|integer|min:1',
-            'description' => 'required|string',
-            'attachment' => 'nullable|file|mimes:pdf,zip,jpg,png,doc,docx|max:10240',
-        ]);
+        $validated = $request->validated();
 
         $attachment_path = $proposal->attachment_path;
         if ($request->hasFile('attachment')) {
@@ -98,9 +102,9 @@ class ProposalController extends Controller
         }
 
         $proposal->update([
-            'bid_amount' => $request->bid_amount,
-            'estimated_time' => $request->estimated_time,
-            'description' => $request->description,
+            'bid_amount' => $validated['bid_amount'],
+            'estimated_time' => $validated['estimated_time'],
+            'description' => $validated['description'],
             'attachment_path' => $attachment_path,
         ]);
 

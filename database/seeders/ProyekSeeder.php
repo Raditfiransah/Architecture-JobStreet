@@ -18,9 +18,10 @@ class ProyekSeeder extends Seeder
     public function run(): void
     {
         // 1. Create a Default Client
-        $clientUser = User::create([
-            'name' => 'Budi Wijaya (Client)',
+        $clientUser = User::updateOrCreate([
             'email' => 'client@example.com',
+        ], [
+            'name' => 'Budi Wijaya (Client)',
             'password' => Hash::make('password'),
             'role' => 'client',
             'is_active' => true,
@@ -30,8 +31,9 @@ class ProyekSeeder extends Seeder
             'email_verified_at' => now(),
         ]);
 
-        ClientProfile::create([
+        ClientProfile::updateOrCreate([
             'user_id' => $clientUser->id,
+        ], [
             'client_type' => 'Perorangan',
             'address' => 'Jl. Ijen No. 12, Malang',
             'project_interests' => ['Residensial', 'Komersial', 'Desain Interior'],
@@ -39,9 +41,10 @@ class ProyekSeeder extends Seeder
         ]);
 
         // 2. Create a Default Architect
-        $arsitekUser = User::create([
-            'name' => 'Ahmad Dani (Arsitek)',
+        $arsitekUser = User::updateOrCreate([
             'email' => 'arsitek@example.com',
+        ], [
+            'name' => 'Ahmad Dani (Arsitek)',
             'password' => Hash::make('password'),
             'role' => 'arsitek',
             'is_active' => true,
@@ -51,10 +54,11 @@ class ProyekSeeder extends Seeder
             'email_verified_at' => now(),
         ]);
 
-        ArsitekProfile::create([
+        ArsitekProfile::updateOrCreate([
             'user_id' => $arsitekUser->id,
+        ], [
             'status_pekerjaan' => 'Arsitek Profesional (IAI)',
-            'education_institution' => 'Institut Teknologi Sepuluh Nopember',
+            'school' => 'Institut Teknologi Sepuluh Nopember',
             'software_skills' => ['AutoCAD', 'SketchUp', 'Revit', '3ds Max', 'Lumion'],
             'location' => 'Surabaya',
             'bio' => 'Arsitek berpengalaman merancang bangunan residensial modern kontemporer dan vila mewah ramah lingkungan.',
@@ -62,7 +66,10 @@ class ProyekSeeder extends Seeder
         ]);
 
         // 3. Create Sample Projects posted by the Client
-        $proyek1 = Proyek::create([
+        $proyek1 = Proyek::updateOrCreate([
+            'user_id' => $clientUser->id,
+            'title' => 'Desain Vila Modern Tropis Bali',
+        ], [
             'user_id' => $clientUser->id,
             'title' => 'Desain Vila Modern Tropis Bali',
             'category' => 'Residensial (Rumah, Villa, Apartemen)',
@@ -72,7 +79,10 @@ class ProyekSeeder extends Seeder
             'status' => 'aktif',
         ]);
 
-        $proyek2 = Proyek::create([
+        Proyek::updateOrCreate([
+            'user_id' => $clientUser->id,
+            'title' => 'Desain Interior Kafe Minimalis Malang',
+        ], [
             'user_id' => $clientUser->id,
             'title' => 'Desain Interior Kafe Minimalis Malang',
             'category' => 'Desain Interior',
@@ -82,7 +92,10 @@ class ProyekSeeder extends Seeder
             'status' => 'aktif',
         ]);
 
-        $proyek3 = Proyek::create([
+        Proyek::updateOrCreate([
+            'user_id' => $clientUser->id,
+            'title' => 'Boutique Hotel & Resort Lombok',
+        ], [
             'user_id' => $clientUser->id,
             'title' => 'Boutique Hotel & Resort Lombok',
             'category' => 'Komersial (Ruko, Kantor, Hotel, Kafe)',
@@ -93,7 +106,10 @@ class ProyekSeeder extends Seeder
         ]);
 
         // 4. Create an initial sample proposal from the architect to Proyek 1
-        Proposal::create([
+        Proposal::updateOrCreate([
+            'user_id' => $arsitekUser->id,
+            'proyek_id' => $proyek1->id,
+        ], [
             'user_id' => $arsitekUser->id,
             'proyek_id' => $proyek1->id,
             'bid_amount' => 40000000,

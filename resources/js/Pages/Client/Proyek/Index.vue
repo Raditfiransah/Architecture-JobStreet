@@ -1,5 +1,5 @@
 <script setup>
-import { Head, Link } from '@inertiajs/vue3';
+import { Head, Link, router } from '@inertiajs/vue3';
 import ProfileLayout from '@/Layouts/ProfileLayout.vue';
 import { 
   Building2, 
@@ -37,6 +37,14 @@ const getStatusColor = (status) => {
     case 'selesai': return 'bg-green-100 text-green-700 border-green-200';
     case 'ditutup': return 'bg-slate-100 text-slate-700 border-slate-200';
     default: return 'bg-yellow-100 text-yellow-700 border-yellow-200';
+  }
+};
+
+const deleteProject = (project) => {
+  if (confirm(`Apakah Anda yakin ingin menghapus proyek "${project.title}"?`)) {
+    router.delete(route('client.proyek.destroy', project.id), {
+      preserveScroll: true,
+    });
   }
 };
 </script>
@@ -92,9 +100,9 @@ const getStatusColor = (status) => {
                     <Clock class="w-3.5 h-3.5" />
                     Dibuat: {{ project.created_at_formatted || 'Baru saja' }}
                   </span>
-                  <span v-if="project.proposal_count" class="flex items-center gap-1.5">
+                  <span v-if="project.proposals_count" class="flex items-center gap-1.5">
                     <ArrowUpRight class="w-3.5 h-3.5" />
-                    {{ project.proposal_count }} Proposal Masuk
+                    {{ project.proposals_count }} Proposal Masuk
                   </span>
                 </div>
               </div>
@@ -121,7 +129,7 @@ const getStatusColor = (status) => {
                       <FileEdit class="mr-2 h-4 w-4" /> Edit Proyek
                     </Link>
                   </DropdownMenuItem>
-                  <DropdownMenuItem class="rounded-lg text-destructive cursor-pointer hover:bg-destructive/5 hover:text-destructive">
+                  <DropdownMenuItem class="rounded-lg text-destructive cursor-pointer hover:bg-destructive/5 hover:text-destructive" @click="deleteProject(project)">
                     <Trash2 class="mr-2 h-4 w-4" /> Hapus Proyek
                   </DropdownMenuItem>
                 </DropdownMenuContent>

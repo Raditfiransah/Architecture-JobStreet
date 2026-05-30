@@ -9,7 +9,11 @@ import {
   CheckCircle, 
   Briefcase,
   ChevronRight,
-  Search
+  Search,
+  Clock,
+  ArrowUpRight,
+  Building2,
+  MoreVertical
 } from "lucide-vue-next";
 import { Button } from "@/Components/UI/ui/button";
 import { Card, CardContent } from "@/Components/UI/ui/card";
@@ -17,7 +21,20 @@ import { Card, CardContent } from "@/Components/UI/ui/card";
 const props = defineProps({
   user: Object,
   stats: Object,
+  projects: {
+    type: Array,
+    default: () => []
+  }
 });
+
+const getStatusColor = (status) => {
+  switch (status?.toLowerCase()) {
+    case 'aktif': return 'bg-blue-100 text-blue-700 border-blue-200';
+    case 'selesai': return 'bg-green-100 text-green-700 border-green-200';
+    case 'ditutup': return 'bg-slate-100 text-slate-700 border-slate-200';
+    default: return 'bg-yellow-100 text-yellow-700 border-yellow-200';
+  }
+};
 </script>
 
 <template>
@@ -43,6 +60,7 @@ const props = defineProps({
       </div>
     </div>
 
+    <!-- Stats grid -->
     <div class="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-10">
       <StatCard title="Proyek Aktif" :value="stats?.active_projects || '0'" color="blue">
          <template #icon><Briefcase class="w-5 h-5" /></template>
@@ -55,6 +73,7 @@ const props = defineProps({
       </StatCard>
     </div>
 
+    <!-- Directory Search Card -->
     <Card class="border-none shadow-sm rounded-2xl overflow-hidden mb-10 bg-gradient-to-br from-white to-slate-50/50">
       <CardContent class="p-0">
         <div class="flex flex-col md:flex-row items-stretch">
@@ -83,12 +102,62 @@ const props = defineProps({
       </CardContent>
     </Card>
 
-    <section>
-      <div class="flex items-center gap-3 mb-6">
-        <div class="w-1.5 h-6 bg-primary rounded-full"></div>
-        <h2 class="text-2xl font-display font-bold text-foreground tracking-tight">Proyek Anda</h2>
+    <!-- Client's projects list section -->
+    <section class="space-y-6">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <div class="w-1.5 h-6 bg-primary rounded-full"></div>
+          <h2 class="text-2xl font-display font-bold text-foreground tracking-tight">Proyek Terbaru</h2>
+        </div>
+        <Link v-if="projects.length > 0" :href="route('client.proyek.index')" class="text-sm font-bold text-primary hover:underline flex items-center gap-1">
+          Lihat Semua Proyek
+          <ChevronRight class="w-4 h-4" />
+        </Link>
       </div>
-      <div class="bg-white border border-slate-100 rounded-2xl p-12 shadow-sm text-center">
+
+      <!-- Render projects list if exists -->
+      <div v-if="projects.length > 0" class="space-y-4">
+        <Card v-for="project in projects" :key="project.id" class="border-none shadow-sm rounded-2xl overflow-hidden hover:shadow-md transition-shadow duration-300 bg-white">
+          <CardContent class="p-6">
+            <div class="flex items-start justify-between">
+              <div class="flex gap-4">
+                <div class="w-12 h-12 rounded-xl bg-primary/5 flex items-center justify-center text-primary shrink-0">
+                  <Building2 class="w-6 h-6" />
+                </div>
+                <div class="min-w-0">
+                  <Link :href="route('client.proyek.show', project.id)" class="hover:text-primary transition-colors">
+                    <h3 class="font-bold text-lg leading-tight truncate text-slate-800">{{ project.title }}</h3>
+                  </Link>
+                  <div class="flex flex-wrap items-center gap-x-4 gap-y-1 mt-1.5 text-xs text-slate-400 font-semibold">
+                    <span class="flex items-center gap-1.5">
+                      <Clock class="w-3.5 h-3.5" />
+                      Kategori: {{ project.category }}
+                    </span>
+                    <span v-if="project.proposals_count !== undefined" class="flex items-center gap-1.5 text-primary">
+                      <ArrowUpRight class="w-3.5 h-3.5" />
+                      {{ project.proposals_count }} Proposal Masuk
+                    </span>
+                  </div>
+                </div>
+              </div>
+              <div class="flex items-center gap-2">
+                <div :class="['px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider border transition-colors', getStatusColor(project.status)]">
+                  {{ project.status || 'Aktif' }}
+                </div>
+                <Button asChild variant="ghost" size="sm" class="rounded-xl font-bold text-xs">
+                  <Link :href="route('client.proyek.show', project.id)">
+                    Kelola
+                    <ChevronRight class="w-4 h-4 ml-1" />
+                  </Link>
+                </Button>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
+      <!-- Render Empty State if no projects yet -->
+      <div v-else class="bg-white border border-slate-100 rounded-2xl p-12 shadow-sm text-center">
         <EmptyState 
           title="Satu langkah lagi!" 
           description="Buat proyek pertama Anda untuk mulai menerima proposal profesional dari mitra sistem kami." 

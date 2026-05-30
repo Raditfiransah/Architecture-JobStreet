@@ -25,17 +25,18 @@ Route::middleware(['auth', 'verified', 'role:client'])
     Route::get('/proyek', [ProyekController::class, 'index'])->name('proyek.index');
     Route::get('/proyek/buat', [ProyekController::class, 'create'])->name('proyek.create');
     Route::post('/proyek', [ProyekController::class, 'store'])->name('proyek.store');
-    Route::get('/proyek/{proyek}', [ProyekController::class, 'show'])->name('proyek.show');
-    Route::get('/proyek/{proyek}/edit', [ProyekController::class, 'edit'])->name('proyek.edit');
-    Route::put('/proyek/{proyek}', [ProyekController::class, 'update'])->name('proyek.update');
-    Route::put('/proyek/{proyek}/tutup', [ProyekController::class, 'tutup'])->name('proyek.tutup');
-    Route::delete('/proyek/{proyek}', [ProyekController::class, 'destroy'])->name('proyek.destroy');
+    Route::get('/proyek/{id}', [ProyekController::class, 'show'])->name('proyek.show');
+    Route::get('/proyek/{id}/edit', [ProyekController::class, 'edit'])->name('proyek.edit');
+    Route::put('/proyek/{id}', [ProyekController::class, 'update'])->name('proyek.update');
+    Route::put('/proyek/{id}/tutup', [ProyekController::class, 'tutup'])->name('proyek.tutup');
+    Route::delete('/proyek/{id}', [ProyekController::class, 'destroy'])->name('proyek.destroy');
 
-    // Kelola proposal masuk — 'proposal-masuk' membedakan dari arsitek.proposal (yang diajukan)
-    Route::get('/proyek/{proyek}/proposal', [ProposalController::class, 'index'])->name('proposal-masuk.index');
-    Route::get('/proyek/{proyek}/proposal/{proposal}', [ProposalController::class, 'show'])->name('proposal-masuk.show');
-    Route::post('/proposal/{proposal}/terima', [ProposalController::class, 'terima'])->name('proposal-masuk.terima');
-    Route::post('/proposal/{proposal}/tolak', [ProposalController::class, 'tolak'])->name('proposal-masuk.tolak');
+    // Kelola proposal masuk
+    Route::get('/proyek/{id}/proposal', [ProposalController::class, 'index'])->name('proposal.index');
+    Route::get('/proyek/{id}/compare', [ProposalController::class, 'compare'])->name('proposal.compare');
+    Route::get('/proyek/{id}/proposal/{propId}', [ProposalController::class, 'show'])->name('proposal.show');
+    Route::post('/proposal/{propId}/terima', [ProposalController::class, 'terima'])->name('proposal.terima');
+    Route::post('/proposal/{propId}/tolak', [ProposalController::class, 'tolak'])->name('proposal.tolak');
 
     /*
     // Inbox

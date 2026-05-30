@@ -32,6 +32,7 @@ Route::middleware('guest')->group(function () {
 
 // ─── Auth (perlu login) ───────────────────────────────────────────────────────
 Route::middleware('auth')->group(function () {
+
     // Verifikasi OTP — Indonesian routes (keep intact, remove verification.notice name)
     Route::get('/verifikasi-email', [OtpVerificationController::class, 'showForm']);
     Route::post('/verifikasi-email', [OtpVerificationController::class, 'verify'])->name('otp.verify');

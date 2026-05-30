@@ -1,5 +1,5 @@
 <script setup>
-import { Head, Link } from '@inertiajs/vue3';
+import { Head, Link, usePage, router } from '@inertiajs/vue3';
 import { computed } from 'vue';
 import PublicLayout from '@/Layouts/PublicLayout.vue';
 import VerificationBadge from '@/Components/Profile/VerificationBadge.vue';
@@ -10,7 +10,8 @@ import {
     Code,
     FileText,
     Globe,
-    Calendar
+    Calendar,
+    Plus
 } from 'lucide-vue-next';
 
 const props = defineProps({
@@ -28,7 +29,23 @@ const props = defineProps({
     }
 });
 
+const page = usePage();
+const user = computed(() => page.props.auth.user);
+const isClient = computed(() => user.value?.role === 'client');
+
 const profile = computed(() => props.arsitek.arsitek_profile || {});
+
+const handleHire = () => {
+    if (!user.value) {
+        router.get(route('login'));
+        return;
+    }
+    if (isClient.value) {
+        router.get(route('client.proyek.create'));
+    } else {
+        router.get(route('home'));
+    }
+};
 </script>
 
 <template>
@@ -64,12 +81,10 @@ const profile = computed(() => props.arsitek.arsitek_profile || {});
                         </div>
                         
                         <div class="flex-shrink-0 flex sm:flex-col gap-3">
-                            <Link v-if="!isPublic" :href="route('client.inbox.index', { to: arsitek.id })" class="px-6 py-2.5 bg-blue-600 text-white font-semibold rounded-lg shadow-sm hover:bg-blue-700 transition">
-                                Hubungi Sekarang
-                            </Link>
-                            <Link v-else :href="route('login')" class="px-6 py-2.5 bg-blue-600 text-white font-semibold rounded-lg shadow-sm hover:bg-blue-700 transition">
-                                Hubungi Sekarang
-                            </Link>
+                            <button @click="handleHire" class="px-6 py-2.5 bg-blue-600 text-white font-semibold rounded-lg shadow-sm hover:bg-blue-700 transition flex items-center gap-2">
+                                <Plus class="w-4 h-4" />
+                                Posting Proyek
+                            </button>
                         </div>
                     </div>
                 </div>

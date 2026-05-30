@@ -43,6 +43,15 @@ class DatabaseSeeder extends Seeder
             'user_id' => $arsitek->id,
         ]);
 
+        $client = User::factory()->client()->create([
+            'name' => 'Client Property',
+            'email' => 'client@client.com',
+            'password' => bcrypt('password'),
+        ]);
+
+        \App\Models\ClientProfile::create([
+            'user_id' => $client->id,
+        ]);
         // Data Dummy Hire Arsitek (tambahan acak)
         User::factory(10)->arsitek()->create()->each(function (User $user) {
             \App\Models\ArsitekProfile::factory()->create([

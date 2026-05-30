@@ -32,6 +32,7 @@ import { Card, CardContent } from "@/Components/UI/ui/card";
 import { Separator } from "@/Components/UI/ui/separator";
 import Navbar from "@/Components/Public/Navbar.vue";
 import VerificationBadge from '@/Components/Profile/VerificationBadge.vue';
+import FlashMessage from "@/Components/Public/FlashMessage.vue";
 
 const page = usePage();
 const user = computed(() => page.props.auth.user || {});
@@ -81,6 +82,7 @@ const menuItems = computed(() => {
       { group: 'Kelola Portofolio & Lamaran', items: [
         { label: 'Portofolio', icon: Briefcase, href: route('arsitek.portofolio.index') },
         { label: 'Aktivitas Lamaran', icon: History, href: route('arsitek.lamaran.index') },
+        { label: 'Proposal Proyek', icon: FileText, href: route('arsitek.proposal.index') },
       ]},
       { group: 'Mengelola Akun', items: [
         { label: 'Verifikasi', icon: ShieldCheck, href: route('arsitek.verifikasi.index') },
@@ -231,6 +233,7 @@ const logout = () => {
 
          <!-- Main Content (2/3) -->
          <main class="flex-1 w-full space-y-6">
+           <FlashMessage />
            <slot />
          </main>
       </div>

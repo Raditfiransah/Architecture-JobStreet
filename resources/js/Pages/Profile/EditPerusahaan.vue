@@ -10,7 +10,6 @@ import InputLabel from '@/Components/InputLabel.vue';
 import TextInput from '@/Components/TextInput.vue';
 import InputError from '@/Components/InputError.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
-import FlashMessage from '@/Components/Public/FlashMessage.vue';
 
 const page = usePage();
 const user = computed(() => page.props.user);
@@ -45,8 +44,6 @@ const submit = () => {
         </template>
 
         <div class="space-y-6">
-            <FlashMessage />
-
             <!-- Media Section -->
             <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
                 <h3 class="text-lg font-semibold mb-4">Identitas Perusahaan</h3>

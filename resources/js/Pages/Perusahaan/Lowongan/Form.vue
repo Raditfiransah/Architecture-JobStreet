@@ -1,5 +1,5 @@
 <script setup>
-import { Head, Link, useForm, router } from '@inertiajs/vue3';
+import { Head, Link, useForm } from '@inertiajs/vue3';
 import ProfileLayout from '@/Layouts/ProfileLayout.vue';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/Components/UI/ui/card";
 import { Button } from "@/Components/UI/ui/button";
@@ -15,12 +15,29 @@ import {
 } from "@/Components/UI/ui/select";
 import { ArrowLeft, Save, Plus, X, Info } from 'lucide-vue-next';
 import InputError from '@/Components/InputError.vue';
-import { ref, onMounted } from 'vue';
 
 const props = defineProps({
     lowongan: Object,
     isEdit: Boolean
 });
+
+const toDateInputValue = (value) => {
+    if (!value) return '';
+
+    const date = new Date(value);
+
+    if (Number.isNaN(date.getTime())) return '';
+
+    const timezoneOffset = date.getTimezoneOffset() * 60000;
+    return new Date(date.getTime() - timezoneOffset).toISOString().split('T')[0];
+};
+
+const dateAfterToday = (days) => {
+    const date = new Date();
+    date.setDate(date.getDate() + days);
+
+    return toDateInputValue(date);
+};
 
 const form = useForm({
     posisi: props.lowongan?.posisi || '',
@@ -30,7 +47,8 @@ const form = useForm({
     deskripsi: props.lowongan?.deskripsi || '',
     syarat: props.lowongan?.syarat || [''],
     tanggung_jawab: props.lowongan?.tanggung_jawab || [''],
-    deadline: props.lowongan?.deadline ? new Date(props.lowongan.deadline).toISOString().split('T')[0] : '',
+    tanggal_mulai: toDateInputValue(props.lowongan?.tanggal_mulai) || toDateInputValue(new Date()),
+    batas_lamaran: toDateInputValue(props.lowongan?.batas_lamaran || props.lowongan?.deadline) || dateAfterToday(30),
 });
 
 const addRequirement = () => form.syarat.push('');
@@ -80,7 +98,7 @@ const submit = () => {
                             </div>
                         </div>
 
-                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div class="space-y-2">
                                 <Label for="tipe" class="text-sm font-bold text-slate-700">Tipe Kontrak <span class="text-red-500">*</span></Label>
                                 <Select v-model="form.tipe">
@@ -102,10 +120,18 @@ const submit = () => {
                                 <Input id="gaji" v-model="form.gaji" placeholder="Cth: 10jt - 15jt" class="rounded-xl border-slate-200 h-12 focus:ring-primary/20" />
                                 <InputError :message="form.errors.gaji" />
                             </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div class="space-y-2">
-                                <Label for="deadline" class="text-sm font-bold text-slate-700">Batas Akhir (Optional)</Label>
-                                <Input id="deadline" type="date" v-model="form.deadline" class="rounded-xl border-slate-200 h-12 focus:ring-primary/20" />
-                                <InputError :message="form.errors.deadline" />
+                                <Label for="tanggal_mulai" class="text-sm font-bold text-slate-700">Tanggal Mulai <span class="text-red-500">*</span></Label>
+                                <Input id="tanggal_mulai" type="date" v-model="form.tanggal_mulai" class="rounded-xl border-slate-200 h-12 focus:ring-primary/20" />
+                                <InputError :message="form.errors.tanggal_mulai" />
+                            </div>
+                            <div class="space-y-2">
+                                <Label for="batas_lamaran" class="text-sm font-bold text-slate-700">Batas Lamaran <span class="text-red-500">*</span></Label>
+                                <Input id="batas_lamaran" type="date" v-model="form.batas_lamaran" class="rounded-xl border-slate-200 h-12 focus:ring-primary/20" />
+                                <InputError :message="form.errors.batas_lamaran" />
                             </div>
                         </div>
 

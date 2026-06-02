@@ -30,6 +30,7 @@ const getStatusColor = (status) => {
     switch (status) {
         case 'aktif': return 'bg-green-50 text-green-600 border-green-100';
         case 'ditutup': return 'bg-red-50 text-red-600 border-red-100';
+        case 'expired': return 'bg-amber-50 text-amber-700 border-amber-100';
         case 'draft': return 'bg-slate-50 text-slate-500 border-slate-100';
         default: return 'bg-slate-50 text-slate-500 border-slate-100';
     }
@@ -109,6 +110,10 @@ const toggleStatus = (id, currentStatus) => {
                                         <div class="flex items-center gap-1.5">
                                             <Users class="w-4 h-4 text-slate-400" />
                                             {{ job.lamarans_count }} Pelamar
+                                        </div>
+                                        <div class="flex items-center gap-1.5">
+                                            <Clock class="w-4 h-4 text-slate-400" />
+                                            {{ formatDate(job.tanggal_mulai) }} - {{ formatDate(job.batas_lamaran) }}
                                         </div>
                                     </div>
                                 </div>

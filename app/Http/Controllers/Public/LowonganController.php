@@ -13,7 +13,9 @@ class LowonganController extends Controller
         $q = $request->input('q');
         $l = $request->input('l');
 
-        $query = Lowongan::query()->latest();
+        $query = Lowongan::query()
+            ->publiclyAvailable()
+            ->latest();
 
         if ($q) {
             $query->where(function ($qb) use ($q) {
@@ -41,11 +43,17 @@ class LowonganController extends Controller
 
     public function show(string $id)
     {
-        $lowongan = Lowongan::findOrFail($id);
+        $lowongan = Lowongan::query()
+            ->publiclyAvailable()
+            ->findOrFail($id);
 
         return \Inertia\Inertia::render('Public/Lowongan/Index', [
             'title' => $lowongan->posisi . ' — ' . $lowongan->perusahaan,
-            'job' => $lowongan,
+            'jobs' => [$lowongan],
+            'filters' => [
+                'q' => null,
+                'l' => null,
+            ],
         ]);
     }
 }

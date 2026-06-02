@@ -46,6 +46,16 @@ const locationQuery = ref(props.filters?.l || "");
 
 const selectedJob = ref(props.jobs && props.jobs.length > 0 ? props.jobs[0] : null);
 
+const formatDate = (dateString) => {
+  if (!dateString) return "-";
+
+  return new Date(dateString).toLocaleDateString("id-ID", {
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+  });
+};
+
 watch(() => props.jobs, (newJobs) => {
   if (newJobs?.length > 0) {
     if (!selectedJob.value || !newJobs.find(j => j.id === selectedJob.value?.id)) {
@@ -164,7 +174,7 @@ const handleAction = (action) => {
                 </div>
                 <div class="flex items-center gap-3 text-xs text-muted-foreground">
                   <span class="flex items-center gap-1"><MapPin class="w-3 h-3" /> {{ job.kota }}</span>
-                  <span class="flex items-center gap-1"><Clock class="w-3 h-3" /> 2 hari lalu</span>
+                  <span class="flex items-center gap-1"><Clock class="w-3 h-3" /> s.d. {{ formatDate(job.batas_lamaran) }}</span>
                 </div>
               </div>
               <Button v-if="!user || user.role === 'arsitek'" variant="ghost" size="icon" class="rounded-full w-8 h-8 shrink-0">
@@ -198,6 +208,10 @@ const handleAction = (action) => {
                   <div class="flex items-center gap-2 text-muted-foreground">
                      <div class="w-8 h-8 rounded-lg bg-muted flex items-center justify-center"><Briefcase class="w-4 h-4 text-primary" /></div>
                     <span>{{ selectedJob.tipe }}</span>
+                  </div>
+                  <div class="flex items-center gap-2 text-muted-foreground">
+                    <div class="w-8 h-8 rounded-lg bg-muted flex items-center justify-center"><Clock class="w-4 h-4 text-primary" /></div>
+                    <span>Batas {{ formatDate(selectedJob.batas_lamaran) }}</span>
                   </div>
                 </div>
               </div>
@@ -290,8 +304,8 @@ const handleAction = (action) => {
                   <div class="flex items-center gap-4">
                     <div class="w-10 h-10 rounded-lg bg-muted flex items-center justify-center"><Clock class="w-5 h-5 text-primary" /></div>
                     <div>
-                      <p class="text-xs font-bold text-muted-foreground uppercase tracking-wider">Diposting</p>
-                      <p class="text-sm font-bold">April 05, 2024</p>
+                      <p class="text-xs font-bold text-muted-foreground uppercase tracking-wider">Masa Lamaran</p>
+                      <p class="text-sm font-bold">{{ formatDate(selectedJob.tanggal_mulai) }} - {{ formatDate(selectedJob.batas_lamaran) }}</p>
                     </div>
                   </div>
                   <Separator class="bg-border/50" />
@@ -394,4 +408,3 @@ const handleAction = (action) => {
   font-family: 'Outfit', sans-serif;
 }
 </style> 
-

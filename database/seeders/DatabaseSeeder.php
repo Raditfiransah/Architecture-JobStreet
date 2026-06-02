@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use App\Models\User;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Hash;
 
 class DatabaseSeeder extends Seeder
 {
@@ -16,41 +17,68 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         // Data Login Admin
-        User::factory()->admin()->create([
-            'name' => 'Admin System',
+        User::updateOrCreate([
             'email' => 'admin@admin.com',
-            'password' => bcrypt('password'),
+        ], [
+            'name' => 'Admin System',
+            'password' => Hash::make('password'),
+            'role' => 'admin',
+            'email_verified_at' => now(),
+            'is_active' => true,
+            'is_verified' => true,
         ]);
 
         // Data Login Perusahaan
-        $perusahaan = User::factory()->perusahaan()->create([
-            'name' => 'Perusahaan BUMN',
+        $perusahaan = User::updateOrCreate([
             'email' => 'perusahaan@perusahaan.com',
-            'password' => bcrypt('password'),
+        ], [
+            'name' => 'Perusahaan BUMN',
+            'password' => Hash::make('password'),
+            'role' => 'perusahaan',
+            'email_verified_at' => now(),
+            'is_active' => true,
+            'is_verified' => true,
         ]);
-        \App\Models\CompanyProfile::create([
+        \App\Models\CompanyProfile::updateOrCreate([
             'user_id' => $perusahaan->id,
+        ], [
             'company_name' => 'Perusahaan BUMN',
         ]);
 
         // Data Login Arsitek
-        $arsitek = User::factory()->arsitek()->create([
-            'name' => 'Arsitek Senior',
+        $arsitek = User::updateOrCreate([
             'email' => 'arsitek@arsitek.com',
-            'password' => bcrypt('password'),
+        ], [
+            'name' => 'Arsitek Senior',
+            'password' => Hash::make('password'),
+            'role' => 'arsitek',
+            'email_verified_at' => now(),
+            'is_active' => true,
+            'is_verified' => true,
         ]);
-        \App\Models\ArsitekProfile::factory()->create([
+        \App\Models\ArsitekProfile::updateOrCreate([
             'user_id' => $arsitek->id,
+        ], [
+            'first_name' => 'Arsitek',
+            'last_name' => 'Senior',
+            'status_pekerjaan' => 'Available',
         ]);
 
-        $client = User::factory()->client()->create([
-            'name' => 'Client Property',
+        $client = User::updateOrCreate([
             'email' => 'client@client.com',
-            'password' => bcrypt('password'),
+        ], [
+            'name' => 'Client Property',
+            'password' => Hash::make('password'),
+            'role' => 'client',
+            'email_verified_at' => now(),
+            'is_active' => true,
+            'is_verified' => true,
         ]);
 
-        \App\Models\ClientProfile::create([
+        \App\Models\ClientProfile::updateOrCreate([
             'user_id' => $client->id,
+        ], [
+            'client_type' => 'Individu',
         ]);
         // Data Dummy Hire Arsitek (tambahan acak)
         User::factory(10)->arsitek()->create()->each(function (User $user) {

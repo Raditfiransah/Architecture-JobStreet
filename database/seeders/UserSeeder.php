@@ -16,59 +16,69 @@ class UserSeeder extends Seeder
     public function run(): void
     {
         // Admin Account
-        User::create([
-            'name' => 'Administrator',
+        User::updateOrCreate([
             'email' => 'admin@example.com',
+        ], [
+            'name' => 'Administrator',
             'password' => Hash::make('password'),
             'role' => 'admin',
             'is_active' => true,
             'is_verified' => true,
+            'email_verified_at' => now(),
         ]);
 
-        User::create([
+        User::updateOrCreate([
+            'email' => 'nino@example.com',
+        ], [
             'name' => 'Administrator1',
-            'email' => 'sharren@example.com',
             'password' => Hash::make('password'),
             'role' => 'admin',
             'is_active' => true,
             'is_verified' => true,
+            'email_verified_at' => now(),
         ]);
 
         // Arsitek Account
-        $arsitek = User::create([
-            'name' => 'Arsitek Profesional',
+        $arsitek = User::updateOrCreate([
             'email' => 'arsitek@example.com',
+        ], [
+            'name' => 'Arsitek Profesional',
             'password' => Hash::make('password'),
             'role' => 'arsitek',
             'is_active' => true,
             'is_verified' => true,
+            'email_verified_at' => now(),
         ]);
         
-        DB::table('arsitek_profiles')->insert([
+        DB::table('arsitek_profiles')->updateOrInsert([
             'user_id' => $arsitek->id,
+        ], [
             'first_name' => 'Arsitek',
             'last_name' => 'Profesional',
             'status_pekerjaan' => 'Freelance',
-            'created_at' => now(),
             'updated_at' => now(),
+            'created_at' => now(),
         ]);
 
         // Perusahaan Account
-        $perusahaan = User::create([
-            'name' => 'Perusahaan Konstruksi',
+        $perusahaan = User::updateOrCreate([
             'email' => 'perusahaan@example.com',
+        ], [
+            'name' => 'Perusahaan Konstruksi',
             'password' => Hash::make('password'),
             'role' => 'perusahaan',
             'is_active' => true,
             'is_verified' => true,
+            'email_verified_at' => now(),
         ]);
 
-        DB::table('company_profiles')->insert([
+        DB::table('company_profiles')->updateOrInsert([
             'user_id' => $perusahaan->id,
+        ], [
             'company_name' => 'PT Konstruksi Jaya',
             'company_desc' => 'Perusahaan yang bergerak di bidang konstruksi dan arsitektur.',
-            'created_at' => now(),
             'updated_at' => now(),
+            'created_at' => now(),
         ]);
     }
 }

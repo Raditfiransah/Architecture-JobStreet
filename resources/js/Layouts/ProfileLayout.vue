@@ -77,16 +77,16 @@ const menuItems = computed(() => {
   if (role === 'arsitek') {
     return [
       { group: 'Utama', items: [
-        { label: 'Dashboard', icon: LayoutDashboard, href: route('arsitek.dashboard') },
+        { label: 'Dashboard', icon: LayoutDashboard, href: route('arsitek.dashboard'), active: 'arsitek.dashboard' },
       ]},
       { group: 'Kelola Portofolio & Lamaran', items: [
-        { label: 'Portofolio', icon: Briefcase, href: route('arsitek.portofolio.index') },
-        { label: 'Aktivitas Lamaran', icon: History, href: route('arsitek.lamaran.index') },
-        { label: 'Proposal Proyek', icon: FileText, href: route('arsitek.proposal.index') },
+        { label: 'Portofolio', icon: Briefcase, href: route('arsitek.portofolio.index'), active: 'arsitek.portofolio.*' },
+        { label: 'Aktivitas Lamaran', icon: History, href: route('arsitek.lamaran.index'), active: 'arsitek.lamaran.*' },
+        { label: 'Proposal Proyek', icon: FileText, href: route('arsitek.proposal.index'), active: 'arsitek.proposal.*' },
       ]},
       { group: 'Mengelola Akun', items: [
-        { label: 'Verifikasi', icon: ShieldCheck, href: route('arsitek.verifikasi.index') },
-        { label: 'Pengaturan Akun', icon: Settings, href: route('arsitek.pengaturan.index') },
+        { label: 'Verifikasi', icon: ShieldCheck, href: route('arsitek.verifikasi.index'), active: 'arsitek.verifikasi.*' },
+        { label: 'Pengaturan Akun', icon: Settings, href: route('arsitek.pengaturan.index'), active: 'arsitek.pengaturan.*' },
       ]}
     ];
   }
@@ -94,15 +94,15 @@ const menuItems = computed(() => {
   if (role === 'perusahaan') {
     return [
       { group: 'Utama', items: [
-        { label: 'Dashboard', icon: LayoutDashboard, href: route('perusahaan.dashboard') },
+        { label: 'Dashboard', icon: LayoutDashboard, href: route('perusahaan.dashboard'), active: 'perusahaan.dashboard' },
       ]},
       { group: 'Manajemen Rekrutmen', items: [
-        { label: 'Kelola Lowongan', icon: Briefcase, href: route('perusahaan.lowongan.index') },
-        { label: 'Kandidat', icon: Target, href: route('perusahaan.pelamar.all') },
+        { label: 'Kelola Lowongan', icon: Briefcase, href: route('perusahaan.lowongan.index'), active: 'perusahaan.lowongan.*' },
+        { label: 'Kandidat', icon: Target, href: route('perusahaan.pelamar.all'), active: 'perusahaan.pelamar.*' },
       ]},
       { group: 'Mengelola Akun', items: [
-        { label: 'Verifikasi', icon: ShieldCheck, href: route('perusahaan.verifikasi.index') },
-        { label: 'Pengaturan Akun', icon: Settings, href: route('perusahaan.pengaturan.index') },
+        { label: 'Verifikasi', icon: ShieldCheck, href: route('perusahaan.verifikasi.index'), active: 'perusahaan.verifikasi.*' },
+        { label: 'Pengaturan Akun', icon: Settings, href: route('perusahaan.pengaturan.index'), active: 'perusahaan.pengaturan.*' },
       ]}
     ];
   }
@@ -110,14 +110,14 @@ const menuItems = computed(() => {
   if (role === 'client') {
     return [
       { group: 'Utama', items: [
-        { label: 'Dashboard', icon: LayoutDashboard, href: route('client.dashboard') },
+        { label: 'Dashboard', icon: LayoutDashboard, href: route('client.dashboard'), active: 'client.dashboard' },
       ]},
       { group: 'Kelola Proyek', items: [
-        { label: 'Proyek', icon: Briefcase, href: route('client.proyek.index') },
+        { label: 'Proyek', icon: Briefcase, href: route('client.proyek.index'), active: 'client.proyek.*' },
       ]},
       { group: 'Mengelola Akun', items: [
-        { label: 'Verifikasi', icon: ShieldCheck, href: route('client.verifikasi.index') },
-        { label: 'Pengaturan Akun', icon: Settings, href: route('client.pengaturan.index') },
+        { label: 'Verifikasi', icon: ShieldCheck, href: route('client.verifikasi.index'), active: 'client.verifikasi.*' },
+        { label: 'Pengaturan Akun', icon: Settings, href: route('client.pengaturan.index'), active: 'client.pengaturan.*' },
       ]}
     ];
   }
@@ -204,9 +204,20 @@ const logout = () => {
                    v-for="item in group.items" 
                    :key="item.label"
                    :href="item.href"
-                   class="flex items-center gap-3 px-3.5 py-2.5 text-sm font-medium rounded-xl transition-all duration-200 hover:bg-white hover:shadow-sm hover:translate-x-1 group text-[#334155]"
+                   :class="[
+                     'flex items-center gap-3 px-3.5 py-2.5 text-sm font-medium rounded-xl transition-all duration-200 hover:bg-white hover:shadow-sm hover:translate-x-1 group',
+                     route().current(item.active)
+                       ? 'bg-white shadow-sm text-primary'
+                       : 'text-[#334155]'
+                   ]"
                  >
-                   <component :is="item.icon" class="w-4 h-4 text-slate-400 group-hover:text-primary transition-colors" />
+                   <component
+                     :is="item.icon"
+                     :class="[
+                       'w-4 h-4 group-hover:text-primary transition-colors',
+                       route().current(item.active) ? 'text-primary' : 'text-slate-400'
+                     ]"
+                   />
                    {{ item.label }}
                  </Link>
                </nav>

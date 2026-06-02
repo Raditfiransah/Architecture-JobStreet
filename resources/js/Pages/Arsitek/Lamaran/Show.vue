@@ -1,7 +1,6 @@
 <script setup>
-import { Head, Link, router } from '@inertiajs/vue3';
+import { Head, Link } from '@inertiajs/vue3';
 import ProfileLayout from '@/Layouts/ProfileLayout.vue';
-import { Button } from "@/Components/UI/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/Components/UI/ui/card";
 import {
   Briefcase,
@@ -14,8 +13,7 @@ import {
   XCircle,
   AlertCircle,
   Building2,
-  DollarSign,
-  Trash2
+  DollarSign
 } from "lucide-vue-next";
 
 const props = defineProps({
@@ -73,12 +71,6 @@ const getStatusMessage = (status) => {
     case 'shortlisted': return 'Profil Anda masuk dalam daftar kandidat terpilih. Perusahaan sedang mengevaluasi lebih lanjut.';
     case 'reviewing': return 'Lamaran Anda sedang dalam proses peninjauan oleh tim rekrutmen perusahaan.';
     default: return 'Lamaran Anda telah terkirim dan sedang menunggu ditinjau oleh perusahaan.';
-  }
-};
-
-const withdraw = () => {
-  if (confirm("Apakah Anda yakin ingin menarik lamaran ini? Tindakan ini tidak dapat dibatalkan.")) {
-    router.delete(route('arsitek.lamaran.withdraw', props.lamaran.id));
   }
 };
 </script>
@@ -187,18 +179,6 @@ const withdraw = () => {
               </div>
             </CardContent>
           </Card>
-
-          <!-- Withdraw Action (only if pending) -->
-          <div v-if="lamaran.status === 'pending'">
-            <Button
-              variant="outline"
-              class="h-12 rounded-2xl font-bold border-rose-200 text-rose-600 hover:bg-rose-50 hover:border-rose-300 transition-all px-6"
-              @click="withdraw"
-            >
-              <Trash2 class="w-4 h-4 mr-2" />
-              Tarik Lamaran Ini
-            </Button>
-          </div>
         </div>
 
         <!-- Right: Job Listing Summary -->

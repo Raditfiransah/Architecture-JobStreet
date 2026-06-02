@@ -38,7 +38,6 @@ Route::middleware(['auth', 'verified', 'role:arsitek'])
     // Lamaran kerja
     Route::get('/lamaran', [LamaranController::class, 'index'])->name('lamaran.index');
     Route::get('/lamaran/{lamaran}', [LamaranController::class, 'show'])->name('lamaran.show');
-    Route::delete('/lamaran/{lamaran}', [LamaranController::class, 'withdraw'])->name('lamaran.withdraw');
 
     // Proposal proyek
     Route::get('/proposal', [ProposalController::class, 'index'])->name('proposal.index');

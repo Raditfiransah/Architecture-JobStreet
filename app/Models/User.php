@@ -89,6 +89,16 @@ class User extends Authenticatable
         return $this->hasMany(Lowongan::class);
     }
 
+    public function proyeks(): HasMany
+    {
+        return $this->hasMany(Proyek::class)->orderBy('created_at', 'desc');
+    }
+
+    public function proposals(): HasMany
+    {
+        return $this->hasMany(Proposal::class)->orderBy('created_at', 'desc');
+    }
+
     public function isAdmin(): bool
     {
         return $this->role === 'admin';

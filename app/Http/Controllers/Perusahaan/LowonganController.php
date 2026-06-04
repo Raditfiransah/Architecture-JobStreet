@@ -28,16 +28,8 @@ class LowonganController extends Controller
 
     public function store(Request $request)
     {
-        $validated = $request->validate([
-            'posisi' => 'required|string|max:255',
-            'kota' => 'required|string|max:255',
-            'tipe' => 'required|in:Full Time,Part Time,Freelance,Contract,Internship',
-            'gaji' => 'nullable|string|max:255',
-            'deskripsi' => 'required|string',
-            'syarat' => 'required|array',
-            'tanggung_jawab' => 'required|array',
-            'deadline' => 'nullable|date',
-        ]);
+        $validated = $this->validateLowongan($request);
+        $validated['deadline'] = $validated['batas_lamaran'];
 
         $companyName = auth()->user()->companyProfile->company_name ?? auth()->user()->name;
         
@@ -67,16 +59,8 @@ class LowonganController extends Controller
     {
         $lowongan = auth()->user()->lowongans()->findOrFail($id);
 
-        $validated = $request->validate([
-            'posisi' => 'required|string|max:255',
-            'kota' => 'required|string|max:255',
-            'tipe' => 'required|in:Full Time,Part Time,Freelance,Contract,Internship',
-            'gaji' => 'nullable|string|max:255',
-            'deskripsi' => 'required|string',
-            'syarat' => 'required|array',
-            'tanggung_jawab' => 'required|array',
-            'deadline' => 'nullable|date',
-        ]);
+        $validated = $this->validateLowongan($request);
+        $validated['deadline'] = $validated['batas_lamaran'];
 
         $lowongan->update($validated);
 
@@ -93,6 +77,11 @@ class LowonganController extends Controller
     public function perpanjang(string $id)
     {
         $lowongan = auth()->user()->lowongans()->findOrFail($id);
+
+        if (! $lowongan->batas_lamaran || $lowongan->batas_lamaran->lt(today())) {
+            return back()->with('error', 'Perbarui batas lamaran sebelum mengaktifkan kembali lowongan.');
+        }
+
         $lowongan->update(['status' => 'aktif']);
         return back()->with('success', 'Lowongan telah diaktifkan kembali.');
     }
@@ -102,5 +91,20 @@ class LowonganController extends Controller
         $lowongan = auth()->user()->lowongans()->findOrFail($id);
         $lowongan->delete();
         return redirect()->route('perusahaan.lowongan.index')->with('success', 'Lowongan berhasil dihapus.');
+    }
+
+    private function validateLowongan(Request $request): array
+    {
+        return $request->validate([
+            'posisi' => 'required|string|max:255',
+            'kota' => 'required|string|max:255',
+            'tipe' => 'required|in:Full Time,Part Time,Freelance,Contract,Internship',
+            'gaji' => 'nullable|string|max:255',
+            'deskripsi' => 'required|string',
+            'syarat' => 'required|array',
+            'tanggung_jawab' => 'required|array',
+            'tanggal_mulai' => 'required|date',
+            'batas_lamaran' => 'required|date|after_or_equal:tanggal_mulai',
+        ]);
     }
 }

@@ -1,5 +1,6 @@
 <script setup>
 import { Head, Link, router } from '@inertiajs/vue3';
+import { computed } from 'vue';
 import ProfileLayout from '@/Layouts/ProfileLayout.vue';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/Components/UI/ui/card";
 import { Button } from "@/Components/UI/ui/button";
@@ -13,7 +14,8 @@ import {
   UserCheck,
   XCircle,
   MessageSquare,
-  Star
+  Star,
+  Users
 } from 'lucide-vue-next';
 import { 
   Tabs, 
@@ -23,9 +25,36 @@ import {
 } from "@/Components/UI/ui/tabs";
 
 const props = defineProps({
-    lowongan: Object,
-    lamarans: Array
+    lowongan: {
+      type: Object,
+      default: () => ({}),
+    },
+    lamarans: {
+      type: Array,
+      default: () => [],
+    },
 });
+
+const applications = computed(() => props.lamarans ?? []);
+const shortlistedApplications = computed(() => applications.value.filter((application) => application?.status === 'shortlisted'));
+const lowonganId = computed(() => props.lowongan?.id);
+const lowonganTitle = computed(() => props.lowongan?.posisi || 'Lowongan');
+const lowonganLocation = computed(() => props.lowongan?.kota || '-');
+const lowonganType = computed(() => props.lowongan?.tipe || '-');
+const applicantCount = computed(() => props.lowongan?.lamarans?.length ?? applications.value.length);
+
+const getApplicantName = (application) => application?.user?.name || 'Pelamar';
+const getApplicantInitials = (application) => getApplicantName(application).slice(0, 2).toUpperCase();
+const getApplicationHref = (application) => {
+  if (!lowonganId.value || !application?.id) {
+    return route('perusahaan.pelamar.all');
+  }
+
+  return route('perusahaan.pelamar.show', {
+    lowongan: lowonganId.value,
+    lamaran: application.id,
+  });
+};
 
 const getStatusColor = (status) => {
   const colors = {
@@ -52,6 +81,10 @@ const getStatusLabel = (status) => {
 };
 
 const formatDate = (dateString) => {
+  if (!dateString) {
+    return '-';
+  }
+
   return new Date(dateString).toLocaleDateString('id-ID', {
     day: 'numeric',
     month: 'short',
@@ -68,7 +101,7 @@ const updateStatus = (appId, newStatus) => {
 
 <template>
     <ProfileLayout>
-        <Head :title="'Kandidat - ' + lowongan.posisi" />
+        <Head :title="'Kandidat - ' + lowonganTitle" />
 
         <div class="space-y-8 animate-in slide-in-from-bottom-4 duration-500">
             <!-- Header -->
@@ -80,21 +113,21 @@ const updateStatus = (appId, newStatus) => {
                     </Link>
                     <div>
                         <div class="flex items-center gap-3 mb-1">
-                            <h1 class="text-3xl font-display font-bold text-slate-900 tracking-tight">{{ lowongan.posisi }}</h1>
+                            <h1 class="text-3xl font-display font-bold text-slate-900 tracking-tight">{{ lowonganTitle }}</h1>
                             <span class="px-3 py-1 rounded-full text-[10px] font-bold uppercase bg-slate-100 text-slate-600 border border-slate-200">
-                                {{ lowongan.lamarans.length }} Pelamar
+                                {{ applicantCount }} Pelamar
                             </span>
                         </div>
                         <p class="text-slate-500 font-medium flex items-center gap-2">
-                            <MapPin class="w-4 h-4" /> {{ lowongan.kota }}
+                            <MapPin class="w-4 h-4" /> {{ lowonganLocation }}
                             <span class="w-1 h-1 rounded-full bg-slate-300"></span>
-                            {{ lowongan.tipe }}
+                            {{ lowonganType }}
                         </p>
                     </div>
                 </div>
                 
                 <div class="flex items-center gap-3 shrink-0">
-                    <Link :href="route('perusahaan.lowongan.edit', lowongan.id)">
+                    <Link v-if="lowonganId" :href="route('perusahaan.lowongan.edit', lowonganId)">
                         <Button variant="outline" class="rounded-xl font-bold border-slate-200 text-slate-600 hover:bg-slate-50">
                             Edit Lowongan
                         </Button>
@@ -122,16 +155,16 @@ const updateStatus = (appId, newStatus) => {
                         </div>
 
                         <TabsContent value="all" class="m-0">
-                            <div v-if="lamarans.length > 0" class="divide-y divide-slate-50">
-                                <div v-for="app in lamarans" :key="app.id" class="px-8 py-6 hover:bg-slate-50/50 transition-colors group">
+                            <div v-if="applications.length > 0" class="divide-y divide-slate-50">
+                                <div v-for="app in applications" :key="app.id" class="px-8 py-6 hover:bg-slate-50/50 transition-colors group">
                                     <div class="flex flex-col md:flex-row md:items-center justify-between gap-6">
                                         <div class="flex items-center gap-5">
                                             <!-- Candidate Avatar Placeholder -->
                                             <div class="w-16 h-16 rounded-2xl bg-white border border-slate-100 shadow-sm flex items-center justify-center text-xl font-bold text-slate-400 group-hover:text-primary transition-colors">
-                                                {{ app.user.name.substring(0, 2).toUpperCase() }}
+                                                {{ getApplicantInitials(app) }}
                                             </div>
                                             <div>
-                                                <h3 class="font-display font-bold text-lg text-slate-900 leading-tight mb-1 group-hover:text-primary transition-colors">{{ app.user.name }}</h3>
+                                                <h3 class="font-display font-bold text-lg text-slate-900 leading-tight mb-1 group-hover:text-primary transition-colors">{{ getApplicantName(app) }}</h3>
                                                 <div class="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm font-medium text-slate-500">
                                                     <span class="text-slate-400">Dilamar: {{ formatDate(app.applied_at) }}</span>
                                                     <span class="w-1 h-1 rounded-full bg-slate-200"></span>
@@ -143,7 +176,7 @@ const updateStatus = (appId, newStatus) => {
                                         </div>
 
                                         <div class="flex items-center gap-3 shrink-0">
-                                            <Link :href="route('perusahaan.pelamar.show', { id: lowongan.id, appId: app.id })">
+                                            <Link :href="getApplicationHref(app)">
                                                 <Button variant="outline" class="rounded-xl font-bold border-slate-200 text-slate-600 hover:bg-slate-50 gap-2">
                                                     Review Profil
                                                     <ChevronRight class="w-4 h-4" />
@@ -179,16 +212,16 @@ const updateStatus = (appId, newStatus) => {
 
                         <TabsContent value="shortlisted" class="m-0">
                             <!-- Similar list but filtered by shortlisted status -->
-                            <div v-if="lamarans.filter(a => a.status === 'shortlisted').length > 0" class="divide-y divide-slate-50">
-                                <div v-for="app in lamarans.filter(a => a.status === 'shortlisted')" :key="app.id" class="px-8 py-6 hover:bg-slate-50/50 transition-colors group">
+                            <div v-if="shortlistedApplications.length > 0" class="divide-y divide-slate-50">
+                                <div v-for="app in shortlistedApplications" :key="app.id" class="px-8 py-6 hover:bg-slate-50/50 transition-colors group">
                                     <!-- Same row content as above -->
                                     <div class="flex flex-col md:flex-row md:items-center justify-between gap-6">
                                         <div class="flex items-center gap-5">
                                             <div class="w-16 h-16 rounded-2xl bg-white border border-slate-100 shadow-sm flex items-center justify-center text-xl font-bold text-indigo-500">
-                                                {{ app.user.name.substring(0, 2).toUpperCase() }}
+                                                {{ getApplicantInitials(app) }}
                                             </div>
                                             <div>
-                                                <h3 class="font-display font-bold text-lg text-slate-900 group-hover:text-primary transition-colors leading-tight mb-1">{{ app.user.name }}</h3>
+                                                <h3 class="font-display font-bold text-lg text-slate-900 group-hover:text-primary transition-colors leading-tight mb-1">{{ getApplicantName(app) }}</h3>
                                                 <div class="flex items-center gap-3">
                                                     <span class="text-xs font-bold text-indigo-500 uppercase tracking-widest">Kandidat Pilihan</span>
                                                     <span class="w-1 h-1 rounded-full bg-slate-200"></span>
@@ -197,7 +230,7 @@ const updateStatus = (appId, newStatus) => {
                                             </div>
                                         </div>
                                         <div class="flex items-center gap-3">
-                                            <Link :href="route('perusahaan.pelamar.show', { id: lowongan.id, appId: app.id })">
+                                            <Link :href="getApplicationHref(app)">
                                                 <Button variant="outline" class="rounded-xl font-bold border-slate-200 text-slate-600 hover:bg-slate-50">
                                                     Lihat Detail
                                                 </Button>

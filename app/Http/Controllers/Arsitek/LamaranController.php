@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Arsitek;
 
 use App\Http\Controllers\Controller;
 use App\Models\Lamaran;
+use App\Models\Lowongan;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Auth;
@@ -33,17 +34,21 @@ class LamaranController extends Controller
         ]);
     }
 
-    public function store(Request $request, string $id)
+    public function store(Request $request, Lowongan $lowongan)
     {
         // This is called from the public job listing
+        if (! $lowongan->isAvailableForApplication()) {
+            return back()->with('error', 'Lowongan ini sudah tidak menerima lamaran.');
+        }
+
         $request->validate([
             'notes' => 'nullable|string',
-            'cv' => 'nullable|file|mimes:pdf,doc,docx|max:5120',
+            'cv' => 'required|file|mimes:pdf,doc,docx|max:5120',
         ]);
 
         // Check if already applied
         $existing = Lamaran::where('user_id', Auth::id())
-            ->where('lowongan_id', $id)
+            ->where('lowongan_id', $lowongan->id)
             ->first();
             
         if ($existing) {
@@ -57,23 +62,12 @@ class LamaranController extends Controller
 
         Lamaran::create([
             'user_id' => Auth::id(),
-            'lowongan_id' => $id,
+            'lowongan_id' => $lowongan->id,
             'status' => 'pending',
             'cv_path' => $cv_path,
             'notes' => $request->notes,
         ]);
 
         return back()->with('status', 'Lamaran berhasil dikirim.');
-    }
-
-    public function withdraw(string $id)
-    {
-        $lamaran = Lamaran::where('user_id', Auth::id())->findOrFail($id);
-        
-        // Only allow withdraw if still pending or reviewing? 
-        // For simplicity, allow any time for now but in real world might have limits.
-        $lamaran->delete();
-
-        return redirect()->route('arsitek.lamaran.index')->with('status', 'Lamaran berhasil ditarik.');
     }
 }

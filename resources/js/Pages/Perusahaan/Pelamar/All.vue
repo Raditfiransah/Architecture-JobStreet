@@ -1,5 +1,6 @@
 <script setup>
 import { Head, Link, router } from '@inertiajs/vue3';
+import { computed } from 'vue';
 import ProfileLayout from '@/Layouts/ProfileLayout.vue';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/Components/UI/ui/card";
 import { Button } from "@/Components/UI/ui/button";
@@ -25,8 +26,28 @@ import {
 } from "@/Components/UI/ui/tabs";
 
 const props = defineProps({
-    lamarans: Array
+    lamarans: {
+      type: Array,
+      default: () => [],
+    },
 });
+
+const applications = computed(() => props.lamarans ?? []);
+const shortlistedApplications = computed(() => applications.value.filter((application) => application?.status === 'shortlisted'));
+
+const getApplicantName = (application) => application?.user?.name || 'Pelamar';
+const getApplicantInitials = (application) => getApplicantName(application).slice(0, 2).toUpperCase();
+const getPositionName = (application) => application?.lowongan?.posisi || 'Lowongan';
+const getApplicationHref = (application) => {
+  if (!application?.lowongan_id || !application?.id) {
+    return route('perusahaan.pelamar.all');
+  }
+
+  return route('perusahaan.pelamar.show', {
+    lowongan: application.lowongan_id,
+    lamaran: application.id,
+  });
+};
 
 const getStatusColor = (status) => {
   const colors = {
@@ -53,6 +74,10 @@ const getStatusLabel = (status) => {
 };
 
 const formatDate = (dateString) => {
+  if (!dateString) {
+    return '-';
+  }
+
   return new Date(dateString).toLocaleDateString('id-ID', {
     day: 'numeric',
     month: 'short',
@@ -93,28 +118,28 @@ const updateStatus = (appId, newStatus) => {
                         <div class="px-8 border-b border-slate-100 mt-6">
                             <TabsList class="bg-transparent h-auto p-0 gap-8">
                                 <TabsTrigger value="all" class="bg-transparent border-b-2 border-transparent rounded-none data-[state=active]:border-primary data-[state=active]:text-primary data-[state=active]:shadow-none px-0 pb-4 text-sm font-bold text-slate-400">
-                                    Semua ({{ lamarans.length }})
+                                    Semua ({{ applications.length }})
                                 </TabsTrigger>
                                 <TabsTrigger value="shortlisted" class="bg-transparent border-b-2 border-transparent rounded-none data-[state=active]:border-primary data-[state=active]:text-primary data-[state=active]:shadow-none px-0 pb-4 text-sm font-bold text-slate-400">
-                                    Shortlisted ({{ lamarans.filter(a => a.status === 'shortlisted').length }})
+                                    Shortlisted ({{ shortlistedApplications.length }})
                                 </TabsTrigger>
                             </TabsList>
                         </div>
 
                         <TabsContent value="all" class="m-0">
-                            <div v-if="lamarans.length > 0" class="divide-y divide-slate-50">
-                                <div v-for="app in lamarans" :key="app.id" class="px-8 py-6 hover:bg-slate-50/50 transition-colors group">
+                            <div v-if="applications.length > 0" class="divide-y divide-slate-50">
+                                <div v-for="app in applications" :key="app.id" class="px-8 py-6 hover:bg-slate-50/50 transition-colors group">
                                     <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
                                         <div class="flex items-center gap-5">
                                             <div class="w-16 h-16 rounded-2xl bg-white border border-slate-100 shadow-sm flex items-center justify-center text-xl font-bold text-slate-400 group-hover:text-primary transition-colors">
-                                                {{ app.user.name.substring(0, 2).toUpperCase() }}
+                                                {{ getApplicantInitials(app) }}
                                             </div>
                                             <div>
-                                                <h3 class="font-display font-bold text-lg text-slate-900 leading-tight mb-1 group-hover:text-primary transition-colors">{{ app.user.name }}</h3>
+                                                <h3 class="font-display font-bold text-lg text-slate-900 leading-tight mb-1 group-hover:text-primary transition-colors">{{ getApplicantName(app) }}</h3>
                                                 <div class="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm font-medium text-slate-500">
                                                     <span class="flex items-center gap-1.5 text-slate-900 font-bold shrink-0">
                                                         <Briefcase class="w-3.5 h-3.5 text-primary" />
-                                                        {{ app.lowongan.posisi }}
+                                                        {{ getPositionName(app) }}
                                                     </span>
                                                     <span class="w-1 h-1 rounded-full bg-slate-200 hidden md:block"></span>
                                                     <span class="text-slate-400">Tgl: {{ formatDate(app.applied_at) }}</span>
@@ -127,7 +152,7 @@ const updateStatus = (appId, newStatus) => {
                                         </div>
 
                                         <div class="flex items-center gap-3 shrink-0">
-                                            <Link :href="route('perusahaan.pelamar.show', { id: app.lowongan_id, appId: app.id })">
+                                            <Link :href="getApplicationHref(app)">
                                                 <Button variant="outline" class="rounded-xl font-bold border-slate-200 text-slate-600 hover:bg-slate-50 gap-2">
                                                     Review Profil
                                                     <ChevronRight class="w-4 h-4" />
@@ -161,24 +186,24 @@ const updateStatus = (appId, newStatus) => {
                         </TabsContent>
 
                         <TabsContent value="shortlisted" class="m-0">
-                            <div v-if="lamarans.filter(a => a.status === 'shortlisted').length > 0" class="divide-y divide-slate-50">
-                                <div v-for="app in lamarans.filter(a => a.status === 'shortlisted')" :key="app.id" class="px-8 py-6 hover:bg-slate-50/50 transition-colors group">
+                            <div v-if="shortlistedApplications.length > 0" class="divide-y divide-slate-50">
+                                <div v-for="app in shortlistedApplications" :key="app.id" class="px-8 py-6 hover:bg-slate-50/50 transition-colors group">
                                     <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
                                         <div class="flex items-center gap-5">
                                             <div class="w-16 h-16 rounded-2xl bg-white border border-slate-100 shadow-sm flex items-center justify-center text-xl font-bold text-indigo-500">
-                                                {{ app.user.name.substring(0, 2).toUpperCase() }}
+                                                {{ getApplicantInitials(app) }}
                                             </div>
                                             <div>
-                                                <h3 class="font-display font-bold text-lg text-slate-900 group-hover:text-primary transition-colors leading-tight mb-1">{{ app.user.name }}</h3>
+                                                <h3 class="font-display font-bold text-lg text-slate-900 group-hover:text-primary transition-colors leading-tight mb-1">{{ getApplicantName(app) }}</h3>
                                                 <div class="flex items-center gap-x-3 text-sm font-medium">
                                                     <span class="text-indigo-600 font-bold tracking-tight">Shortlisted</span>
                                                     <span class="w-1 h-1 rounded-full bg-slate-200"></span>
-                                                    <span class="text-slate-400">{{ app.lowongan.posisi }}</span>
+                                                    <span class="text-slate-400">{{ getPositionName(app) }}</span>
                                                 </div>
                                             </div>
                                         </div>
                                         <div class="flex items-center gap-3">
-                                            <Link :href="route('perusahaan.pelamar.show', { id: app.lowongan_id, appId: app.id })">
+                                            <Link :href="getApplicationHref(app)">
                                                 <Button variant="outline" class="rounded-xl font-bold border-slate-200 text-slate-600 hover:bg-slate-50">
                                                     Lihat Detail
                                                 </Button>

@@ -226,7 +226,12 @@ class LowonganSeeder extends Seeder
         ];
 
         foreach ($lowongan as $job) {
-            Lowongan::create($job);
+            Lowongan::create(array_merge($job, [
+                'status' => $job['status'] ?? 'aktif',
+                'tanggal_mulai' => now()->subDays(7)->toDateString(),
+                'batas_lamaran' => now()->addDays(30)->toDateString(),
+                'deadline' => now()->addDays(30)->toDateString(),
+            ]));
         }
     }
 }

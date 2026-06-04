@@ -3,7 +3,7 @@ import { reactiveOmit } from "@vueuse/core";
 import { Cross2Icon } from '@radix-icons/vue';
 import {
   DialogClose,
-  DialogContent,
+  DialogContent as RekaDialogContent,
   DialogOverlay,
   DialogPortal,
   useForwardPropsEmits,
@@ -40,7 +40,7 @@ const forwarded = useForwardPropsEmits(delegatedProps, emits);
     <DialogOverlay
       class="fixed inset-0 z-50 bg-black/80 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0"
     />
-    <DialogContent
+    <RekaDialogContent
       v-bind="forwarded"
       :class="
         cn(
@@ -57,6 +57,6 @@ const forwarded = useForwardPropsEmits(delegatedProps, emits);
         <Cross2Icon class="w-4 h-4" />
         <span class="sr-only">Close</span>
       </DialogClose>
-    </DialogContent>
+    </RekaDialogContent>
   </DialogPortal>
 </template>

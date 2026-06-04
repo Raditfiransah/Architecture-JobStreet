@@ -194,30 +194,22 @@ const dropdownLinks = computed(() => {
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent class="w-80 mt-2 rounded-xl border-border/50 p-0 overflow-hidden" align="end">
-              <div class="p-2 bg-background">
-                <div class="px-3 py-3 border-b border-border/50 mb-1">
-                  <p class="font-bold text-sm text-foreground truncate">{{ user.name }}</p>
-                  <p class="text-[11px] text-muted-foreground truncate">{{ user.email }}</p>
-                </div>
-                
-                <div class="py-1">
-                  <Link 
-                    v-for="link in dropdownLinks" 
-                    :key="link.name" 
-                    :href="link.href" 
-                    class="flex items-center py-2 px-3 rounded-lg text-sm font-medium text-muted-foreground hover:text-primary hover:bg-primary/5 transition-all group"
-                  >
-                    <component :is="link.icon" class="mr-3 h-4 w-4 text-muted-foreground/70 group-hover:text-primary transition-colors" />
-                    <span>{{ link.name }}</span>
-                  </Link>
-                </div>
-
-                <div class="mt-1 pt-1 border-t border-border/50">
-                  <Link :href="route('logout')" method="post" as="button" class="flex items-center w-full py-2 px-3 rounded-lg text-sm font-medium text-destructive hover:bg-destructive/5 transition-all group">
-                    <LogOut class="mr-3 h-4 w-4 text-destructive/70 group-hover:text-destructive" />
-                    <span>Keluar</span>
-                  </Link>
-                </div>
+              <div class="p-4 bg-background">
+                <p class="font-bold text-foreground">{{ user.name }}</p>
+                <p class="text-xs text-muted-foreground">{{ user.email }}</p>
+                <DropdownMenuSeparator class="my-3" />
+                <Link :href="route(user.role === 'admin' ? 'admin.dashboard' : user.role + '.profil.edit')" class="flex items-center py-2 text-sm font-medium hover:text-primary transition-colors">
+                  <User class="mr-3 h-4 w-4" />
+                  <span>Profil Saya</span>
+                </Link>
+                <Link v-if="user.role === 'client'" :href="route('client.proyek.create')" class="flex items-center py-2 text-sm font-medium hover:text-primary transition-colors">
+                  <Briefcase class="mr-3 h-4 w-4" />
+                  <span>Posting Proyek Baru</span>
+                </Link>
+                <Link :href="route('logout')" method="post" as="button" class="flex items-center w-full py-2 text-sm font-medium text-destructive mt-1 hover:text-destructive/80 transition-colors">
+                  <LogOut class="mr-3 h-4 w-4" />
+                  <span>Keluar</span>
+                </Link>
               </div>
             </DropdownMenuContent>
           </DropdownMenu>

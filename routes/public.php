@@ -4,6 +4,7 @@ use App\Http\Controllers\Public\LowonganController;
 use App\Http\Controllers\Public\ProyekController;
 use App\Http\Controllers\Public\ArsitekController;
 use App\Http\Controllers\Public\InfoHubController;
+use App\Http\Controllers\Public\ProfileViewController;
 use Illuminate\Support\Facades\Route;
 
 // ─── Halaman Publik Tanpa Login ────────────────────────────────────────────
@@ -13,16 +14,16 @@ use Illuminate\Support\Facades\Route;
 Route::get('/lowongan', [LowonganController::class, 'index'])->name('lowongan.index');
 Route::get('/lowongan/{lowongan}', [LowonganController::class, 'show'])->name('lowongan.show');
 
-// Proyek arsitektur
-Route::middleware('auth')->group(function () {
-    Route::get('/proyek', [ProyekController::class, 'index'])->name('proyek.index');
-    Route::get('/proyek/{proyek}', [ProyekController::class, 'show'])->name('proyek.show');
+// Marketplace proyek arsitektur
+Route::get('/proyek', [ProyekController::class, 'index'])->name('proyek.index');
+Route::get('/proyek/{proyek}', [ProyekController::class, 'show'])->name('proyek.show');
 
-    // Direktori arsitek
-    Route::get('/arsitek', [ArsitekController::class, 'index'])->name('arsitek.direktori');
-    Route::get('/arsitek/{username}', [ArsitekController::class, 'show'])->name('arsitek.profil');
+// Direktori dan profil publik
+Route::get('/hire-arsitek', [ArsitekController::class, 'index'])->name('arsitek.index');
+Route::get('/arsitek', [ArsitekController::class, 'index'])->name('arsitek.direktori');
+Route::get('/arsitek/{user}', [ProfileViewController::class, 'showArsitek'])->name('public.arsitek.show');
+Route::get('/perusahaan/{user}', [ProfileViewController::class, 'showPerusahaan'])->name('public.perusahaan.show');
 
-    // Info Hub
-    Route::get('/info', [InfoHubController::class, 'index'])->name('info.index');
-    Route::get('/info/{slug}', [InfoHubController::class, 'show'])->name('info.show');
-});
+// Info Hub
+Route::get('/info', [InfoHubController::class, 'index'])->name('info.index');
+Route::get('/info/{infoHub}', [InfoHubController::class, 'show'])->name('info.show');

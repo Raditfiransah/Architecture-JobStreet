@@ -9,9 +9,6 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('arsitek_profiles', function (Blueprint $table): void {
-            // Rename old column
-            $table->renameColumn('school', 'education_institution');
-            
             // Bio & specialization
             $table->text('bio')->nullable()->after('degree_type');
             $table->string('specialization', 100)->nullable()->after('bio');
@@ -38,7 +35,6 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('arsitek_profiles', function (Blueprint $table): void {
-            $table->renameColumn('education_institution', 'school');
             $table->dropColumn([
                 'bio',
                 'specialization',

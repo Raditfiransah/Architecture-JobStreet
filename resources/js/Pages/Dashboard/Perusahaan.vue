@@ -8,19 +8,54 @@ import {
   Users, 
   UserCheck, 
   Clock, 
-  ArrowRight,
+  ChevronRight,
   Plus,
-  MoreVertical,
   CheckCircle2,
-  XCircle,
   Clock3
 } from 'lucide-vue-next';
 
 const props = defineProps({
-    stats: Object,
-    recentApplications: Array,
-    companyName: String
+    stats: {
+      type: Object,
+      default: () => ({
+        total_lowongan: 0,
+        lowongan_aktif: 0,
+        total_pelamar: 0,
+        shortlisted: 0,
+      }),
+    },
+    recentApplications: {
+      type: Array,
+      default: () => [],
+    },
+    companyName: {
+      type: String,
+      default: 'Perusahaan',
+    },
 });
+
+const safeStats = {
+  total_lowongan: Number(props.stats?.total_lowongan ?? 0),
+  lowongan_aktif: Number(props.stats?.lowongan_aktif ?? 0),
+  total_pelamar: Number(props.stats?.total_pelamar ?? 0),
+  shortlisted: Number(props.stats?.shortlisted ?? 0),
+};
+
+const applications = props.recentApplications ?? [];
+
+const getApplicantName = (application) => application?.user?.name || 'Pelamar';
+const getApplicantInitials = (application) => getApplicantName(application).slice(0, 2).toUpperCase();
+const getPositionName = (application) => application?.lowongan?.posisi || 'Lowongan';
+const getApplicationHref = (application) => {
+  if (!application?.lowongan_id || !application?.id) {
+    return route('perusahaan.pelamar.all');
+  }
+
+  return route('perusahaan.pelamar.show', {
+    lowongan: application.lowongan_id,
+    lamaran: application.id,
+  });
+};
 
 const getStatusColor = (status) => {
   const colors = {
@@ -84,7 +119,7 @@ const formatDate = (dateString) => {
                             </div>
                             <div>
                                 <p class="text-xs font-bold text-slate-400 uppercase tracking-wider">Lowongan Aktif</p>
-                                <h3 class="text-2xl font-display font-bold text-slate-900">{{ stats.lowongan_aktif }} / {{ stats.total_lowongan }}</h3>
+                                <h3 class="text-2xl font-display font-bold text-slate-900">{{ safeStats.lowongan_aktif }} / {{ safeStats.total_lowongan }}</h3>
                             </div>
                         </div>
                     </CardContent>
@@ -98,7 +133,7 @@ const formatDate = (dateString) => {
                             </div>
                             <div>
                                 <p class="text-xs font-bold text-slate-400 uppercase tracking-wider">Total Pelamar</p>
-                                <h3 class="text-2xl font-display font-bold text-slate-900">{{ stats.total_pelamar }}</h3>
+                                <h3 class="text-2xl font-display font-bold text-slate-900">{{ safeStats.total_pelamar }}</h3>
                             </div>
                         </div>
                     </CardContent>
@@ -112,7 +147,7 @@ const formatDate = (dateString) => {
                             </div>
                             <div>
                                 <p class="text-xs font-bold text-slate-400 uppercase tracking-wider">Shortlisted</p>
-                                <h3 class="text-2xl font-display font-bold text-slate-900">{{ stats.shortlisted }}</h3>
+                                <h3 class="text-2xl font-display font-bold text-slate-900">{{ safeStats.shortlisted }}</h3>
                             </div>
                         </div>
                     </CardContent>
@@ -126,7 +161,7 @@ const formatDate = (dateString) => {
                             </div>
                             <div>
                                 <p class="text-xs font-bold text-slate-400 uppercase tracking-wider">Perlu Ditinjau</p>
-                                <h3 class="text-2xl font-display font-bold text-slate-900">{{ stats.total_pelamar - stats.shortlisted }}</h3>
+                                <h3 class="text-2xl font-display font-bold text-slate-900">{{ safeStats.total_pelamar - safeStats.shortlisted }}</h3>
                             </div>
                         </div>
                     </CardContent>
@@ -146,22 +181,22 @@ const formatDate = (dateString) => {
                         </Link>
                     </CardHeader>
                     <CardContent class="px-8 pb-8">
-                        <div v-if="recentApplications.length > 0" class="divide-y divide-slate-100">
-                            <div v-for="app in recentApplications" :key="app.id" class="py-4 flex items-center justify-between group">
+                        <div v-if="applications.length > 0" class="divide-y divide-slate-100">
+                            <div v-for="app in applications" :key="app.id" class="py-4 flex items-center justify-between group">
                                 <div class="flex items-center gap-4">
                                     <div class="w-12 h-12 rounded-xl bg-slate-100 flex items-center justify-center font-bold text-slate-400 group-hover:bg-primary/5 group-hover:text-primary transition-colors">
-                                        {{ app.user.name.substring(0, 2).toUpperCase() }}
+                                        {{ getApplicantInitials(app) }}
                                     </div>
                                     <div>
-                                        <h4 class="font-bold text-slate-900 leading-none mb-1 group-hover:text-primary transition-colors">{{ app.user.name }}</h4>
-                                        <p class="text-xs text-slate-500 font-medium">Melamar: <span class="text-slate-700">{{ app.lowongan.posisi }}</span></p>
+                                        <h4 class="font-bold text-slate-900 leading-none mb-1 group-hover:text-primary transition-colors">{{ getApplicantName(app) }}</h4>
+                                        <p class="text-xs text-slate-500 font-medium">Melamar: <span class="text-slate-700">{{ getPositionName(app) }}</span></p>
                                     </div>
                                 </div>
                                 <div class="flex items-center gap-4">
                                     <span class="px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider border" :class="getStatusColor(app.status)">
                                         {{ getStatusLabel(app.status) }}
                                     </span>
-                                    <Link :href="route('perusahaan.pelamar.show', { id: app.lowongan_id, appId: app.id })">
+                                    <Link :href="getApplicationHref(app)">
                                         <Button variant="ghost" size="icon" class="rounded-xl h-10 w-10 hover:bg-slate-50">
                                             <ChevronRight class="w-5 h-5 text-slate-400" />
                                         </Button>

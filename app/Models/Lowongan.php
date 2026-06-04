@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 
 class Lowongan extends Model
@@ -22,6 +23,8 @@ class Lowongan extends Model
         'tanggung_jawab',
         'status',
         'deadline',
+        'tanggal_mulai',
+        'batas_lamaran',
     ];
 
     protected function casts(): array
@@ -31,7 +34,30 @@ class Lowongan extends Model
             'tanggung_jawab' => 'array',
             'rating' => 'decimal:1',
             'deadline' => 'date',
+            'tanggal_mulai' => 'date',
+            'batas_lamaran' => 'date',
         ];
+    }
+
+    public function scopePubliclyAvailable(Builder $query): Builder
+    {
+        $today = today();
+
+        return $query
+            ->where('status', 'aktif')
+            ->whereDate('tanggal_mulai', '<=', $today)
+            ->whereDate('batas_lamaran', '>=', $today);
+    }
+
+    public function isAvailableForApplication(): bool
+    {
+        $today = today();
+
+        return $this->status === 'aktif'
+            && $this->tanggal_mulai !== null
+            && $this->batas_lamaran !== null
+            && $this->tanggal_mulai->lte($today)
+            && $this->batas_lamaran->gte($today);
     }
 
     public function user()

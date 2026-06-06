@@ -73,14 +73,6 @@ const statCards = [
           <h1 class="text-3xl font-bold tracking-tight text-foreground">Admin Overview</h1>
           <p class="text-muted-foreground mt-1">Pusat kontrol dan monitoring sistem LokerArsitek.</p>
         </div>
-        <div class="flex items-center gap-3">
-          <Button variant="outline" class="rounded-xl font-bold text-xs uppercase tracking-wider">
-            Download Report
-          </Button>
-          <Button class="rounded-xl font-bold text-xs uppercase tracking-wider shadow-lg shadow-primary/20">
-            System Status
-          </Button>
-        </div>
       </div>
 
       <!-- Stats Grid -->

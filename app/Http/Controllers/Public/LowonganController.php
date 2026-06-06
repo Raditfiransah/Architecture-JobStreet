@@ -21,7 +21,7 @@ class LowonganController extends Controller
             $query->where(function ($qb) use ($q) {
                 $qb->where('posisi', 'like', "%{$q}%")
                    ->orWhere('perusahaan', 'like', "%{$q}%")
-                   ->orWhere('kota', 'like', "%{$q}%");
+                   ->orWhere('deskripsi', 'like', "%{$q}%");
             });
         }
 

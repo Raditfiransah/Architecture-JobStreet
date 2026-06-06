@@ -27,8 +27,8 @@ Route::middleware(['auth', 'verified', 'role:perusahaan'])
 
     // Kelola lowongan
     Route::get('/lowongan', [LowonganController::class, 'index'])->name('lowongan.index');
-    Route::get('/lowongan/buat', [LowonganController::class, 'create'])->name('lowongan.create');
-    Route::post('/lowongan', [LowonganController::class, 'store'])->name('lowongan.store');
+    Route::get('/lowongan/buat', [LowonganController::class, 'create'])->middleware('profile.verified')->name('lowongan.create');
+    Route::post('/lowongan', [LowonganController::class, 'store'])->middleware('profile.verified')->name('lowongan.store');
     Route::get('/lowongan/{lowongan}/edit', [LowonganController::class, 'edit'])->name('lowongan.edit');
     Route::put('/lowongan/{lowongan}', [LowonganController::class, 'update'])->name('lowongan.update');
     Route::put('/lowongan/{lowongan}/tutup', [LowonganController::class, 'tutup'])->name('lowongan.tutup');

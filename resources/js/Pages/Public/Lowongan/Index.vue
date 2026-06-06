@@ -40,6 +40,7 @@ const props = defineProps({
 
 const page = usePage();
 const user = computed(() => page.props.auth.user);
+const isProfileVerified = computed(() => user.value?.profile?.verification_status === 'verified');
 
 const searchQuery = ref(props.filters?.q || "");
 const locationQuery = ref(props.filters?.l || "");
@@ -134,6 +135,11 @@ const handleAction = (action) => {
 
   if (action === 'apply') {
     if (user.value.role === 'arsitek') {
+      if (!isProfileVerified.value) {
+        router.visit(route('arsitek.verifikasi.index'));
+        return;
+      }
+
       applyModalOpen.value = true;
     }
   }
@@ -219,7 +225,7 @@ const handleAction = (action) => {
 
             <div class="flex flex-wrap gap-4">
               <Button v-if="!user || user.role === 'arsitek'" @click="handleAction('apply')" size="lg" class="rounded-lg px-8 h-12 font-semibold flex-1 md:flex-none">
-                Lamar Sekarang
+                {{ user?.role === 'arsitek' && !isProfileVerified ? 'Verifikasi untuk Melamar' : 'Lamar Sekarang' }}
                 <ChevronRight class="ml-2 w-5 h-5" />
               </Button>
               <Button v-if="!user || user.role === 'arsitek'" @click="handleAction('save')" variant="outline" size="lg" class="rounded-lg px-6 h-12 border-border">

@@ -1,5 +1,6 @@
 <script setup>
-import { Head, Link, router } from '@inertiajs/vue3';
+import { Head, Link, router, usePage } from '@inertiajs/vue3';
+import { computed } from 'vue';
 import ProfileLayout from '@/Layouts/ProfileLayout.vue';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/Components/UI/ui/card";
 import { Button } from "@/Components/UI/ui/button";
@@ -25,6 +26,10 @@ import {
 const props = defineProps({
     lowongans: Array
 });
+
+const page = usePage();
+const profileVerified = computed(() => page.props.auth.user?.profile?.verification_status === 'verified');
+const createLowonganHref = computed(() => profileVerified.value ? route('perusahaan.lowongan.create') : route('perusahaan.verifikasi.index'));
 
 const getStatusColor = (status) => {
     switch (status) {
@@ -71,10 +76,10 @@ const toggleStatus = (id, currentStatus) => {
                     <h1 class="text-3xl font-display font-bold text-slate-900 tracking-tight">Kelola Lowongan</h1>
                     <p class="text-slate-500 font-medium">Buat dan pantau lowongan kerja yang Anda publikasikan.</p>
                 </div>
-                <Link :href="route('perusahaan.lowongan.create')">
+                <Link :href="createLowonganHref">
                     <Button class="rounded-2xl h-12 px-6 font-bold gap-2 shadow-lg shadow-primary/20">
                         <Plus class="w-5 h-5" />
-                        Tambah Lowongan Baru
+                        {{ profileVerified ? 'Tambah Lowongan Baru' : 'Verifikasi untuk Posting' }}
                     </Button>
                 </Link>
             </div>
@@ -162,10 +167,10 @@ const toggleStatus = (id, currentStatus) => {
                     <img src="https://illustrations.popsy.co/amber/work-from-home.svg" alt="Empty Job" class="w-64 h-64 grayscale opacity-80 mb-8" />
                     <h3 class="text-2xl font-display font-bold text-slate-800 mb-3">Belum ada lowongan terbit</h3>
                     <p class="text-slate-500 font-medium mb-8">Mulailah merekrut tim impianmu dengan memposting lowongan kerja pertama Anda di platform Arsitek.</p>
-                    <Link :href="route('perusahaan.lowongan.create')">
+                    <Link :href="createLowonganHref">
                         <Button class="rounded-2xl h-14 px-8 font-bold gap-2 shadow-xl shadow-primary/20">
                             <Plus class="w-6 h-6" />
-                            Buat Lowongan Sekarang
+                            {{ profileVerified ? 'Buat Lowongan Sekarang' : 'Verifikasi untuk Posting' }}
                         </Button>
                     </Link>
                 </div>

@@ -54,10 +54,6 @@ const selectArsitek = (arsitek) => {
   selectedArsitek.value = arsitek;
 };
 
-const userInitials = (name) => {
-  return name.split(' ').map(n => n[0]).join('').toUpperCase().substring(0, 2);
-};
-
 const handleHire = () => {
   if (!isLoggedIn.value) {
     router.get(route('login'));
@@ -100,9 +96,7 @@ const handleHire = () => {
             <div class="flex gap-4">
                <Avatar class="h-12 w-12 rounded-full border border-border shadow-sm shrink-0">
                   <AvatarImage :src="arsitek.user?.avatar_url" />
-                  <AvatarFallback class="bg-primary/5 text-primary font-bold text-sm">
-                     {{ userInitials(arsitek.user?.name || 'A') }}
-                  </AvatarFallback>
+                  <AvatarFallback class="bg-gray-100"></AvatarFallback>
                </Avatar>
                <div class="min-w-0 flex-1">
                   <h3 class="text-sm font-bold text-[#1E293B] leading-tight mb-1 truncate group-hover:text-primary transition-colors">
@@ -139,9 +133,7 @@ const handleHire = () => {
                    <div class="relative -mt-12 mb-6">
                       <Avatar class="h-24 w-24 rounded-full border-4 border-white shadow-xl">
                          <AvatarImage :src="selectedArsitek.user?.avatar_url" />
-                         <AvatarFallback class="bg-primary/5 text-primary text-2xl font-bold">
-                            {{ userInitials(selectedArsitek.user?.name || 'A') }}
-                         </AvatarFallback>
+                         <AvatarFallback class="bg-gray-100"></AvatarFallback>
                       </Avatar>
                    </div>
 
@@ -159,13 +151,6 @@ const handleHire = () => {
                          <div class="flex items-center gap-4 text-xs text-slate-400 pt-1">
                             <span class="flex items-center gap-1.5"><MapPin class="w-3.5 h-3.5" /> {{ selectedArsitek.location || 'Malang, Indonesia' }}</span>
                          </div>
-                      </div>
-
-                      <div class="flex items-center gap-3 shrink-0">
-                         <Button @click="handleHire" class="rounded-xl px-10 h-12 font-bold text-xs uppercase tracking-wider gap-2">
-                            <Plus class="w-4 h-4" />
-                            Hire Architect
-                         </Button>
                       </div>
                    </div>
                 </div>
@@ -219,19 +204,18 @@ const handleHire = () => {
                          </div>
                       </div>
                       <Separator class="bg-border/30" />
-                      <Button variant="outline" class="w-full rounded-xl font-bold text-[10px] uppercase tracking-wider border-border/60 h-10 hover:bg-slate-50 text-[#334155]">
-                         Lihat Portofolio Lengkap
+                      <Button
+                        v-if="selectedArsitek.user?.id"
+                        variant="outline"
+                        as-child
+                        class="w-full rounded-xl font-bold text-[10px] uppercase tracking-wider border-border/60 h-10 hover:bg-slate-50 text-[#334155]"
+                      >
+                         <Link :href="route('public.arsitek.show', selectedArsitek.user.id)">
+                            Lihat Portofolio Lengkap
+                         </Link>
                       </Button>
                    </CardContent>
                 </Card>
-
-                <div class="bg-primary text-primary-foreground rounded-2xl p-8 relative overflow-hidden shadow-xl shadow-primary/10">
-                   <h4 class="text-lg font-bold mb-3 relative z-10">Mulai Proyekmu?</h4>
-                   <p class="text-xs font-bold mb-8 opacity-70 leading-loose relative z-10 tracking-wide">Hire Arsitek profesional untuk mewujudkan desain impian Anda.</p>
-                   <Button @click="handleHire" variant="secondary" class="w-full rounded-xl font-bold text-[11px] uppercase tracking-wider h-11 bg-white text-primary hover:bg-slate-50 relative z-10">
-                      Posting Proyek Sekarang
-                   </Button>
-                </div>
              </div>
           </div>
         </div>

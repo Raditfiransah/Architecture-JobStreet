@@ -20,6 +20,10 @@ class VerificationController extends Controller
         $hasExistingLicense = $profile && $profile->license_document_url;
 
         $request->validate([
+            'email' => [
+                'required', 'string', 'email', 'max:150',
+                \Illuminate\Validation\Rule::unique('users', 'email')->ignore($user->id),
+            ],
             'phone' => [
                 'required', 'string', 'max:20',
                 \Illuminate\Validation\Rule::unique('users', 'phone')->ignore($user->id),
@@ -27,10 +31,14 @@ class VerificationController extends Controller
             'identity_document' => ($hasExistingIdentity ? 'nullable' : 'required') . '|file|mimes:pdf,jpg,jpeg,png|max:5120',
             'license_document' => ($hasExistingLicense ? 'nullable' : 'required') . '|file|mimes:pdf,jpg,jpeg,png|max:5120',
         ], [
+            'email.unique' => 'Email ini sudah digunakan oleh akun lain.',
             'phone.unique' => 'Nomor telepon ini sudah digunakan oleh akun lain.',
         ]);
 
-        $user->update(['phone' => $request->phone]);
+        $user->update([
+            'email' => $request->email,
+            'phone' => $request->phone,
+        ]);
 
         $identityPath = $profile ? $profile->identity_document_url : null;
         if ($request->hasFile('identity_document')) {

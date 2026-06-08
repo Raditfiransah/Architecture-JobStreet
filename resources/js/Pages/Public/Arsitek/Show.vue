@@ -55,18 +55,16 @@ const handleHire = () => {
         <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
             <!-- Header Section -->
             <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-                <div class="h-32 sm:h-48 bg-gradient-to-r from-blue-600 to-indigo-700"></div>
+                <div class="h-32 sm:h-48 bg-gray-100"></div>
                 
                 <div class="px-6 sm:px-10 py-6 relative">
-                    <div class="flex flex-col sm:flex-row items-center sm:items-end gap-6 sm:gap-8 -mt-20 sm:-mt-24 mb-6">
-                        <div class="w-32 h-32 sm:w-40 sm:h-40 rounded-full border-4 border-white shadow-md bg-white overflow-hidden flex-shrink-0">
+                    <div class="flex flex-col sm:flex-row items-center sm:items-start gap-6 sm:gap-8 mb-6">
+                        <div class="-mt-20 sm:-mt-24 w-32 h-32 sm:w-40 sm:h-40 rounded-full border-4 border-white shadow-md bg-gray-100 overflow-hidden flex-shrink-0">
                             <img v-if="arsitek.avatar_url" :src="arsitek.avatar_url" class="w-full h-full object-cover" />
-                            <div v-else class="w-full h-full bg-gray-100 flex items-center justify-center text-gray-400 text-3xl font-bold uppercase">
-                                {{ arsitek.name.charAt(0) }}
-                            </div>
+                            <div v-else class="w-full h-full bg-gray-100"></div>
                         </div>
                         
-                        <div class="flex-1 text-center sm:text-left">
+                        <div class="flex-1 text-center sm:text-left sm:pt-4">
                             <h1 class="text-3xl font-bold text-gray-900">{{ arsitek.name }}</h1>
                             <p class="text-lg text-gray-600 font-medium mt-1">{{ profile.specialization || 'Arsitek' }}</p>
                             
@@ -81,7 +79,7 @@ const handleHire = () => {
                         </div>
                         
                         <div class="flex-shrink-0 flex sm:flex-col gap-3">
-                            <button @click="handleHire" class="px-6 py-2.5 bg-blue-600 text-white font-semibold rounded-lg shadow-sm hover:bg-blue-700 transition flex items-center gap-2">
+                            <button @click="handleHire" class="px-6 py-2.5 bg-black text-white font-semibold rounded-lg shadow-sm hover:bg-neutral-800 transition flex items-center gap-2">
                                 <Plus class="w-4 h-4" />
                                 Posting Proyek
                             </button>

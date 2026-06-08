@@ -3,6 +3,7 @@
 use App\Http\Middleware\CheckRole;
 use App\Http\Middleware\EnsureEmailVerified;
 use App\Http\Middleware\EnsureProfileComplete;
+use App\Http\Middleware\EnsureProfileVerified;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -24,6 +25,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'verified' => EnsureEmailVerified::class,
             'email.verified' => EnsureEmailVerified::class,
             'profile.complete' => EnsureProfileComplete::class,
+            'profile.verified' => EnsureProfileVerified::class,
         ]);
 
         // Use Redis throttling only when phpredis extension is available

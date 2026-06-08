@@ -69,6 +69,7 @@ Route::middleware(['auth', 'verified', 'role:arsitek'])
 // (URL berasal dari halaman lowongan/proyek publik sehingga tidak perlu prefix dashboard)
 Route::middleware(['auth', 'verified', 'role:arsitek'])->group(function () {
     Route::post('/lowongan/{lowongan}/lamar', [LamaranController::class, 'store'])
+        ->middleware('profile.verified')
         ->name('arsitek.lamaran.store');
 
     Route::post('/proyek/{proyek}/proposal', [ProposalController::class, 'store'])

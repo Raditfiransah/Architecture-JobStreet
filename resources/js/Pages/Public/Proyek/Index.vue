@@ -140,7 +140,7 @@ const formatCurrency = (value) => {
             :key="project.id"
             @click="selectProject(project)"
             :class="[
-              'p-4.5 rounded-2xl border transition-all cursor-pointer relative bg-white',
+              'px-5 py-4 rounded-2xl border transition-all cursor-pointer relative bg-white',
               selectedProject?.id === project.id 
                 ? 'border-primary shadow-sm bg-primary/[0.02]' 
                 : 'border-slate-100/80 shadow-sm hover:bg-slate-50/50 hover:border-slate-200'
@@ -148,8 +148,7 @@ const formatCurrency = (value) => {
           >
             <div class="space-y-3">
               <div class="min-w-0">
-                <span class="text-[9px] font-black text-primary uppercase tracking-wider bg-primary/5 px-2.5 py-0.5 rounded-md leading-none">{{ project.category }}</span>
-                <h3 class="text-base font-bold text-slate-800 leading-snug mt-2.5 hover:text-primary transition-colors">{{ project.title }}</h3>
+                <h3 class="text-base font-bold text-slate-800 leading-snug hover:text-primary transition-colors">{{ project.title }}</h3>
                 <p class="text-xs text-slate-400 font-semibold mt-1 flex items-center gap-1.5"><MapPin class="w-3.5 h-3.5 text-slate-400 shrink-0" /> {{ project.location }}</p>
               </div>
               

@@ -40,6 +40,7 @@ const props = defineProps({
 
 const page = usePage();
 const user = computed(() => page.props.auth.user);
+const isProfileVerified = computed(() => user.value?.profile?.verification_status === 'verified');
 
 const searchQuery = ref(props.filters?.q || "");
 const locationQuery = ref(props.filters?.l || "");
@@ -134,6 +135,11 @@ const handleAction = (action) => {
 
   if (action === 'apply') {
     if (user.value.role === 'arsitek') {
+      if (!isProfileVerified.value) {
+        router.visit(route('arsitek.verifikasi.index'));
+        return;
+      }
+
       applyModalOpen.value = true;
     }
   }
@@ -219,7 +225,7 @@ const handleAction = (action) => {
 
             <div class="flex flex-wrap gap-4">
               <Button v-if="!user || user.role === 'arsitek'" @click="handleAction('apply')" size="lg" class="rounded-lg px-8 h-12 font-semibold flex-1 md:flex-none">
-                Lamar Sekarang
+                {{ user?.role === 'arsitek' && !isProfileVerified ? 'Verifikasi untuk Melamar' : 'Lamar Sekarang' }}
                 <ChevronRight class="ml-2 w-5 h-5" />
               </Button>
               <Button v-if="!user || user.role === 'arsitek'" @click="handleAction('save')" variant="outline" size="lg" class="rounded-lg px-6 h-12 border-border">
@@ -314,14 +320,6 @@ const handleAction = (action) => {
                   </Button>
                 </CardContent>
               </Card>
-
-              <div class="bg-primary text-primary-foreground rounded-xl p-6 relative overflow-hidden">
-                <h4 class="text-lg font-bold mb-3">Tingkatkan Peluangmu!</h4>
-                <p class="text-sm font-medium mb-6 opacity-80 leading-relaxed">Arsitek dengan portofolio lengkap memiliki peluang 4x lebih besar.</p>
-                <Button variant="secondary" class="w-full rounded-lg font-medium h-12 bg-white text-primary hover:bg-white">
-                  Lengkapi Profil Now
-                </Button>
-              </div>
             </div>
           </div>
         </div>

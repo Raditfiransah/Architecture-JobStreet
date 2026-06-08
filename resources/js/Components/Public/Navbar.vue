@@ -85,8 +85,11 @@ onUnmounted(() => {
 const navLinks = computed(() => {
   const baseLinks = [
     { name: "Lowongan Kerja", route: "lowongan.index" },
-    { name: "Hire Architect", route: "arsitek.index" },
   ];
+
+  if (user.value?.role !== 'arsitek') {
+    baseLinks.push({ name: "Hire Architect", route: "arsitek.index" });
+  }
 
   if (user.value) {
     return [

@@ -11,7 +11,6 @@ import {
   MessageCircle,
   LogOut,
   ShieldCheck,
-  Monitor,
   CheckCircle2,
   Lock
 } from "lucide-vue-next";
@@ -169,12 +168,6 @@ const logout = () => {
         </Button>
 
         <div class="px-3 py-2 text-[11px] font-bold uppercase tracking-widest text-muted-foreground mt-4 mb-1">Sistem & Keamanan</div>
-        <Button asChild variant="ghost" :class="[isRoute('admin.system.index') ? 'bg-primary/10 text-primary' : 'text-muted-foreground hover:text-foreground hover:bg-muted']" class="w-full justify-start rounded-lg font-medium mb-1">
-          <Link :href="route('admin.system.index')">
-            <Monitor class="mr-3 h-4 w-4" />
-            Monitoring System
-          </Link>
-        </Button>
         <Button asChild variant="ghost" :class="[isRoute('admin.security.index') ? 'bg-primary/10 text-primary' : 'text-muted-foreground hover:text-foreground hover:bg-muted']" class="w-full justify-start rounded-lg font-medium mb-1">
           <Link :href="route('admin.security.index')">
             <ShieldCheck class="mr-3 h-4 w-4" />

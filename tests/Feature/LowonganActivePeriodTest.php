@@ -2,6 +2,8 @@
 
 namespace Tests\Feature;
 
+use App\Models\ArsitekProfile;
+use App\Models\CompanyProfile;
 use App\Models\Lowongan;
 use App\Models\User;
 use Carbon\Carbon;
@@ -16,7 +18,7 @@ class LowonganActivePeriodTest extends TestCase
 
     public function test_perusahaan_can_create_lowongan_with_active_period(): void
     {
-        $perusahaan = User::factory()->perusahaan()->create([
+        $perusahaan = $this->verifiedPerusahaan([
             'name' => 'Studio Rekrutmen',
         ]);
 
@@ -41,7 +43,7 @@ class LowonganActivePeriodTest extends TestCase
 
     public function test_perusahaan_cannot_set_deadline_before_start_date(): void
     {
-        $perusahaan = User::factory()->perusahaan()->create();
+        $perusahaan = $this->verifiedPerusahaan();
 
         $response = $this
             ->actingAs($perusahaan)
@@ -106,6 +108,34 @@ class LowonganActivePeriodTest extends TestCase
             );
     }
 
+    public function test_public_lowongan_keyword_search_does_not_match_location(): void
+    {
+        $this->createLowongan([
+            'posisi' => 'Drafter Interior',
+            'perusahaan' => 'Studio Ruang',
+            'kota' => 'Malang',
+            'deskripsi' => 'Mengerjakan gambar teknis interior.',
+            'status' => 'aktif',
+            'tanggal_mulai' => today(),
+            'batas_lamaran' => today()->addDays(7),
+        ]);
+
+        $this->get(route('lowongan.index', ['q' => 'Malang']))
+            ->assertOk()
+            ->assertInertia(fn (Assert $page) => $page
+                ->component('Public/Lowongan/Index', false)
+                ->has('jobs', 0)
+            );
+
+        $this->get(route('lowongan.index', ['l' => 'Malang']))
+            ->assertOk()
+            ->assertInertia(fn (Assert $page) => $page
+                ->component('Public/Lowongan/Index', false)
+                ->has('jobs', 1)
+                ->where('jobs.0.kota', 'Malang')
+            );
+    }
+
     public function test_lowongan_starting_today_in_jakarta_is_publicly_visible(): void
     {
         Carbon::setTestNow(Carbon::parse('2026-06-03 00:30:00', 'Asia/Jakarta'));
@@ -131,7 +161,7 @@ class LowonganActivePeriodTest extends TestCase
 
     public function test_perusahaan_dashboard_still_shows_expired_lowongan(): void
     {
-        $perusahaan = User::factory()->perusahaan()->create();
+        $perusahaan = $this->verifiedPerusahaan();
 
         $this->createLowongan([
             'user_id' => $perusahaan->id,
@@ -154,7 +184,7 @@ class LowonganActivePeriodTest extends TestCase
 
     public function test_arsitek_cannot_apply_to_expired_lowongan(): void
     {
-        $arsitek = User::factory()->arsitek()->create();
+        $arsitek = $this->verifiedArsitek();
         $expiredLowongan = $this->createLowongan([
             'status' => 'expired',
             'tanggal_mulai' => today()->subDays(20),
@@ -169,6 +199,43 @@ class LowonganActivePeriodTest extends TestCase
             ]);
 
         $response->assertSessionHas('error', 'Lowongan ini sudah tidak menerima lamaran.');
+        $this->assertDatabaseCount('lamarans', 0);
+    }
+
+    public function test_unverified_perusahaan_cannot_create_lowongan(): void
+    {
+        $perusahaan = User::factory()->perusahaan()->create();
+
+        $response = $this
+            ->actingAs($perusahaan)
+            ->post(route('perusahaan.lowongan.store'), $this->validLowonganPayload());
+
+        $response
+            ->assertRedirect(route('perusahaan.verifikasi.index'))
+            ->assertSessionHas('error', 'Profil Anda harus diverifikasi admin terlebih dahulu sebelum melakukan aksi ini.');
+
+        $this->assertDatabaseCount('lowongan', 0);
+    }
+
+    public function test_unverified_arsitek_cannot_apply_to_lowongan(): void
+    {
+        $arsitek = User::factory()->arsitek()->create();
+        $lowongan = $this->createLowongan([
+            'tanggal_mulai' => today(),
+            'batas_lamaran' => today()->addDays(7),
+        ]);
+
+        $response = $this
+            ->actingAs($arsitek)
+            ->post(route('arsitek.lamaran.store', $lowongan), [
+                'cv' => UploadedFile::fake()->create('cv.pdf', 100, 'application/pdf'),
+                'notes' => 'Saya tertarik dengan posisi ini.',
+            ]);
+
+        $response
+            ->assertRedirect(route('arsitek.verifikasi.index'))
+            ->assertSessionHas('error', 'Profil Anda harus diverifikasi admin terlebih dahulu sebelum melakukan aksi ini.');
+
         $this->assertDatabaseCount('lamarans', 0);
     }
 
@@ -211,5 +278,32 @@ class LowonganActivePeriodTest extends TestCase
         ], $overrides);
 
         return Lowongan::create($attributes);
+    }
+
+    private function verifiedPerusahaan(array $attributes = []): User
+    {
+        $user = User::factory()->perusahaan()->create($attributes);
+
+        CompanyProfile::create([
+            'user_id' => $user->id,
+            'company_name' => $user->name,
+            'verification_status' => 'verified',
+            'verified_at' => now(),
+        ]);
+
+        return $user;
+    }
+
+    private function verifiedArsitek(array $attributes = []): User
+    {
+        $user = User::factory()->arsitek()->create($attributes);
+
+        ArsitekProfile::factory()->create([
+            'user_id' => $user->id,
+            'verification_status' => 'verified',
+            'verified_at' => now(),
+        ]);
+
+        return $user;
     }
 }

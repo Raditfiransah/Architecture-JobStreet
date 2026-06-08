@@ -1,5 +1,6 @@
 <script setup>
-import { Head, Link } from '@inertiajs/vue3';
+import { Head, Link, usePage } from '@inertiajs/vue3';
+import { computed } from 'vue';
 import ProfileLayout from '@/Layouts/ProfileLayout.vue';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/Components/UI/ui/card";
 import { Button } from "@/Components/UI/ui/button";
@@ -42,6 +43,9 @@ const safeStats = {
 };
 
 const applications = props.recentApplications ?? [];
+const page = usePage();
+const profileVerified = computed(() => page.props.auth.user?.profile?.verification_status === 'verified');
+const createLowonganHref = computed(() => profileVerified.value ? route('perusahaan.lowongan.create') : route('perusahaan.verifikasi.index'));
 
 const getApplicantName = (application) => application?.user?.name || 'Pelamar';
 const getApplicantInitials = (application) => getApplicantName(application).slice(0, 2).toUpperCase();
@@ -101,10 +105,10 @@ const formatDate = (dateString) => {
                     <h1 class="text-3xl font-display font-bold text-slate-900 tracking-tight">Hiring Dashboard</h1>
                     <p class="text-slate-500 font-medium">Selamat datang, {{ companyName }}. Pantau progres rekrutmen Anda.</p>
                 </div>
-                <Link :href="route('perusahaan.lowongan.create')">
+                <Link :href="createLowonganHref">
                     <Button class="rounded-2xl h-12 px-6 font-bold gap-2 shadow-lg shadow-primary/20 transition-all hover:scale-105 active:scale-95">
                         <Plus class="w-5 h-5" />
-                        Buat Lowongan
+                        {{ profileVerified ? 'Buat Lowongan' : 'Verifikasi untuk Posting' }}
                     </Button>
                 </Link>
             </div>

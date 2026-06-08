@@ -320,14 +320,6 @@ const handleAction = (action) => {
                   </Button>
                 </CardContent>
               </Card>
-
-              <div class="bg-primary text-primary-foreground rounded-xl p-6 relative overflow-hidden">
-                <h4 class="text-lg font-bold mb-3">Tingkatkan Peluangmu!</h4>
-                <p class="text-sm font-medium mb-6 opacity-80 leading-relaxed">Arsitek dengan portofolio lengkap memiliki peluang 4x lebih besar.</p>
-                <Button variant="secondary" class="w-full rounded-lg font-medium h-12 bg-white text-primary hover:bg-white">
-                  Lengkapi Profil Now
-                </Button>
-              </div>
             </div>
           </div>
         </div>

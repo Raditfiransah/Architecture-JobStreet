@@ -13,8 +13,6 @@ import {
     User,
     Building2,
     CheckCircle2,
-    Eye,
-    EyeOff,
     CalendarDays,
     MapPin,
     Phone,
@@ -116,37 +114,9 @@ const uploadedDocuments = computed(() =>
     documents.value.filter((d) => d.url)
 );
 
-// ─── Track which docs have been viewed (persisted in localStorage) ───────────
-const storageKey = `admin_doc_viewed_${props.type}_${props.profile.id}`;
-
-const loadViewed = () => {
-    try {
-        return JSON.parse(localStorage.getItem(storageKey) || "{}");
-    } catch {
-        return {};
-    }
-};
-
-const viewed = ref(loadViewed());
-
-const isViewed = (key) => !!viewed.value[key];
-
-const openDoc = (key, url) => {
-    viewed.value[key] = true;
-    try {
-        localStorage.setItem(storageKey, JSON.stringify(viewed.value));
-    } catch {
-        // localStorage not available, silently ignore
-    }
+const openDoc = (url) => {
     window.open(url, "_blank");
 };
-
-// All required uploaded docs must be viewed before allowing action
-const allRequiredViewed = computed(() => {
-    if (props.profile.verification_status === "verified") return true;
-    const requiredUploaded = uploadedDocuments.value.filter((d) => d.required);
-    return requiredUploaded.every((d) => isViewed(d.key));
-});
 
 // ─── Status config ────────────────────────────────────────────────────────────
 const statusConfig = computed(() => {
@@ -343,11 +313,11 @@ const typeLabel = computed(() => {
                         <div class="flex items-center gap-3 min-w-0">
                             <div
                                 class="w-9 h-9 rounded-xl flex items-center justify-center shrink-0"
-                                :class="doc.url ? (isViewed(doc.key) ? 'bg-emerald-50' : 'bg-primary/5') : 'bg-muted'"
+                                :class="doc.url ? 'bg-primary/5' : 'bg-muted'"
                             >
                                 <FileText
                                     class="w-4 h-4"
-                                    :class="doc.url ? (isViewed(doc.key) ? 'text-emerald-600' : 'text-primary') : 'text-muted-foreground'"
+                                    :class="doc.url ? 'text-primary' : 'text-muted-foreground'"
                                 />
                             </div>
                             <div>
@@ -359,25 +329,19 @@ const typeLabel = computed(() => {
                                     >Opsional</span>
                                 </p>
                                 <p v-if="!doc.url" class="text-xs text-muted-foreground italic">Belum diunggah</p>
-                                <p v-else-if="isViewed(doc.key)" class="text-xs text-emerald-600 font-medium flex items-center gap-1">
-                                    <Eye class="w-3 h-3" /> Sudah dilihat
-                                </p>
-                                <p v-else class="text-xs text-orange-500 font-medium flex items-center gap-1">
-                                    <EyeOff class="w-3 h-3" /> Belum dilihat
-                                </p>
+                                <p v-else class="text-xs text-muted-foreground">Dokumen tersedia</p>
                             </div>
                         </div>
 
                         <Button
                             v-if="doc.url"
-                            @click="openDoc(doc.key, doc.url)"
+                            @click="openDoc(doc.url)"
                             variant="outline"
                             size="sm"
-                            class="shrink-0 h-9 px-4 rounded-xl gap-2 font-bold text-xs"
-                            :class="isViewed(doc.key) ? 'border-emerald-200 text-emerald-700 hover:bg-emerald-50' : 'border-primary/30 text-primary hover:bg-primary/5'"
+                            class="shrink-0 h-9 px-4 rounded-xl gap-2 font-bold text-xs border-primary/30 text-primary hover:bg-primary/5"
                         >
                             <ExternalLink class="w-3.5 h-3.5" />
-                            {{ isViewed(doc.key) ? "Buka Lagi" : "Buka Dokumen" }}
+                            Buka Dokumen
                         </Button>
                         <span v-else class="text-xs text-muted-foreground italic shrink-0">—</span>
                     </div>
@@ -390,15 +354,6 @@ const typeLabel = computed(() => {
                 class="bg-card border border-border/60 rounded-2xl shadow-sm p-6 space-y-5"
             >
                 <h2 class="font-bold text-base text-foreground">Keputusan Verifikasi</h2>
-
-                <!-- Warning: not all docs viewed yet -->
-                <div
-                    v-if="!allRequiredViewed && uploadedDocuments.length > 0"
-                    class="flex items-start gap-3 p-4 bg-orange-50 border border-orange-200 rounded-xl text-sm text-orange-700"
-                >
-                    <AlertTriangle class="w-4 h-4 mt-0.5 shrink-0" />
-                    <span>Buka semua dokumen wajib terlebih dahulu sebelum melakukan verifikasi.</span>
-                </div>
 
                 <!-- No documents uploaded -->
                 <div
@@ -413,7 +368,7 @@ const typeLabel = computed(() => {
                     <!-- Approve -->
                     <Button
                         @click="handleVerify"
-                        :disabled="!allRequiredViewed || uploadedDocuments.length === 0"
+                        :disabled="uploadedDocuments.length === 0"
                         class="flex-1 h-11 rounded-xl gap-2 font-bold bg-emerald-600 hover:bg-emerald-700 text-white disabled:opacity-40 disabled:cursor-not-allowed"
                     >
                         <CheckCircle2 class="w-4 h-4" />

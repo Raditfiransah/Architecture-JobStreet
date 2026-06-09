@@ -220,19 +220,6 @@ const formatDate = (dateString) => {
 
                 <!-- Quick Tips -->
                 <div class="space-y-6">
-                    <Card class="border-border/60 shadow-sm rounded-[32px] overflow-hidden bg-primary text-white">
-                        <CardContent class="p-8">
-                            <div class="w-14 h-14 rounded-2xl bg-white/20 flex items-center justify-center mb-6 backdrop-blur-sm">
-                                <CheckCircle2 class="w-8 h-8 text-white" />
-                            </div>
-                            <h3 class="text-xl font-display font-bold mb-3">Tingkatkan Kualitas Iklan</h3>
-                            <p class="text-white/80 text-sm leading-relaxed mb-6">Informasi gaji dan deskripsi yang jelas meningkatkan jumlah pelamar hingga 40%.</p>
-                            <Button variant="secondary" class="w-full rounded-2xl font-bold bg-white text-primary hover:bg-slate-50">
-                                Pelajari Tips
-                            </Button>
-                        </CardContent>
-                    </Card>
-
                     <Card class="border-border/60 shadow-sm rounded-[24px] overflow-hidden">
                         <CardContent class="p-6 flex items-center gap-4">
                             <div class="w-12 h-12 rounded-2xl bg-slate-50 flex items-center justify-center shrink-0">

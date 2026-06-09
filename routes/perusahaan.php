@@ -23,6 +23,7 @@ Route::middleware(['auth', 'verified', 'role:perusahaan'])
     Route::get('/profil', [ProfilController::class, 'edit'])->name('profil.edit');
     Route::put('/profil', [ProfilController::class, 'update'])->name('profil.update');
     Route::post('/logo', [ProfilController::class, 'updateLogo'])->name('profil.logo');
+    Route::post('/banner', [ProfilController::class, 'updateBanner'])->name('profil.banner');
     Route::post('/profil/document', [ProfilController::class, 'uploadDocument'])->name('profil.document');
 
     // Kelola lowongan

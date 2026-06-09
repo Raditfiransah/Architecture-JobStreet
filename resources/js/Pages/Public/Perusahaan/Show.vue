@@ -37,7 +37,15 @@ const profile = computed(() => props.perusahaan.companyProfile || props.perusaha
         <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
             <!-- Header Section -->
             <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-                <div class="h-32 sm:h-48 bg-gray-100"></div>
+                <!-- Banner -->
+                <div class="h-32 sm:h-48 bg-gradient-to-r from-gray-200 to-gray-300 overflow-hidden">
+                    <img
+                        v-if="perusahaan.banner_url"
+                        :src="perusahaan.banner_url"
+                        class="w-full h-full object-cover"
+                        alt="Background profil perusahaan"
+                    />
+                </div>
                 
                 <div class="px-6 sm:px-10 py-6 relative">
                     <div class="flex flex-col sm:flex-row items-center sm:items-end gap-6 sm:gap-8 -mt-20 sm:-mt-24 mb-6">

@@ -3,6 +3,7 @@ import { Head, usePage } from '@inertiajs/vue3';
 import { computed } from 'vue';
 import ProfileLayout from '@/Layouts/ProfileLayout.vue';
 import AvatarUploader from '@/Components/Profile/AvatarUploader.vue';
+import BannerUploader from '@/Components/Profile/BannerUploader.vue';
 import DocumentUploader from '@/Components/Profile/DocumentUploader.vue';
 import TagInput from '@/Components/Profile/TagInput.vue';
 import { useForm } from '@inertiajs/vue3';
@@ -51,11 +52,22 @@ const submit = () => {
             <!-- Media Section -->
             <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
                 <h3 class="text-lg font-semibold mb-4">Media Pribadi</h3>
-                
-                <AvatarUploader 
-                    :current-avatar="user.avatar_url"
-                    :upload-url="route('arsitek.profil.avatar')"
-                />
+
+                <!-- Background / Banner -->
+                <div class="mb-6">
+                    <p class="text-sm font-medium text-gray-700 mb-2">Foto Background Profil</p>
+                    <BannerUploader
+                        :current-banner="user.banner_url"
+                        :upload-url="route('arsitek.profil.banner')"
+                    />
+                </div>
+
+                <div class="border-t pt-6">
+                    <AvatarUploader
+                        :current-avatar="user.avatar_url"
+                        :upload-url="route('arsitek.profil.avatar')"
+                    />
+                </div>
             </div>
 
             <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">

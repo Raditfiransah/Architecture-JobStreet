@@ -119,12 +119,21 @@ const handleHire = () => {
       <section class="flex-1 bg-slate-50/30 md:h-[calc(100vh-134px)] md:min-h-[600px] overflow-y-auto px-6 lg:px-10 py-10">
         <div v-if="selectedArsitek" class="max-w-3xl mx-auto space-y-8">
           <Card class="border-border/60 shadow-sm overflow-hidden rounded-2xl bg-white">
-             <!-- Banner Mockup -->
-             <div class="h-40 w-full bg-[#f8fafc] border-b border-border/40 relative">
-                <div class="absolute inset-0 opacity-5 bg-[radial-gradient(#e2e8f0_1.5px,transparent_1.5px)] [background-size:24px_24px]"></div>
-                <div class="absolute right-8 bottom-0 h-32 w-48 opacity-30">
-                   <img src="https://illustrations.popsy.co/slate/remote-work.svg" class="h-full w-full object-contain object-bottom" alt="Illustration" />
-                </div>
+             <!-- Banner -->
+             <div class="h-40 w-full bg-gradient-to-r from-gray-200 to-gray-300 relative overflow-hidden">
+                <img
+                   v-if="selectedArsitek.user?.banner_url"
+                   :src="selectedArsitek.user.banner_url"
+                   class="w-full h-full object-cover"
+                   alt="Background profil"
+                />
+                <!-- fallback decorative pattern when no banner -->
+                <template v-else>
+                   <div class="absolute inset-0 opacity-5 bg-[radial-gradient(#e2e8f0_1.5px,transparent_1.5px)] [background-size:24px_24px]"></div>
+                   <div class="absolute right-8 bottom-0 h-32 w-48 opacity-30">
+                      <img src="https://illustrations.popsy.co/slate/remote-work.svg" class="h-full w-full object-contain object-bottom" alt="" />
+                   </div>
+                </template>
              </div>
 
              <CardContent class="p-0 relative">

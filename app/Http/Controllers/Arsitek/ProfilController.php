@@ -81,6 +81,26 @@ class ProfilController extends Controller
         return back()->with('message', 'Foto profil berhasil diperbarui.');
     }
 
+    public function updateBanner(Request $request)
+    {
+        $request->validate([
+            'banner' => 'required|image|mimes:jpeg,jpg,png,webp|max:51200',
+        ]);
+
+        /** @var \App\Models\User $user */
+        $user = $request->user();
+
+        $url = $this->fileUploadService->uploadBanner(
+            $request->file('banner'),
+            'banners',
+            $user->banner_url
+        );
+
+        $user->update(['banner_url' => $url]);
+
+        return back()->with('message', 'Foto background berhasil diperbarui.');
+    }
+
     public function uploadDocument(Request $request)
     {
         $request->validate([

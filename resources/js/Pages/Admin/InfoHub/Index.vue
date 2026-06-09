@@ -54,7 +54,9 @@ const destroyInfo = (info) => {
             </div>
 
             <div class="bg-card border border-border/60 rounded-2xl shadow-sm overflow-hidden">
-                <Table>
+                <!-- Desktop Table -->
+                <div class="hidden sm:block">
+                  <Table>
                     <TableHeader class="bg-muted/30">
                         <TableRow>
                             <TableHead class="font-bold text-xs uppercase tracking-wider py-4 w-[100px]">Poster</TableHead>
@@ -86,24 +88,16 @@ const destroyInfo = (info) => {
                             <TableCell>
                                 <div class="flex justify-end gap-2">
                                     <Button asChild variant="ghost" size="icon-sm" class="rounded-lg">
-                                        <Link :href="route('info.show', info.id)" title="Lihat halaman publik">
+                                        <Link :href="route('info.show', info.id)">
                                             <ExternalLink class="w-4 h-4" />
                                         </Link>
                                     </Button>
                                     <Button asChild variant="outline" size="icon-sm" class="rounded-lg">
-                                        <Link :href="route('admin.info.edit', info.id)" title="Edit info">
+                                        <Link :href="route('admin.info.edit', info.id)">
                                             <Pencil class="w-4 h-4" />
                                         </Link>
                                     </Button>
-                                    <Button
-                                        type="button"
-                                        variant="destructive"
-                                        size="icon-sm"
-                                        class="rounded-lg"
-                                        :disabled="deleteForm.processing"
-                                        title="Hapus info"
-                                        @click="destroyInfo(info)"
-                                    >
+                                    <Button type="button" variant="destructive" size="icon-sm" class="rounded-lg" :disabled="deleteForm.processing" @click="destroyInfo(info)">
                                         <Trash2 class="w-4 h-4" />
                                     </Button>
                                 </div>
@@ -115,9 +109,38 @@ const destroyInfo = (info) => {
                             </TableCell>
                         </TableRow>
                     </TableBody>
-                </Table>
+                  </Table>
+                </div>
 
-                <div v-if="infohubs.links && infohubs.links.length > 3" class="px-8 py-4 border-t border-border/40 bg-muted/5">
+                <!-- Mobile Card List -->
+                <div class="sm:hidden divide-y divide-border/40">
+                  <div v-if="infohubs.data.length === 0" class="py-12 text-center text-muted-foreground text-sm">
+                    Belum ada data InfoHub.
+                  </div>
+                  <div v-for="info in infohubs.data" :key="info.id" class="p-4 flex items-start gap-3 hover:bg-muted/5 transition-colors">
+                    <div class="w-14 h-14 rounded-lg bg-muted flex items-center justify-center overflow-hidden border border-border/50 shrink-0">
+                      <img v-if="info.image_url" :src="info.image_url" class="object-cover w-full h-full" alt="Poster" />
+                      <ImageIcon v-else class="w-5 h-5 text-muted-foreground/50" />
+                    </div>
+                    <div class="flex-1 min-w-0">
+                      <p class="font-bold text-sm text-foreground truncate">{{ info.judul }}</p>
+                      <div class="flex items-center gap-2 mt-1">
+                        <Badge variant="outline" class="rounded-lg font-bold text-[10px] uppercase tracking-wider">{{ info.kategori }}</Badge>
+                        <span class="text-xs text-muted-foreground">{{ new Date(info.created_at).toLocaleDateString('id-ID', { day: 'numeric', month: 'short' }) }}</span>
+                      </div>
+                    </div>
+                    <div class="flex items-center gap-1 shrink-0">
+                      <Button asChild variant="ghost" size="icon" class="rounded-lg h-8 w-8">
+                        <Link :href="route('admin.info.edit', info.id)"><Pencil class="w-3.5 h-3.5" /></Link>
+                      </Button>
+                      <Button type="button" variant="ghost" size="icon" class="rounded-lg h-8 w-8 text-destructive hover:bg-destructive/10" :disabled="deleteForm.processing" @click="destroyInfo(info)">
+                        <Trash2 class="w-3.5 h-3.5" />
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+
+                <div v-if="infohubs.links && infohubs.links.length > 3" class="px-4 sm:px-8 py-4 border-t border-border/40 bg-muted/5">
                     <Pagination :links="infohubs.links" />
                 </div>
             </div>

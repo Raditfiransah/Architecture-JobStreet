@@ -115,8 +115,8 @@ const updateStatus = (appId, newStatus) => {
                 </CardHeader>
                 <CardContent class="p-0">
                     <Tabs default-value="all" class="w-full">
-                        <div class="px-8 border-b border-slate-100 mt-6">
-                            <TabsList class="bg-transparent h-auto p-0 gap-8">
+                        <div class="px-4 sm:px-8 border-b border-slate-100 mt-6 overflow-x-auto">
+                            <TabsList class="bg-transparent h-auto p-0 gap-4 sm:gap-8 min-w-max">
                                 <TabsTrigger value="all" class="bg-transparent border-b-2 border-transparent rounded-none data-[state=active]:border-primary data-[state=active]:text-primary data-[state=active]:shadow-none px-0 pb-4 text-sm font-bold text-slate-400">
                                     Semua ({{ applications.length }})
                                 </TabsTrigger>
@@ -128,48 +128,43 @@ const updateStatus = (appId, newStatus) => {
 
                         <TabsContent value="all" class="m-0">
                             <div v-if="applications.length > 0" class="divide-y divide-slate-50">
-                                <div v-for="app in applications" :key="app.id" class="px-8 py-6 hover:bg-slate-50/50 transition-colors group">
-                                    <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
-                                        <div class="flex items-center gap-5">
-                                            <div class="w-16 h-16 rounded-2xl bg-white border border-slate-100 shadow-sm flex items-center justify-center text-xl font-bold text-slate-400 group-hover:text-primary transition-colors">
+                                <div v-for="app in applications" :key="app.id" class="px-4 sm:px-8 py-5 sm:py-6 hover:bg-slate-50/50 transition-colors group">
+                                    <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4 lg:gap-6">
+                                        <div class="flex items-start sm:items-center gap-4 sm:gap-5">
+                                            <div class="w-12 h-12 sm:w-16 sm:h-16 rounded-xl sm:rounded-2xl bg-white border border-slate-100 shadow-sm flex items-center justify-center text-lg sm:text-xl font-bold text-slate-400 group-hover:text-primary transition-colors shrink-0">
                                                 {{ getApplicantInitials(app) }}
                                             </div>
                                             <div>
-                                                <h3 class="font-display font-bold text-lg text-slate-900 leading-tight mb-1 group-hover:text-primary transition-colors">{{ getApplicantName(app) }}</h3>
-                                                <div class="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm font-medium text-slate-500">
+                                                <h3 class="font-display font-bold text-base sm:text-lg text-slate-900 leading-tight mb-1 group-hover:text-primary transition-colors">{{ getApplicantName(app) }}</h3>
+                                                <div class="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs sm:text-sm font-medium text-slate-500">
                                                     <span class="flex items-center gap-1.5 text-slate-900 font-bold shrink-0">
                                                         <Briefcase class="w-3.5 h-3.5 text-primary" />
                                                         {{ getPositionName(app) }}
                                                     </span>
-                                                    <span class="w-1 h-1 rounded-full bg-slate-200 hidden md:block"></span>
-                                                    <span class="text-slate-400">Tgl: {{ formatDate(app.applied_at) }}</span>
-                                                    <span class="w-1 h-1 rounded-full bg-slate-200"></span>
-                                                    <span class="px-3 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider border" :class="getStatusColor(app.status)">
+                                                    <span class="text-slate-400">{{ formatDate(app.applied_at) }}</span>
+                                                    <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider border" :class="getStatusColor(app.status)">
                                                         {{ getStatusLabel(app.status) }}
                                                     </span>
                                                 </div>
                                             </div>
                                         </div>
 
-                                        <div class="flex items-center gap-3 shrink-0">
+                                        <div class="flex items-center gap-2 sm:gap-3 shrink-0 ml-16 sm:ml-0">
                                             <Link :href="getApplicationHref(app)">
-                                                <Button variant="outline" class="rounded-xl font-bold border-slate-200 text-slate-600 hover:bg-slate-50 gap-2">
-                                                    Review Profil
-                                                    <ChevronRight class="w-4 h-4" />
+                                                <Button variant="outline" size="sm" class="rounded-xl font-bold border-slate-200 text-slate-600 hover:bg-slate-50 gap-1.5">
+                                                    Review
+                                                    <ChevronRight class="w-3.5 h-3.5" />
                                                 </Button>
                                             </Link>
                                             <Button 
                                                 v-if="app.status === 'pending' || app.status === 'reviewing'"
                                                 @click="updateStatus(app.id, 'shortlisted')"
                                                 variant="secondary" 
-                                                class="rounded-xl font-bold bg-indigo-50 text-indigo-600 hover:bg-indigo-100 border-transparent gap-2"
+                                                size="sm"
+                                                class="rounded-xl font-bold bg-indigo-50 text-indigo-600 hover:bg-indigo-100 border-transparent gap-1.5"
                                             >
-                                                <UserCheck class="w-4 h-4" />
+                                                <UserCheck class="w-3.5 h-3.5" />
                                                 Shortlist
-                                            </Button>
-                                            <Button v-else-if="app.status === 'shortlisted'" variant="secondary" class="rounded-xl font-bold bg-green-50 text-green-600 hover:bg-green-100 border-transparent gap-2">
-                                                <Star class="w-4 h-4 fill-current" />
-                                                Shortlisted
                                             </Button>
                                         </div>
                                     </div>

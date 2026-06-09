@@ -76,7 +76,7 @@ const statCards = [
       </div>
 
       <!-- Stats Grid -->
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6">
+      <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4 sm:gap-6">
         <Card v-for="stat in statCards" :key="stat.title" class="overflow-hidden border-border/60 shadow-sm group hover:shadow-md transition-all duration-300">
           <CardContent class="p-0">
             <div class="p-6">
@@ -116,7 +116,7 @@ const statCards = [
           </CardHeader>
           <CardContent class="p-0">
             <div class="divide-y divide-border/40">
-              <div v-for="i in 5" :key="i" class="px-8 py-5 flex items-center justify-between hover:bg-muted/5 transition-colors">
+              <div v-for="i in 5" :key="i" class="px-4 sm:px-8 py-4 sm:py-5 flex items-center justify-between hover:bg-muted/5 transition-colors">
                 <div class="flex items-center gap-4">
                   <div class="w-10 h-10 rounded-full bg-muted/50 flex items-center justify-center shrink-0">
                     <Users class="w-5 h-5 text-muted-foreground" />

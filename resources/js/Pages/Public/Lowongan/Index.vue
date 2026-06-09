@@ -14,7 +14,8 @@ import {
   CheckCircle2,
   ChevronRight,
   Search,
-  Users
+  Users,
+  ArrowLeft
 } from "lucide-vue-next";
 import { Card, CardContent, CardHeader, CardTitle } from "@/Components/UI/ui/card";
 import { Button } from "@/Components/UI/ui/button";
@@ -48,9 +49,11 @@ const locationQuery = ref(props.filters?.l || "");
 const selectedJob = ref(props.jobs && props.jobs.length > 0 ? props.jobs[0] : null);
 const selectedCompanyProfileUrl = computed(() => selectedJob.value?.company_profile_url || null);
 
+// Mobile tab state: 'list' | 'detail'
+const mobileTab = ref('list');
+
 const formatDate = (dateString) => {
   if (!dateString) return "-";
-
   return new Date(dateString).toLocaleDateString("id-ID", {
     day: "numeric",
     month: "short",
@@ -80,6 +83,7 @@ const handleSearch = () => {
 
 const selectJob = (job) => {
   selectedJob.value = job;
+  mobileTab.value = 'detail';
 };
 
 const applyModalOpen = ref(false);
@@ -107,25 +111,19 @@ const closeApplyModal = () => {
 
 const submitApply = () => {
   if (!selectedJob.value) return;
-
   if (!applyForm.cv) {
     applyForm.setError('cv', 'CV wajib dipilih sebelum mengirim lamaran.');
     return;
   }
-  
   applyForm.post(route('arsitek.lamaran.store', selectedJob.value.id), {
     forceFormData: true,
     preserveScroll: true,
-    onSuccess: () => {
-      closeApplyModal();
-    },
+    onSuccess: () => { closeApplyModal(); },
   });
 };
 
 watch(applyModalOpen, (isOpen) => {
-  if (!isOpen) {
-    resetApplyForm();
-  }
+  if (!isOpen) resetApplyForm();
 });
 
 const handleAction = (action) => {
@@ -133,14 +131,12 @@ const handleAction = (action) => {
     router.visit(route('login'));
     return;
   }
-
   if (action === 'apply') {
     if (user.value.role === 'arsitek') {
       if (!isProfileVerified.value) {
         router.visit(route('arsitek.verifikasi.index'));
         return;
       }
-
       applyModalOpen.value = true;
     }
   }
@@ -152,9 +148,39 @@ const handleAction = (action) => {
     <Head :title="title" />
 
     <main class="flex-1 w-full max-w-[1280px] mx-auto flex flex-col md:flex-row bg-white">
+
+      <!-- MOBILE TAB BAR (hidden on md+) -->
+      <div class="md:hidden sticky top-[64px] z-30 bg-white border-b border-border flex">
+        <button
+          @click="mobileTab = 'list'"
+          :class="[
+            'flex-1 py-3 text-sm font-bold transition-colors',
+            mobileTab === 'list' ? 'text-primary border-b-2 border-primary' : 'text-muted-foreground'
+          ]"
+        >
+          Daftar ({{ jobs?.length || 0 }})
+        </button>
+        <button
+          @click="mobileTab = 'detail'"
+          :disabled="!selectedJob"
+          :class="[
+            'flex-1 py-3 text-sm font-bold transition-colors',
+            mobileTab === 'detail' ? 'text-primary border-b-2 border-primary' : 'text-muted-foreground',
+            !selectedJob ? 'opacity-40 cursor-not-allowed' : ''
+          ]"
+        >
+          Detail
+        </button>
+      </div>
+
       <!-- Job List -->
-      <aside class="w-full md:w-80 lg:w-96 shrink-0 border-r border-border md:h-[calc(100vh-134px)] md:min-h-[600px] overflow-y-auto">
-        <div class="sticky top-0 bg-background/95 backdrop-blur z-20 px-4 py-3 border-b border-border flex items-center justify-between">
+      <aside
+        :class="[
+          'w-full md:w-80 lg:w-96 shrink-0 md:border-r border-border md:h-[calc(100vh-134px)] md:min-h-[600px] md:overflow-y-auto',
+          mobileTab === 'list' ? 'block' : 'hidden md:block'
+        ]"
+      >
+        <div class="hidden md:flex sticky top-0 bg-background/95 backdrop-blur z-20 px-4 py-3 border-b border-border items-center justify-between">
           <span class="text-xs font-bold uppercase tracking-widest text-muted-foreground">{{ jobs?.length || 0 }} lowongan</span>
           <Button variant="ghost" size="sm" class="text-xs h-7 px-2 font-medium text-primary">Terbaru</Button>
         </div>
@@ -193,150 +219,164 @@ const handleAction = (action) => {
       </aside>
 
       <!-- Detail -->
-      <section class="flex-1 bg-background md:h-[calc(100vh-134px)] md:min-h-[600px] overflow-y-auto px-6 lg:px-8 py-8">
-        <div v-if="selectedJob" class="max-w-3xl mx-auto space-y-8">
-          <div class="border border-border rounded-xl p-6 md:p-8">
-            <div class="flex flex-col md:flex-row md:items-start gap-6 mb-8">
-              <div class="flex-1 space-y-4">
-                <div class="flex items-center gap-3">
-                  <p class="text-lg font-medium text-muted-foreground">{{ selectedJob.perusahaan }}</p>
-                  <Badge class="bg-primary/10 text-primary rounded-full px-2 py-1 text-xs">Terverifikasi</Badge>
-                </div>
-                <h1 class="text-2xl font-bold text-foreground">{{ selectedJob.posisi }}</h1>
-                <div class="flex flex-wrap items-center gap-4">
-                  <div class="flex items-center gap-2 text-primary font-semibold">
-                    <div class="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center"><Calculator class="w-4 h-4" /></div>
-                    <span>Rp {{ selectedJob.gaji }}</span>
+      <section
+        :class="[
+          'flex-1 bg-background md:h-[calc(100vh-134px)] md:min-h-[600px] md:overflow-y-auto',
+          mobileTab === 'detail' ? 'block' : 'hidden md:block'
+        ]"
+      >
+        <!-- Mobile back button -->
+        <div class="md:hidden px-4 pt-4">
+          <button @click="mobileTab = 'list'" class="flex items-center gap-2 text-sm font-bold text-muted-foreground hover:text-primary transition-colors mb-4">
+            <ArrowLeft class="w-4 h-4" />
+            Kembali ke Daftar
+          </button>
+        </div>
+
+        <div class="px-4 sm:px-6 lg:px-8 py-2 sm:py-8">
+          <div v-if="selectedJob" class="max-w-3xl mx-auto space-y-8">
+            <div class="border border-border rounded-xl p-6 md:p-8">
+              <div class="flex flex-col md:flex-row md:items-start gap-6 mb-8">
+                <div class="flex-1 space-y-4">
+                  <div class="flex items-center gap-3">
+                    <p class="text-lg font-medium text-muted-foreground">{{ selectedJob.perusahaan }}</p>
+                    <Badge class="bg-primary/10 text-primary rounded-full px-2 py-1 text-xs">Terverifikasi</Badge>
                   </div>
-                  <div class="flex items-center gap-2 text-muted-foreground">
-                    <div class="w-8 h-8 rounded-lg bg-muted flex items-center justify-center"><MapPin class="w-4 h-4 text-primary" /></div>
-                    <span>{{ selectedJob.kota }}</span>
-                  </div>
-                  <div class="flex items-center gap-2 text-muted-foreground">
-                     <div class="w-8 h-8 rounded-lg bg-muted flex items-center justify-center"><Briefcase class="w-4 h-4 text-primary" /></div>
-                    <span>{{ selectedJob.tipe }}</span>
-                  </div>
-                  <div class="flex items-center gap-2 text-muted-foreground">
-                    <div class="w-8 h-8 rounded-lg bg-muted flex items-center justify-center"><Clock class="w-4 h-4 text-primary" /></div>
-                    <span>Batas {{ formatDate(selectedJob.batas_lamaran) }}</span>
+                  <h1 class="text-2xl font-bold text-foreground">{{ selectedJob.posisi }}</h1>
+                  <div class="flex flex-wrap items-center gap-4">
+                    <div class="flex items-center gap-2 text-primary font-semibold">
+                      <div class="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center"><Calculator class="w-4 h-4" /></div>
+                      <span>Rp {{ selectedJob.gaji }}</span>
+                    </div>
+                    <div class="flex items-center gap-2 text-muted-foreground">
+                      <div class="w-8 h-8 rounded-lg bg-muted flex items-center justify-center"><MapPin class="w-4 h-4 text-primary" /></div>
+                      <span>{{ selectedJob.kota }}</span>
+                    </div>
+                    <div class="flex items-center gap-2 text-muted-foreground">
+                      <div class="w-8 h-8 rounded-lg bg-muted flex items-center justify-center"><Briefcase class="w-4 h-4 text-primary" /></div>
+                      <span>{{ selectedJob.tipe }}</span>
+                    </div>
+                    <div class="flex items-center gap-2 text-muted-foreground">
+                      <div class="w-8 h-8 rounded-lg bg-muted flex items-center justify-center"><Clock class="w-4 h-4 text-primary" /></div>
+                      <span>Batas {{ formatDate(selectedJob.batas_lamaran) }}</span>
+                    </div>
                   </div>
                 </div>
               </div>
+
+              <div class="flex flex-wrap gap-4">
+                <Button v-if="!user || user.role === 'arsitek'" @click="handleAction('apply')" size="lg" class="rounded-lg px-8 h-12 font-semibold flex-1 md:flex-none">
+                  {{ user?.role === 'arsitek' && !isProfileVerified ? 'Verifikasi untuk Melamar' : 'Lamar Sekarang' }}
+                  <ChevronRight class="ml-2 w-5 h-5" />
+                </Button>
+                <Button v-if="!user || user.role === 'arsitek'" @click="handleAction('save')" variant="outline" size="lg" class="rounded-lg px-6 h-12 border-border">
+                  <Bookmark class="w-5 h-5 mr-2" />
+                  Simpan
+                </Button>
+                <Button variant="ghost" size="icon" class="rounded-lg w-12 h-12">
+                  <ExternalLink class="w-5 h-5" />
+                </Button>
+              </div>
             </div>
 
-            <div class="flex flex-wrap gap-4">
-              <Button v-if="!user || user.role === 'arsitek'" @click="handleAction('apply')" size="lg" class="rounded-lg px-8 h-12 font-semibold flex-1 md:flex-none">
-                {{ user?.role === 'arsitek' && !isProfileVerified ? 'Verifikasi untuk Melamar' : 'Lamar Sekarang' }}
-                <ChevronRight class="ml-2 w-5 h-5" />
-              </Button>
-              <Button v-if="!user || user.role === 'arsitek'" @click="handleAction('save')" variant="outline" size="lg" class="rounded-lg px-6 h-12 border-border">
-                <Bookmark class="w-5 h-5 mr-2" />
-                Simpan
-              </Button>
-              <Button variant="ghost" size="icon" class="rounded-lg w-12 h-12">
-                <ExternalLink class="w-5 h-5" />
-              </Button>
+            <!-- Content -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+              <div class="lg:col-span-2 space-y-8">
+                <section>
+                  <div class="flex items-center gap-3 mb-4">
+                    <div class="w-1 h-6 bg-primary rounded-full"></div>
+                    <h3 class="text-xl font-bold">Tentang Pekerjaan</h3>
+                  </div>
+                  <p class="text-base text-muted-foreground leading-relaxed whitespace-pre-line">
+                    {{ selectedJob.deskripsi }}
+                  </p>
+                </section>
+
+                <section>
+                  <div class="flex items-center gap-3 mb-6">
+                    <div class="w-1 h-6 bg-primary rounded-full"></div>
+                    <h3 class="text-xl font-bold">Kualifikasi & Peran</h3>
+                  </div>
+                  <div class="grid gap-6">
+                    <div class="space-y-3">
+                      <h4 class="text-base font-bold flex items-center gap-2">
+                        <CheckCircle2 class="w-5 h-5 text-primary" />
+                        Persyaratan Utama
+                      </h4>
+                      <ul class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                        <li v-for="(syarat, idx) in selectedJob.syarat" :key="idx" class="p-3 rounded-lg bg-muted/30 border border-border text-sm font-medium flex items-center gap-2">
+                          <div class="w-1.5 h-1.5 rounded-full bg-primary shrink-0"></div>
+                          {{ syarat }}
+                        </li>
+                      </ul>
+                    </div>
+                    <div class="space-y-3">
+                      <h4 class="text-base font-bold flex items-center gap-2">
+                        <CheckCircle class="w-5 h-5 text-primary" />
+                        Tanggung Jawab
+                      </h4>
+                      <ul class="grid grid-cols-1 gap-3">
+                        <li v-for="(task, idx) in selectedJob.tanggung_jawab" :key="idx" class="p-3 rounded-lg bg-muted/30 border border-border text-sm font-medium flex items-center gap-2">
+                          <div class="w-1.5 h-1.5 rounded-full bg-primary shrink-0"></div>
+                          {{ task }}
+                        </li>
+                      </ul>
+                    </div>
+                  </div>
+                </section>
+              </div>
+
+              <!-- Side Specs -->
+              <div class="space-y-6">
+                <Card class="rounded-xl border-border overflow-hidden">
+                  <CardHeader class="pb-3">
+                    <CardTitle class="text-xs font-bold uppercase tracking-wider text-muted-foreground">Ringkasan Perusahaan</CardTitle>
+                  </CardHeader>
+                  <CardContent class="space-y-4">
+                    <div class="flex items-center gap-4">
+                      <div class="w-10 h-10 rounded-lg bg-muted flex items-center justify-center"><Building class="w-5 h-5 text-primary" /></div>
+                      <div>
+                        <p class="text-xs font-bold text-muted-foreground uppercase tracking-wider">Industri</p>
+                        <p class="text-sm font-bold">Architecture & Design</p>
+                      </div>
+                    </div>
+                    <div class="flex items-center gap-4">
+                      <div class="w-10 h-10 rounded-lg bg-muted flex items-center justify-center"><Users class="w-5 h-5 text-primary" /></div>
+                      <div>
+                        <p class="text-xs font-bold text-muted-foreground uppercase tracking-wider">Ukuran</p>
+                        <p class="text-sm font-bold">50 - 200 Karyawan</p>
+                      </div>
+                    </div>
+                    <div class="flex items-center gap-4">
+                      <div class="w-10 h-10 rounded-lg bg-muted flex items-center justify-center"><Clock class="w-5 h-5 text-primary" /></div>
+                      <div>
+                        <p class="text-xs font-bold text-muted-foreground uppercase tracking-wider">Masa Lamaran</p>
+                        <p class="text-sm font-bold">{{ formatDate(selectedJob.tanggal_mulai) }} - {{ formatDate(selectedJob.batas_lamaran) }}</p>
+                      </div>
+                    </div>
+                    <Separator class="bg-border/50" />
+                    <Link
+                      v-if="selectedCompanyProfileUrl"
+                      :href="selectedCompanyProfileUrl"
+                      class="inline-flex h-10 w-full items-center justify-center rounded-lg bg-black px-4 py-2 text-sm font-semibold text-white shadow-sm transition-colors whitespace-nowrap hover:bg-neutral-800"
+                    >
+                      Lihat Profil Perusahaan
+                    </Link>
+                  </CardContent>
+                </Card>
+              </div>
             </div>
           </div>
 
-          <!-- Content -->
-          <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            <div class="lg:col-span-2 space-y-8">
-              <section>
-                <div class="flex items-center gap-3 mb-4">
-                  <div class="w-1 h-6 bg-primary rounded-full"></div>
-                  <h3 class="text-xl font-bold">Tentang Pekerjaan</h3>
-                </div>
-                <p class="text-base text-muted-foreground leading-relaxed whitespace-pre-line">
-                  {{ selectedJob.deskripsi }}
-                </p>
-              </section>
-
-              <section>
-                <div class="flex items-center gap-3 mb-6">
-                  <div class="w-1 h-6 bg-primary rounded-full"></div>
-                  <h3 class="text-xl font-bold">Kualifikasi & Peran</h3>
-                </div>
-                <div class="grid gap-6">
-                  <div class="space-y-3">
-                    <h4 class="text-base font-bold flex items-center gap-2">
-                      <CheckCircle2 class="w-5 h-5 text-primary" />
-                      Persyaratan Utama
-                    </h4>
-                    <ul class="grid grid-cols-1 md:grid-cols-2 gap-3">
-                      <li v-for="(syarat, idx) in selectedJob.syarat" :key="idx" class="p-3 rounded-lg bg-muted/30 border border-border text-sm font-medium flex items-center gap-2">
-                        <div class="w-1.5 h-1.5 rounded-full bg-primary shrink-0"></div>
-                        {{ syarat }}
-                      </li>
-                    </ul>
-                  </div>
-
-                  <div class="space-y-3">
-                    <h4 class="text-base font-bold flex items-center gap-2">
-                      <CheckCircle class="w-5 h-5 text-primary" />
-                      Tanggung Jawab
-                    </h4>
-                    <ul class="grid grid-cols-1 gap-3">
-                      <li v-for="(task, idx) in selectedJob.tanggung_jawab" :key="idx" class="p-3 rounded-lg bg-muted/30 border border-border text-sm font-medium flex items-center gap-2">
-                        <div class="w-1.5 h-1.5 rounded-full bg-primary shrink-0"></div>
-                        {{ task }}
-                      </li>
-                    </ul>
-                  </div>
-                </div>
-              </section>
+          <!-- Empty -->
+          <div v-else class="flex flex-col items-center justify-center text-center p-12 space-y-6 min-h-[400px]">
+            <div class="w-24 h-24 bg-muted rounded-full flex items-center justify-center">
+              <Briefcase class="w-10 h-10 text-muted-foreground/40" />
             </div>
-
-            <!-- Side Specs -->
-            <div class="space-y-6">
-              <Card class="rounded-xl border-border overflow-hidden">
-                <CardHeader class="pb-3">
-                  <CardTitle class="text-xs font-bold uppercase tracking-wider text-muted-foreground">Ringkasan Perusahaan</CardTitle>
-                </CardHeader>
-                <CardContent class="space-y-4">
-                  <div class="flex items-center gap-4">
-                    <div class="w-10 h-10 rounded-lg bg-muted flex items-center justify-center"><Building class="w-5 h-5 text-primary" /></div>
-                    <div>
-                      <p class="text-xs font-bold text-muted-foreground uppercase tracking-wider">Industri</p>
-                      <p class="text-sm font-bold">Architecture & Design</p>
-                    </div>
-                  </div>
-                  <div class="flex items-center gap-4">
-                    <div class="w-10 h-10 rounded-lg bg-muted flex items-center justify-center"><Users class="w-5 h-5 text-primary" /></div>
-                    <div>
-                      <p class="text-xs font-bold text-muted-foreground uppercase tracking-wider">Ukuran</p>
-                      <p class="text-sm font-bold">50 - 200 Karyawan</p>
-                    </div>
-                  </div>
-                  <div class="flex items-center gap-4">
-                    <div class="w-10 h-10 rounded-lg bg-muted flex items-center justify-center"><Clock class="w-5 h-5 text-primary" /></div>
-                    <div>
-                      <p class="text-xs font-bold text-muted-foreground uppercase tracking-wider">Masa Lamaran</p>
-                      <p class="text-sm font-bold">{{ formatDate(selectedJob.tanggal_mulai) }} - {{ formatDate(selectedJob.batas_lamaran) }}</p>
-                    </div>
-                  </div>
-                  <Separator class="bg-border/50" />
-                  <Link
-                    v-if="selectedCompanyProfileUrl"
-                    :href="selectedCompanyProfileUrl"
-                    class="inline-flex h-10 w-full items-center justify-center rounded-lg bg-black px-4 py-2 text-sm font-semibold text-white shadow-sm transition-colors whitespace-nowrap hover:bg-neutral-800 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
-                  >
-                    Lihat Profil Perusahaan
-                  </Link>
-                </CardContent>
-              </Card>
+            <div class="max-w-xs space-y-2">
+              <h3 class="text-xl font-bold">Pilih Lowongan</h3>
+              <p class="text-sm text-muted-foreground leading-relaxed">Silakan pilih lowongan di sebelah kiri untuk melihat detail pekerjaan.</p>
             </div>
-          </div>
-        </div>
-
-        <!-- Empty -->
-        <div v-else class="h-full flex flex-col items-center justify-center text-center p-12 space-y-6">
-          <div class="w-24 h-24 bg-muted rounded-full flex items-center justify-center">
-             <Briefcase class="w-10 h-10 text-muted-foreground/40" />
-          </div>
-          <div class="max-w-xs space-y-2">
-            <h3 class="text-xl font-bold">Pilih Lowongan</h3>
-            <p class="text-sm text-muted-foreground leading-relaxed">Silakan pilih lowongan di sebelah kiri untuk melihat detail pekerjaan.</p>
           </div>
         </div>
       </section>
@@ -352,7 +392,6 @@ const handleAction = (action) => {
               Kirimkan lamaran Anda untuk posisi <strong>{{ selectedJob.posisi }}</strong> di <strong>{{ selectedJob.perusahaan }}</strong>.
             </DialogDescription>
           </DialogHeader>
-
           <div v-if="selectedJob" class="mt-5 rounded-lg border border-border bg-muted/30 p-4">
             <p class="text-xs font-bold uppercase tracking-wider text-muted-foreground">{{ selectedJob.perusahaan }}</p>
             <p class="mt-1 text-sm font-semibold text-foreground">{{ selectedJob.posisi }}</p>
@@ -361,39 +400,21 @@ const handleAction = (action) => {
               <span class="inline-flex items-center gap-1"><Briefcase class="h-3 w-3" /> {{ selectedJob.tipe }}</span>
             </div>
           </div>
-          
           <div class="grid gap-6 py-6">
             <div class="grid gap-2">
               <Label htmlFor="cv">Curriculum Vitae</Label>
-              <Input 
-                :key="cvInputKey"
-                id="cv" 
-                type="file" 
-                accept=".pdf,.doc,.docx"
-                @change="handleFileChange"
-                :class="{ 'border-destructive': applyForm.errors.cv }"
-              />
-              <p class="text-[11px] text-muted-foreground">Wajib diisi. Format yang didukung: PDF, DOC, DOCX. Maksimal 5MB.</p>
+              <Input :key="cvInputKey" id="cv" type="file" accept=".pdf,.doc,.docx" @change="handleFileChange" :class="{ 'border-destructive': applyForm.errors.cv }" />
+              <p class="text-[11px] text-muted-foreground">Wajib diisi. Format: PDF, DOC, DOCX. Maks 5MB.</p>
               <p v-if="applyForm.errors.cv" class="text-xs text-destructive mt-1">{{ applyForm.errors.cv }}</p>
             </div>
-            
             <div class="grid gap-2">
               <Label htmlFor="notes">Catatan Tambahan (Opsional)</Label>
-              <Textarea 
-                id="notes" 
-                v-model="applyForm.notes"
-                placeholder="Tuliskan catatan singkat, pengalaman relevan, atau mengapa Anda cocok untuk posisi ini..."
-                rows="4"
-                :class="{ 'border-destructive': applyForm.errors.notes }"
-              />
+              <Textarea id="notes" v-model="applyForm.notes" placeholder="Tuliskan catatan singkat..." rows="4" :class="{ 'border-destructive': applyForm.errors.notes }" />
               <p v-if="applyForm.errors.notes" class="text-xs text-destructive mt-1">{{ applyForm.errors.notes }}</p>
             </div>
           </div>
-          
           <DialogFooter>
-            <Button type="button" variant="outline" @click="closeApplyModal" :disabled="applyForm.processing">
-              Batal
-            </Button>
+            <Button type="button" variant="outline" @click="closeApplyModal" :disabled="applyForm.processing">Batal</Button>
             <Button type="submit" :disabled="applyForm.processing || !selectedJob">
               <span v-if="applyForm.processing">Mengirim...</span>
               <span v-else>Kirim Lamaran</span>
@@ -410,4 +431,4 @@ const handleAction = (action) => {
 .font-display {
   font-family: 'Outfit', sans-serif;
 }
-</style> 
+</style>

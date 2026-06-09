@@ -199,9 +199,10 @@ const getProposalStatusColor = (status) => {
         </Card>
 
         <!-- Case 2: Logged in as Architect, Project is Active, No Proposal Submitted Yet -->
-        <form v-else-if="isArchitect && project.status === 'aktif'" @submit.prevent="submitProposal" class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <form v-else-if="isArchitect && project.status === 'aktif'" @submit.prevent="submitProposal" class="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8">
           
-          <div class="lg:col-span-2 space-y-6">
+          <!-- Form fields: stacks below on mobile, takes 2/3 on desktop -->
+          <div class="lg:col-span-2 space-y-6 order-2 lg:order-1">
             <Card class="border-slate-100 shadow-sm rounded-3xl overflow-hidden bg-white">
               <CardHeader class="pb-4">
                 <div class="flex items-center gap-3">
@@ -245,7 +246,7 @@ const getProposalStatusColor = (status) => {
             </Card>
           </div>
 
-          <div class="space-y-6">
+          <div class="space-y-6 order-1 lg:order-2">
             <!-- Concept File Attachment -->
             <Card class="border-slate-100 shadow-sm rounded-3xl overflow-hidden bg-white">
               <CardHeader class="pb-3">

@@ -77,13 +77,6 @@ const handleHire = () => {
                                 </div>
                             </div>
                         </div>
-                        
-                        <div class="flex-shrink-0 flex sm:flex-col gap-3">
-                            <button @click="handleHire" class="px-6 py-2.5 bg-black text-white font-semibold rounded-lg shadow-sm hover:bg-neutral-800 transition flex items-center gap-2">
-                                <Plus class="w-4 h-4" />
-                                Posting Proyek
-                            </button>
-                        </div>
                     </div>
                 </div>
             </div>

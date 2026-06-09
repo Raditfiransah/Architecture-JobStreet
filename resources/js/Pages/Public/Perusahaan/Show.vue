@@ -6,7 +6,6 @@ import VerificationBadge from '@/Components/Profile/VerificationBadge.vue';
 import { 
     MapPin, 
     Briefcase, 
-    Building2,
     Users,
     FileText,
     Globe,
@@ -38,15 +37,13 @@ const profile = computed(() => props.perusahaan.company_profile || {});
         <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
             <!-- Header Section -->
             <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-                <div class="h-32 sm:h-48 bg-gradient-to-r from-emerald-600 to-teal-700"></div>
+                <div class="h-32 sm:h-48 bg-gray-100"></div>
                 
                 <div class="px-6 sm:px-10 py-6 relative">
                     <div class="flex flex-col sm:flex-row items-center sm:items-end gap-6 sm:gap-8 -mt-20 sm:-mt-24 mb-6">
-                        <div class="w-32 h-32 sm:w-40 sm:h-40 rounded-2xl border-4 border-white shadow-md bg-white overflow-hidden flex-shrink-0">
+                        <div class="w-32 h-32 sm:w-40 sm:h-40 rounded-2xl border-4 border-white shadow-md bg-gray-100 overflow-hidden flex-shrink-0">
                             <img v-if="profile.company_logo_url || perusahaan.avatar_url" :src="profile.company_logo_url || perusahaan.avatar_url" class="w-full h-full object-contain p-2" />
-                            <div v-else class="w-full h-full bg-gray-100 flex items-center justify-center text-gray-400 text-3xl font-bold uppercase">
-                                <Building2 class="w-16 h-16 opacity-50" />
-                            </div>
+                            <div v-else class="w-full h-full bg-gray-100"></div>
                         </div>
                         
                         <div class="flex-1 text-center sm:text-left">

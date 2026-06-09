@@ -21,6 +21,7 @@ const isLoading = ref(false);
 const errors = ref({});
 
 const form = ref({
+    email: user.value.email || '',
     phone: user.value.phone || '',
     identity_document_url: null,
     license_document_url: null
@@ -37,6 +38,7 @@ onMounted(() => {
         if (draft) {
             try {
                 const parsed = JSON.parse(draft);
+                form.value.email = parsed.email || form.value.email;
                 form.value.phone = parsed.phone || form.value.phone;
             } catch (e) {
                 console.error("Failed to parse draft", e);
@@ -45,10 +47,11 @@ onMounted(() => {
     }
 });
 
-watch(() => form.value.phone, (newVal) => {
+watch(() => [form.value.email, form.value.phone], ([email, phone]) => {
     if (!isVerified.value) {
-        localStorage.setItem('arsitek_verifikasi_draft', JSON.stringify({ phone: newVal }));
+        localStorage.setItem('arsitek_verifikasi_draft', JSON.stringify({ email, phone }));
     }
+    errors.value.email = null;
     errors.value.phone = null;
 });
 
@@ -63,7 +66,7 @@ const handleFileUpload = (e, field) => {
 const isFormValid = computed(() => {
     const hasIdentity = form.value.identity_document_url !== null || profile.value.identity_document_url;
     const hasLicense = form.value.license_document_url !== null || profile.value.license_document_url;
-    return form.value.phone.trim() !== '' && hasIdentity && hasLicense;
+    return form.value.email.trim() !== '' && form.value.phone.trim() !== '' && hasIdentity && hasLicense;
 });
 
 const submit = () => {
@@ -77,6 +80,7 @@ const submit = () => {
         errors.value = {};
         
         const formData = new FormData();
+        formData.append('email', form.value.email);
         formData.append('phone', form.value.phone);
         if (form.value.identity_document_url) {
             formData.append('identity_document', form.value.identity_document_url);
@@ -157,11 +161,14 @@ const submit = () => {
                             <Label for="email">Email Profesional <span class="text-rose-500">*</span></Label>
                             <Input 
                                 id="email" 
-                                :value="user.email" 
-                                disabled
-                                class="bg-muted"
+                                v-model="form.email"
+                                type="email"
+                                placeholder="nama@domain.com"
+                                :disabled="isVerified || verificationStatus === 'pending'"
+                                :class="{ 'border-rose-500': errors.email }"
                             />
-                            <p class="text-xs text-muted-foreground">Email terikat dengan akun Anda.</p>
+                            <p v-if="errors.email" class="text-sm text-rose-500">{{ errors.email }}</p>
+                            <p class="text-xs text-muted-foreground">Email ini akan digunakan sebagai email profesional akun Anda.</p>
                         </div>
                     </div>
 

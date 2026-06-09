@@ -2,8 +2,12 @@
 
 namespace Database\Seeders;
 
+use App\Models\CompanyProfile;
 use App\Models\Lowongan;
+use App\Models\User;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
 
 class LowonganSeeder extends Seeder
 {
@@ -226,12 +230,50 @@ class LowonganSeeder extends Seeder
         ];
 
         foreach ($lowongan as $job) {
-            Lowongan::create(array_merge($job, [
+            $company = $this->companyUserFor($job['perusahaan'], $job['kota']);
+
+            Lowongan::updateOrCreate([
+                'posisi' => $job['posisi'],
+                'perusahaan' => $job['perusahaan'],
+            ], array_merge($job, [
+                'user_id' => $company->id,
                 'status' => $job['status'] ?? 'aktif',
                 'tanggal_mulai' => now()->subDays(7)->toDateString(),
                 'batas_lamaran' => now()->addDays(30)->toDateString(),
                 'deadline' => now()->addDays(30)->toDateString(),
             ]));
         }
+    }
+
+    private function companyUserFor(string $companyName, string $location): User
+    {
+        $email = Str::slug($companyName) . '@example.com';
+
+        $user = User::updateOrCreate([
+            'email' => $email,
+        ], [
+            'name' => $companyName,
+            'password' => Hash::make('password'),
+            'role' => 'perusahaan',
+            'is_active' => true,
+            'is_verified' => true,
+            'email_verified_at' => now(),
+            'location' => $location,
+        ]);
+
+        CompanyProfile::updateOrCreate([
+            'user_id' => $user->id,
+        ], [
+            'company_name' => $companyName,
+            'company_desc' => 'Studio/perusahaan arsitektur yang membuka lowongan melalui Bursa Kerja Architecture JobStreet.',
+            'industry' => 'Architecture & Design',
+            'company_size' => '50 - 200 Karyawan',
+            'location' => $location,
+            'business_fields' => ['Architecture', 'Design'],
+            'verification_status' => 'verified',
+            'verified_at' => now(),
+        ]);
+
+        return $user;
     }
 }

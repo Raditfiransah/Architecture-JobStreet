@@ -46,6 +46,7 @@ const searchQuery = ref(props.filters?.q || "");
 const locationQuery = ref(props.filters?.l || "");
 
 const selectedJob = ref(props.jobs && props.jobs.length > 0 ? props.jobs[0] : null);
+const selectedCompanyProfileUrl = computed(() => selectedJob.value?.company_profile_url || null);
 
 const formatDate = (dateString) => {
   if (!dateString) return "-";
@@ -315,9 +316,13 @@ const handleAction = (action) => {
                     </div>
                   </div>
                   <Separator class="bg-border/50" />
-                  <Button variant="outline" class="w-full rounded-lg font-medium border-border hover:border-primary/30">
+                  <Link
+                    v-if="selectedCompanyProfileUrl"
+                    :href="selectedCompanyProfileUrl"
+                    class="inline-flex h-10 w-full items-center justify-center rounded-lg bg-black px-4 py-2 text-sm font-semibold text-white shadow-sm transition-colors whitespace-nowrap hover:bg-neutral-800 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+                  >
                     Lihat Profil Perusahaan
-                  </Button>
+                  </Link>
                 </CardContent>
               </Card>
             </div>

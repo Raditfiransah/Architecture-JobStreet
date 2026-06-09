@@ -4,7 +4,9 @@ namespace App\Http\Controllers\Public;
 
 use App\Http\Controllers\Controller;
 use App\Models\Lowongan;
+use App\Models\User;
 use Illuminate\Http\Request;
+use Inertia\Inertia;
 
 class LowonganController extends Controller
 {
@@ -31,9 +33,9 @@ class LowonganController extends Controller
 
         $jobs = $query->get();
 
-        return \Inertia\Inertia::render('Public/Lowongan/Index', [
+        return Inertia::render('Public/Lowongan/Index', [
             'title' => 'Daftar Lowongan Arsitek',
-            'jobs' => $jobs,
+            'jobs' => $this->formatJobs($jobs),
             'filters' => [
                 'q' => $q,
                 'l' => $l,
@@ -47,13 +49,42 @@ class LowonganController extends Controller
             ->publiclyAvailable()
             ->findOrFail($id);
 
-        return \Inertia\Inertia::render('Public/Lowongan/Index', [
+        return Inertia::render('Public/Lowongan/Index', [
             'title' => $lowongan->posisi . ' — ' . $lowongan->perusahaan,
-            'jobs' => [$lowongan],
+            'jobs' => $this->formatJobs(collect([$lowongan])),
             'filters' => [
                 'q' => null,
                 'l' => null,
             ],
         ]);
+    }
+
+    private function formatJobs($jobs)
+    {
+        $fallbackCompanyId = User::query()
+            ->where('role', 'perusahaan')
+            ->oldest()
+            ->value('id');
+
+        return $jobs->map(function (Lowongan $lowongan) {
+            $companyUserId = $lowongan->user_id ?: User::query()
+                ->where('role', 'perusahaan')
+                ->where('name', $lowongan->perusahaan)
+                ->value('id');
+
+            return array_merge($lowongan->toArray(), [
+                'company_profile_url' => $companyUserId
+                    ? route('public.perusahaan.show', $companyUserId)
+                    : null,
+            ]);
+        })->values()->map(function (array $job) use ($fallbackCompanyId) {
+            if ($job['company_profile_url'] || !$fallbackCompanyId) {
+                return $job;
+            }
+
+            $job['company_profile_url'] = route('public.perusahaan.show', $fallbackCompanyId);
+
+            return $job;
+        });
     }
 }

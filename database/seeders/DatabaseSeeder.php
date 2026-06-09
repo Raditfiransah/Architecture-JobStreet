@@ -90,12 +90,34 @@ class DatabaseSeeder extends Seeder
         // Data Dummy Perusahaan untuk keperluan lowongan kerja (opsional tapi baiknya ada)
         User::factory(3)->perusahaan()->create();
 
-        // Data Dummy Lowongan Kerja
+        // Data Dummy Lowongan Kerja (dari seeder lama, tetap dipertahankan)
         $this->call([
             UserSeeder::class,
             LowonganSeeder::class,
             ProyekSeeder::class,
             InfoHubSeeder::class,
         ]);
+
+        // ── Data Dummy Lengkap ────────────────────────────────────────────────
+        // Arsitek dengan profil detail, portofolio, keahlian, verifikasi
+        $this->call(ArsitekProfileSeeder::class);
+
+        // Perusahaan dengan profil detail + lowongan kerja baru
+        $this->call(PerusahaanSeeder::class);
+
+        // Client dengan profil + proyek yang diposting
+        $this->call(ClientSeeder::class);
+
+        // Proposal: arsitek melamar ke proyek
+        $this->call(ProposalSeeder::class);
+
+        // Lamaran: arsitek melamar ke lowongan
+        $this->call(LamaranSeeder::class);
+
+        // InfoHub tambahan: event, sayembara, magang lebih banyak
+        $this->call(InfoHubExtraSeeder::class);
+
+        // Audit log aktivitas admin dan user
+        $this->call(AuditLogSeeder::class);
     }
 }

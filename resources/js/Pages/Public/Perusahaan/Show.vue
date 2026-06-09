@@ -27,7 +27,7 @@ const props = defineProps({
     }
 });
 
-const profile = computed(() => props.perusahaan.company_profile || {});
+const profile = computed(() => props.perusahaan.companyProfile || props.perusahaan.company_profile || {});
 </script>
 
 <template>

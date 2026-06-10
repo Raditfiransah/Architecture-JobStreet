@@ -1,128 +1,173 @@
-# Web Architect Project
+<div align="center">
 
-This is a Laravel-based web application that uses Docker for containerization to ensure consistent development environments across teams.
+# 🏗️ Loker Arsitek
 
-## Prerequisites
+### Platform Karir & Kolaborasi untuk Industri Arsitektur Indonesia
 
-- Docker and Docker Compose installed on your machine
-- Git installed (for cloning the repository)
+[![Laravel](https://img.shields.io/badge/Laravel-12-%23FF2D20?logo=laravel&logoColor=white)](https://laravel.com)
+[![Vue.js](https://img.shields.io/badge/Vue.js-3-%234FC08D?logo=vuedotjs&logoColor=white)](https://vuejs.org)
+[![License](https://img.shields.io/badge/License-MIT-blue)](#)
 
-## Getting Started
+> **Jembatan antara arsitek berbakat, perusahaan terpercaya, dan klien yang membutuhkan karya arsitektur terbaik.**
 
-### Option 1: Using the Startup Script (Recommended)
+</div>
 
-The easiest way to get started is to use the provided startup script:
+---
 
-```bash
-git clone <repository-url>
-cd Web-Architect
-chmod +x start.sh
-./start.sh
+## 📖 Tentang Loker Arsitek
+
+**Loker Arsitek** adalah ekosistem karir dan marketplace proyek yang didedikasikan khusus untuk industri arsitektur dan desain interior di Indonesia.
+
+Kami menyatukan tiga sisi pasar dalam satu platform:
+
+| Siapa | Kebutuhan |
+|-------|-----------|
+| 🎨 **Arsitek & Desainer** | Mencari pekerjaan tetap, proyek lepas, dan tempat memamerkan portofolio |
+| 🏢 **Perusahaan Konstruksi/Desain** | Menemukan talenta arsitektur yang terverifikasi dan relevan |
+| 🏠 **Klien Pemilik Proyek** | Menemukan arsitek tepat untuk mewujudkan desain impian |
+
+---
+
+## ✨ Highlight Fitur
+
+### Dua Pasar dalam Satu Platform
+
+#### 🔵 Pasar Rekrutmen — Lowongan Kerja
+
+Perusahaan membuka lowongan → Arsitek melamar dengan portofolio → Perusahaan kurasi kandidat terbaik.
+
+```
+🏢 Perusahaan pasang lowongan → ✅ Admin moderasi → 📢 Muncul di papan lowongan
+🎨 Arsitek temukan & lamar → 📊 Lacak status lamaran di dashboard
 ```
 
-This script will:
-1. Check if Docker is installed
-2. Build and start all containers
-3. Display access URLs and useful commands
+#### 🟢 Pasar Proyek — Open Bidding
 
-### Option 2: Manual Setup with Makefile
+Klien memasang proyek → Arsitek ajukan proposal dengan penawaran → Klien pilih yang terbaik.
 
-Alternatively, you can use the Makefile for more control:
-
-```bash
-git clone <repository-url>
-cd Web-Architect
-
-# Build and start containers
-make up
-
-# Install JavaScript dependencies (PHP deps handled by Docker entrypoint)
-make node-install    # npm install in node container
-
-# Application setup is handled by Docker entrypoint:
-# - .env file creation from .env.example
-# - Composer install
-# - Application key generation
-# - Database migrations
-# - Cache clearing
-# - Permission fixing
-
-# Access the application immediately after containers are healthy
+```
+🏠 Klien buat proyek + budget → ✅ Admin moderasi → 📢 Muncul di marketplace
+🎨 Arsitek kirim proposal bidding → 🤝 Klien terima proposal terbaik
 ```
 
-### Option 3: Direct Docker Commands
+---
 
-If you prefer to use Docker Compose directly:
+### 🎨 Untuk Arsitek & Desainer Interior
 
-```bash
-git clone <repository-url>
-cd Web-Architect
+| Fitur | Manfaat |
+|-------|---------|
+| **Portofolio Profesional** | Pamerkan karya terbaik dengan gambar, deskripsi, dan tautan — bisa diurutkan bebas |
+| **Cari Lowongan Kerja** | Filter berdasarkan posisi, lokasi, dan kata kunci — khusus lowongan arsitektur |
+| **Ikut Bidding Proyek** | Tawarkan jasa ke proyek klien dengan penawaran harga dan estimasi waktu |
+| **Dashboard Aktifitas** | Pantau semua lamaran dan proposal dalam satu tempat |
+| **Notifikasi Real-time** | Dapatkan notifikasi saat lamaran dilihat, proposal direspon, atau status berubah |
 
-# Build and start containers
-docker compose up -d --build
+**Alur pengguna:** Daftar → Lengkapi profil → Verifikasi dokumen → Bangun portofolio → Lamar/ bidding.
 
-# Install JavaScript dependencies (PHP deps handled by Docker entrypoint)
-docker compose exec node npm install
+---
 
-# Application setup is handled by Docker entrypoint (see above)
-```
+### 🏢 Untuk Perusahaan & Penyedia Kerja
 
-## Access the Application
+| Fitur | Manfaat |
+|-------|---------|
+| **Pasang Lowongan** | Buat iklan lowongan detail: posisi, gaji, tipe kerja, syarat, dan tanggung jawab |
+| **Kelola Pelamar** | Lihat semua pelamar, urutkan, short-list, dan update status aplikasi |
+| **Company Branding** | Tampilkan logo, banner, dan profil perusahaan profesional |
+| **Dashboard Rekrutmen** | Pantau jumlah pelamar, lowongan aktif, dan metrik rekrutmen |
 
-- **Main Application**: http://localhost:8000
-- **phpMyAdmin**: http://localhost:8081 (use database credentials from .env)
-- **Vite Dev Server**: http://localhost:5173 (for HMR during development)
+**Alur pengguna:** Daftar → Lengkapi profil perusahaan → Verifikasi dokumen → Pasang lowongan → Kurasi pelamar.
 
-## Useful Commands
+---
 
-```bash
-# Using Makefile
-make up           # Start containers
-make down         # Stop and remove containers
-make build        # Rebuild containers
-make restart      # Restart containers
-make shell        # Enter PHP application container
-make logs         # Follow logs of all containers
-make migrate      # Run database migrations
-make seed         # Run database seeders
-make node-install # Run npm install in node container
+### 🏠 Untuk Klien & Pemilik Proyek
 
-# Direct Docker Compose commands
-docker compose up -d          # Start containers in background
-docker compose down           # Stop containers
-docker compose logs -f        # View logs
-docker compose exec app sh    # Enter app container
-docker compose exec node sh   # Enter node container
-```
+| Fitur | Manfaat |
+|-------|---------|
+| **Pasang Proyek** | Deskripsikan kebutuhan desain, tentukan budget, kategori, dan lokasi |
+| **Bandingkan Proposal** | Lihat semua penawaran arsitek, bandingkan harga dan pendekatan |
+| **Pilih & Mulai Kolaborasi** | Terima proposal terbaik dan mulai wujudkan proyek |
+| **Pantau Progres** | Lihat status proyek dari awal hingga selesai |
 
-## Important Notes About Docker Entrypoint
+**Alur pengguna:** Daftar → Verifikasi → Pasang proyek → Terima proposal → Kolaborasi.
 
-The Docker container for the PHP application includes an entrypoint script that automatically handles:
-- Creating `.env` from `.env.example` if it doesn't exist
-- Running `composer install` to install PHP dependencies
-- Generating the application key if not already set
-- Clearing configuration and cache
-- Running database migrations (`php artisan migrate --force`)
-- Fixing permissions for Laravel directories
+---
 
-This means you don't need to manually run `composer install`, `php artisan key:generate`, or `php artisan migrate` after starting the containers - these are handled automatically!
+### 🛡️ Untuk Admin Platform
 
-## Database Credentials (from .env)
+| Fitur | Manfaat |
+|-------|---------|
+| **Moderasi Lowongan & Proyek** | Review dan approve setiap konten sebelum tayang |
+| **Verifikasi Pengguna** | Validasi dokumen arsitek dan perusahaan untuk menjaga kepercayaan |
+| **Manajemen Pengguna** | Kelola akun, suspend akun bermasalah |
+| **Info Hub** | Publikasikan artikel, panduan, dan pengumuman untuk komunitas |
+| **Sistem Laporan** | Tangani konten yang dilaporkan pengguna |
+| **Audit Keamanan** | Semua tindakan admin tercatat dengan IP dan user agent |
 
-By default, the database credentials are:
-- Database: laravel
-- Username: laravel
-- Password: secret
-- Host: db
-- Port: 3306
+**Alur kerja:** Dashboard → Review antrian moderasi → Approve/tolak → Publikasikan konten.
 
-These can be customized in the `.env` file.
+---
 
-## Notes
+## 🎯 Nilai Lebih
 
-- The application will be available at http://localhost:8000 once all services are healthy (typically within 1-2 minutes after startup)
-- Initial startup may take a few minutes as Docker images are built and dependencies are installed
-- Make sure Docker has sufficient resources allocated (at least 2GB RAM recommended)
-- The startup script (`start.sh`) provides the quickest way to get started
-- The Makefile offers convenient shortcuts for common development tasks
-- Since the Docker entrypoint handles Laravel setup, you can focus on frontend development with `docker compose exec node npm run dev`
+| Buat Pengguna | Benefit |
+|---------------|---------|
+| **Trusted Ecosystem** | Semua pengguna terverifikasi — email OTP + verifikasi dokumen oleh admin |
+| **100% Relevan** | Khusus industri arsitektur — bukan generic job board |
+| **Dua Pasar Sekaligus** | Cari kerja tetap dan bidding proyek lepas dalam satu akun |
+| **Gratis** | Bergabung dan mengakses fitur dasar tanpa biaya |
+| **Bangun Reputasi** | Portofolio dan rating membantu menonjol di antara kompetitor |
+
+---
+
+## 🖥️ Tampilan Platform
+
+| Halaman | Deskripsi |
+|---------|-----------|
+| **Beranda** (`/`) | Landing page dengan hero, statistik, dan ajakan bergabung |
+| **Papan Lowongan** (`/lowongan`) | Cari lowongan kerja arsitektur terbaru |
+| **Marketplace Proyek** (`/proyek`) | Jelajahi proyek desain yang butuh arsitek |
+| **Direktori Arsitek** (`/arsitek`) | Temukan arsitek berdasarkan portofolio |
+| **Info Hub** (`/info`) | Artikel, tips karir, dan berita industri |
+| **Dashboard** | Panel personal untuk setiap role dengan data relevan |
+
+---
+
+## 📱 Tersedia di Mobile
+
+Tampilan responsif yang nyaman digunakan di perangkat apa pun — desktop, tablet, maupun ponsel. Nikmati pengalaman penuh di mana saja.
+
+---
+
+## 🤝 Untuk Siapa Platform Ini?
+
+- ✅ **Arsitek** — fresh graduate hingga senior yang mencari peluang karir dan proyek
+- ✅ **Desainer Interior** — profesional desain interior yang ingin ekspansi jaringan
+- ✅ **Perusahaan Arsitektur** — biro arsitek, kontraktor, pengembang properti
+- ✅ **Klien Individu** — pemilik rumah, pemilik bisnis, pengembang yang butuh jasa desain
+- ✅ **Mahasiswa Arsitektur** — cari magang atau proyek pertama
+
+---
+
+## 🧭 Roadmap (Rencana ke Depan)
+
+- [x] Registrasi & autentikasi dengan verifikasi email OTP
+- [x] Manajemen profil & portofolio arsitek
+- [x] Papan lowongan kerja dengan filter & pencarian
+- [x] Marketplace proyek dengan sistem bidding
+- [x] Sistem moderasi & verifikasi dokumen
+- [ ] Sistem notifikasi & pesan real-time
+- [ ] Integrasi pembayaran premium
+- [ ] Fitur rating & review antar pengguna
+- [ ] Aplikasi mobile native
+
+---
+
+<div align="center">
+
+**Dibangun dengan ❤️ untuk ekosistem arsitektur Indonesia**
+
+[Website](https://lokerarsitek.id) · [Laporkan Bug](https://github.com/anomalyco/Web-Architect/issues)
+
+© 2026 Loker Arsitek Indonesia
+
+</div>

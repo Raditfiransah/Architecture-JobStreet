@@ -38,6 +38,8 @@ class ProposalController extends Controller
 
     public function store(StoreProposalRequest $request, string $id)
     {
+        $this->ensureProfileVerified();
+
         // Check if project exists and is active
         $project = Proyek::findOrFail($id);
         if ($project->status !== 'aktif') {
@@ -87,6 +89,8 @@ class ProposalController extends Controller
 
     public function update(UpdateProposalRequest $request, string $id)
     {
+        $this->ensureProfileVerified();
+
         $proposal = Proposal::where('user_id', auth()->id())
             ->where('status', 'pending')
             ->findOrFail($id);

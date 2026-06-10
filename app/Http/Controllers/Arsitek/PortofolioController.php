@@ -27,6 +27,8 @@ class PortofolioController extends Controller
 
     public function store(Request $request)
     {
+        $this->ensureProfileVerified();
+
         $request->validate([
             'title' => 'required|string|max:255',
             'description' => 'nullable|string',
@@ -67,6 +69,8 @@ class PortofolioController extends Controller
 
     public function update(Request $request, string $id)
     {
+        $this->ensureProfileVerified();
+
         $portofolio = Portofolio::where('user_id', Auth::id())->findOrFail($id);
 
         $request->validate([
@@ -111,6 +115,8 @@ class PortofolioController extends Controller
 
     public function destroy(string $id)
     {
+        $this->ensureProfileVerified();
+
         $portofolio = Portofolio::where('user_id', Auth::id())->findOrFail($id);
         
         if ($portofolio->thumbnail) {
@@ -130,6 +136,8 @@ class PortofolioController extends Controller
 
     public function reorder(Request $request)
     {
+        $this->ensureProfileVerified();
+
         $request->validate([
             'orders' => 'required|array',
             'orders.*.id' => 'required|exists:portofolios,id',

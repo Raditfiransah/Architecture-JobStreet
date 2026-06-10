@@ -4,7 +4,6 @@ import { Link, usePage, useForm } from '@inertiajs/vue3';
 import { 
   User, 
   Briefcase, 
-  Settings, 
   LogOut, 
   MapPin, 
   FileText, 
@@ -78,7 +77,6 @@ const menuItems = computed(() => {
       ]},
       { group: 'Mengelola Akun', items: [
         { label: 'Verifikasi', icon: ShieldCheck, href: route('arsitek.verifikasi.index'), active: 'arsitek.verifikasi.*' },
-        { label: 'Pengaturan Akun', icon: Settings, href: route('arsitek.pengaturan.index'), active: 'arsitek.pengaturan.*' },
       ]}
     ];
   }
@@ -94,7 +92,6 @@ const menuItems = computed(() => {
       ]},
       { group: 'Mengelola Akun', items: [
         { label: 'Verifikasi', icon: ShieldCheck, href: route('perusahaan.verifikasi.index'), active: 'perusahaan.verifikasi.*' },
-        { label: 'Pengaturan Akun', icon: Settings, href: route('perusahaan.pengaturan.index'), active: 'perusahaan.pengaturan.*' },
       ]}
     ];
   }
@@ -109,7 +106,6 @@ const menuItems = computed(() => {
       ]},
       { group: 'Mengelola Akun', items: [
         { label: 'Verifikasi', icon: ShieldCheck, href: route('client.verifikasi.index'), active: 'client.verifikasi.*' },
-        { label: 'Pengaturan Akun', icon: Settings, href: route('client.pengaturan.index'), active: 'client.pengaturan.*' },
       ]}
     ];
   }

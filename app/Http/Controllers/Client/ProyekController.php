@@ -25,11 +25,15 @@ class ProyekController extends Controller
 
     public function create()
     {
+        $this->ensureProfileVerified();
+
         return Inertia::render('Client/Proyek/Create');
     }
 
     public function store(StoreProyekRequest $request)
     {
+        $this->ensureProfileVerified();
+
         $validated = $request->validated();
 
         $attachment_path = null;
@@ -66,6 +70,8 @@ class ProyekController extends Controller
 
     public function edit(string $id)
     {
+        $this->ensureProfileVerified();
+
         $project = Proyek::where('user_id', auth()->id())->findOrFail($id);
         
         return Inertia::render('Client/Proyek/Edit', [
@@ -75,6 +81,8 @@ class ProyekController extends Controller
 
     public function update(UpdateProyekRequest $request, string $id)
     {
+        $this->ensureProfileVerified();
+
         $project = Proyek::where('user_id', auth()->id())->findOrFail($id);
 
         if ($project->status !== 'aktif') {
@@ -105,6 +113,8 @@ class ProyekController extends Controller
 
     public function tutup(string $id)
     {
+        $this->ensureProfileVerified();
+
         $project = Proyek::where('user_id', auth()->id())->findOrFail($id);
 
         if ($project->status !== 'aktif') {
@@ -120,6 +130,8 @@ class ProyekController extends Controller
 
     public function destroy(string $id)
     {
+        $this->ensureProfileVerified();
+
         $project = Proyek::where('user_id', auth()->id())->findOrFail($id);
         
         if ($project->attachment_path) {

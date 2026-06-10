@@ -4,7 +4,6 @@ import { computed } from 'vue';
 import { 
   LogOut, 
   User, 
-  Settings, 
   Bell, 
   Search, 
   Menu,
@@ -71,20 +70,17 @@ const dropdownLinks = computed(() => {
       { name: "Lowongan Saya", href: route('perusahaan.lowongan.index'), icon: Briefcase },
       { name: "Daftar Pelamar", href: route('perusahaan.pelamar.all'), icon: Users },
       { name: "Profil Perusahaan", href: route('perusahaan.profil.edit'), icon: User },
-      { name: "Pengaturan", href: route('perusahaan.pengaturan.index'), icon: Settings },
     ],
     arsitek: [
       { name: "Dashboard", href: route('arsitek.dashboard'), icon: LayoutDashboard },
       { name: "Portofolio", href: route('arsitek.portofolio.index'), icon: Folder },
       { name: "Lamaran Saya", href: route('arsitek.lamaran.index'), icon: Briefcase },
       { name: "Profil Arsitek", href: route('arsitek.profil.edit'), icon: User },
-      { name: "Pengaturan", href: route('arsitek.pengaturan.index'), icon: Settings },
     ],
     client: [
       { name: "Dashboard", href: route('client.dashboard'), icon: LayoutDashboard },
       { name: "Proyek Saya", href: route('client.proyek.index'), icon: Folder },
       { name: "Profil Client", href: route('client.profil.edit'), icon: User },
-      { name: "Pengaturan", href: route('client.pengaturan.index'), icon: Settings },
     ],
   };
 

@@ -15,9 +15,10 @@ const quote = "The way to get started is to quit talking and begin doing";
 const author = "Walt Disney";
 </script>
 
-<template>  
-  <div class="relative min-h-screen flex-col items-center justify-center grid lg:max-w-none lg:grid-cols-5 lg:px-0 bg-background text-foreground animate-in fade-in duration-700">
-    <!-- Top Right Toggle Link -->
+<template>
+  <div class="relative min-h-screen bg-background text-foreground animate-in fade-in duration-700 flex flex-col lg:grid lg:grid-cols-5 lg:max-w-none lg:px-0">
+
+    <!-- Toggle link (Login ↔ Daftar) -->
     <Link
       :href="mode === 'login' ? route('register') : route('login')"
       :class="cn(
@@ -27,16 +28,16 @@ const author = "Walt Disney";
     >
       {{ mode === 'login' ? 'Daftar' : 'Masuk' }}
     </Link>
- 
-    <!-- Left Panel (lg only) -->
+
+    <!-- Left Panel — dark branding (desktop only) -->
     <div class="relative hidden h-full flex-col bg-zinc-950 p-10 text-white lg:flex border-r border-border/10 lg:col-span-3">
       <div class="absolute inset-0 bg-zinc-950" />
       <div class="absolute inset-0 opacity-10 bg-[radial-gradient(#ffffff_1px,transparent_1px)] [background-size:32px_32px]"></div>
-      
+
       <div class="relative z-20 flex items-center text-xl font-bold">
         <Link :href="route('home')" class="flex items-center gap-3 group">
           <div class="w-10 h-10 rounded-xl bg-primary flex items-center justify-center text-primary-foreground group-hover:rotate-12 transition-all duration-300">
-             <Briefcase class="w-5 h-5" />
+            <Briefcase class="w-5 h-5" />
           </div>
           <span class="text-xl font-display font-bold tracking-tight text-white">
             Loker<span class="text-gray-400">Arsitek</span>
@@ -48,23 +49,36 @@ const author = "Walt Disney";
         <div class="p-8 rounded-xl">
           <blockquote class="max-w-2xl">
             <p class="text-lg leading-relaxed">
-              “{{ quote }}”
+              "{{ quote }}"
               <span>– {{ author }}</span>
             </p>
           </blockquote>
         </div>
       </div>
     </div>
- 
-    <!-- Right Panel (Form) -->
-    <div class="lg:p-8 flex items-center justify-center lg:col-span-2">
-      <div class="mx-auto flex w-full flex-col justify-center space-y-4 sm:w-[320px]">
+
+    <!-- Right Panel — Form -->
+    <div class="flex flex-1 flex-col items-center justify-center px-4 py-12 sm:px-8 lg:px-8 lg:col-span-2">
+
+      <!-- Mobile logo (hidden on desktop where left panel shows) -->
+      <div class="mb-8 lg:hidden">
+        <Link :href="route('home')" class="flex items-center gap-3 group">
+          <div class="w-10 h-10 rounded-xl bg-primary flex items-center justify-center text-primary-foreground group-hover:rotate-12 transition-all duration-300">
+            <Briefcase class="w-5 h-5" />
+          </div>
+          <span class="text-2xl font-display font-bold tracking-tight text-primary">
+            Loker<span class="text-foreground">Arsitek</span>
+          </span>
+        </Link>
+      </div>
+
+      <div class="w-full max-w-[360px] flex flex-col justify-center space-y-4">
         <slot />
-        
-        <p class="px-8 text-center text-[10px] text-muted-foreground leading-relaxed">
-          Dengan melanjutkan, Anda menyetujui 
-          <Link href="#" class="underline underline-offset-4 hover:text-primary transition-colors">Syarat & Ketentuan</Link> 
-          dan 
+
+        <p class="text-center text-[10px] text-muted-foreground leading-relaxed">
+          Dengan melanjutkan, Anda menyetujui
+          <Link href="#" class="underline underline-offset-4 hover:text-primary transition-colors">Syarat & Ketentuan</Link>
+          dan
           <Link href="#" class="underline underline-offset-4 hover:text-primary transition-colors">Kebijakan Privasi</Link> kami.
         </p>
       </div>

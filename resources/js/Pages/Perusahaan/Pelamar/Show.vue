@@ -68,32 +68,32 @@ const updateStatus = (newStatus) => {
                         <ArrowLeft class="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
                         Kembali ke Daftar Pelamar
                     </Link>
-                    <div class="flex items-start gap-6">
-                        <div class="w-24 h-24 rounded-3xl bg-primary/5 border border-primary/10 flex items-center justify-center text-3xl font-bold text-primary shadow-sm shrink-0">
+                    <div class="flex flex-col sm:flex-row items-start gap-4 sm:gap-6">
+                        <div class="w-16 h-16 sm:w-24 sm:h-24 rounded-2xl sm:rounded-3xl bg-primary/5 border border-primary/10 flex items-center justify-center text-xl sm:text-3xl font-bold text-primary shadow-sm shrink-0">
                             {{ lamaran.user.name.substring(0, 2).toUpperCase() }}
                         </div>
-                        <div class="space-y-1">
-                            <div class="flex items-center gap-3">
-                                <h1 class="text-3xl font-display font-bold text-slate-900 tracking-tight">{{ lamaran.user.name }}</h1>
+                        <div class="space-y-1 min-w-0">
+                            <div class="flex flex-wrap items-center gap-2 sm:gap-3">
+                                <h1 class="text-xl sm:text-3xl font-display font-bold text-slate-900 tracking-tight">{{ lamaran.user.name }}</h1>
                                 <Badge variant="outline" :class="getStatusColor(lamaran.status) + ' rounded-lg border px-3 py-1 font-bold uppercase tracking-wider text-[10px]'">
                                     {{ getStatusLabel(lamaran.status) }}
                                 </Badge>
                             </div>
-                            <p class="text-lg font-medium text-slate-600">{{ lamaran.user.arsitek_profile?.status_pekerjaan || 'Arsitek Profesional' }}</p>
-                            <div class="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm font-medium text-slate-400">
-                                <div class="flex items-center gap-1.5"><MapPin class="w-4 h-4" /> {{ lamaran.user.location || 'Lokasi tidak diatur' }}</div>
-                                <div class="flex items-center gap-1.5"><Mail class="w-4 h-4" /> {{ lamaran.user.email }}</div>
+                            <p class="text-sm sm:text-lg font-medium text-slate-600">{{ lamaran.user.arsitek_profile?.status_pekerjaan || 'Arsitek Profesional' }}</p>
+                            <div class="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs sm:text-sm font-medium text-slate-400">
+                                <div class="flex items-center gap-1.5"><MapPin class="w-3.5 h-3.5" /> {{ lamaran.user.location || 'Lokasi tidak diatur' }}</div>
+                                <div class="flex items-center gap-1.5"><Mail class="w-3.5 h-3.5" /> {{ lamaran.user.email }}</div>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <div class="flex items-center gap-3 shrink-0 pt-8">
+                <div class="flex items-center gap-3 shrink-0 sm:pt-8">
                     <Button variant="outline" class="rounded-xl font-bold gap-2">
                         <MessageSquare class="w-4 h-4" /> Hubungi
                     </Button>
                     <Button @click="updateStatus('shortlisted')" v-if="lamaran.status !== 'shortlisted' && lamaran.status !== 'accepted'" class="rounded-xl font-bold bg-indigo-600 hover:bg-indigo-700">
-                        Shortlist Kandidat
+                        Shortlist
                     </Button>
                 </div>
             </div>

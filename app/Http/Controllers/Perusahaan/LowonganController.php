@@ -47,6 +47,8 @@ class LowonganController extends Controller
 
     public function edit(string $id)
     {
+        $this->ensureProfileVerified();
+
         $lowongan = auth()->user()->lowongans()->findOrFail($id);
 
         return \Inertia\Inertia::render('Perusahaan/Lowongan/Form', [
@@ -57,6 +59,8 @@ class LowonganController extends Controller
 
     public function update(Request $request, string $id)
     {
+        $this->ensureProfileVerified();
+
         $lowongan = auth()->user()->lowongans()->findOrFail($id);
 
         $validated = $this->validateLowongan($request);
@@ -69,6 +73,8 @@ class LowonganController extends Controller
 
     public function tutup(string $id)
     {
+        $this->ensureProfileVerified();
+
         $lowongan = auth()->user()->lowongans()->findOrFail($id);
         $lowongan->update(['status' => 'ditutup']);
         return back()->with('success', 'Lowongan telah ditutup.');
@@ -76,6 +82,8 @@ class LowonganController extends Controller
 
     public function perpanjang(string $id)
     {
+        $this->ensureProfileVerified();
+
         $lowongan = auth()->user()->lowongans()->findOrFail($id);
 
         if (! $lowongan->batas_lamaran || $lowongan->batas_lamaran->lt(today())) {
@@ -88,6 +96,8 @@ class LowonganController extends Controller
 
     public function destroy(string $id)
     {
+        $this->ensureProfileVerified();
+
         $lowongan = auth()->user()->lowongans()->findOrFail($id);
         $lowongan->delete();
         return redirect()->route('perusahaan.lowongan.index')->with('success', 'Lowongan berhasil dihapus.');

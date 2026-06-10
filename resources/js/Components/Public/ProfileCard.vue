@@ -30,8 +30,14 @@ const isPerusahaan = computed(() => props.user.role === 'perusahaan');
 const isClient = computed(() => props.user.role === 'client');
 
 // Extract specific profiles if available, or fallback to user
-const arsitekProfile = computed(() => props.user.arsitek_profile || props.user.profile || {});
-const companyProfile = computed(() => props.user.company_profile || props.user.profile || {});
+// Inertia serializes Eloquent relations as snake_case keys (arsitek_profile / company_profile)
+// Auth shared props passes the profile as generic 'profile' key
+const arsitekProfile = computed(() => 
+    props.user.arsitek_profile || props.user.arsitekProfile || props.user.profile || {}
+);
+const companyProfile = computed(() => 
+    props.user.company_profile || props.user.companyProfile || props.user.profile || {}
+);
 
 const fullName = computed(() => {
   if (isArsitek.value) {

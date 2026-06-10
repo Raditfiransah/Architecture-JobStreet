@@ -261,19 +261,148 @@ class LowonganSeeder extends Seeder
             'location' => $location,
         ]);
 
+        // Map known companies to richer profiles
+        $profileData = $this->knownCompanyProfile($companyName, $location);
+
         CompanyProfile::updateOrCreate([
             'user_id' => $user->id,
-        ], [
-            'company_name' => $companyName,
-            'company_desc' => 'Studio/perusahaan arsitektur yang membuka lowongan melalui Bursa Kerja Architecture JobStreet.',
-            'industry' => 'Architecture & Design',
-            'company_size' => '50 - 200 Karyawan',
-            'location' => $location,
-            'business_fields' => ['Architecture', 'Design'],
-            'verification_status' => 'verified',
-            'verified_at' => now(),
-        ]);
+        ], $profileData);
 
         return $user;
+    }
+
+    private function knownCompanyProfile(string $companyName, string $location): array
+    {
+        $profiles = [
+            'Arkindo Studio' => [
+                'company_name'       => 'Arkindo Studio',
+                'company_desc'       => 'Arkindo Studio adalah biro arsitektur terkemuka yang berfokus pada desain residensial mewah, hotel bintang lima, dan kawasan komersial premium. Didirikan oleh arsitek-arsitek berpengalaman yang percaya bahwa desain harus bermakna sekaligus indah.',
+                'industry'           => 'Jasa Arsitektur & Desain',
+                'company_size'       => '51-200 Karyawan',
+                'business_fields'    => ['Arsitektur Residensial', 'Hospitality', 'Komersial', 'Interior Design'],
+                'founded_year'       => 2010,
+                'company_website'    => 'https://www.arkindo.studio',
+                'verification_status'=> 'verified',
+                'verified_at'        => now(),
+            ],
+            'PT Graha Design' => [
+                'company_name'       => 'PT Graha Design',
+                'company_desc'       => 'PT Graha Design adalah firma arsitektur dan engineering terintegrasi dengan pengalaman lebih dari 20 tahun di proyek infrastruktur, gedung pemerintahan, dan kawasan industri skala nasional.',
+                'industry'           => 'Konstruksi & Rekayasa',
+                'company_size'       => '201-500 Karyawan',
+                'business_fields'    => ['Engineering', 'Infrastruktur', 'BIM Management', 'Konstruksi'],
+                'founded_year'       => 2004,
+                'company_website'    => 'https://www.grahadesign.id',
+                'verification_status'=> 'verified',
+                'verified_at'        => now(),
+            ],
+            'Kana Interiors' => [
+                'company_name'       => 'Kana Interiors',
+                'company_desc'       => 'Kana Interiors adalah studio desain interior boutique yang mengkhususkan diri pada proyek residensial premium dan komersial. Pendekatan kami selalu berakar pada cerita klien, estetika lokal, dan detail material terbaik.',
+                'industry'           => 'Desain Interior',
+                'company_size'       => '11-50 Karyawan',
+                'business_fields'    => ['Interior Residensial', 'Interior Komersial', 'FF&E'],
+                'founded_year'       => 2015,
+                'company_website'    => 'https://www.kanainteriors.co',
+                'verification_status'=> 'verified',
+                'verified_at'        => now(),
+            ],
+            'PT Rekayasa Kota Nusantara' => [
+                'company_name'       => 'PT Rekayasa Kota Nusantara',
+                'company_desc'       => 'PT Rekayasa Kota Nusantara adalah konsultan perencanaan kota dengan rekam jejak panjang dalam penyusunan RTRW, RDTR, masterplan kawasan strategis nasional termasuk kawasan IKN, dan proyek Smart City.',
+                'industry'           => 'Perencanaan Wilayah & Kota',
+                'company_size'       => '51-200 Karyawan',
+                'business_fields'    => ['Perencanaan Kota', 'Tata Ruang', 'Smart City', 'GIS & Analisis Spasial'],
+                'founded_year'       => 2001,
+                'company_website'    => 'https://www.rekayasanusantara.co.id',
+                'verification_status'=> 'verified',
+                'verified_at'        => now(),
+            ],
+            'Taman Hijau Indonesia' => [
+                'company_name'       => 'Taman Hijau Indonesia',
+                'company_desc'       => 'Taman Hijau Indonesia adalah firma landscape architecture terkemuka yang berfokus pada perancangan taman resort mewah, ruang publik, dan lanskap kawasan perumahan premium di seluruh Indonesia.',
+                'industry'           => 'Arsitektur Lanskap & Lingkungan',
+                'company_size'       => '11-50 Karyawan',
+                'business_fields'    => ['Landscape Architecture', 'Taman Resort', 'Ruang Publik', 'Urban Greening'],
+                'founded_year'       => 2012,
+                'company_website'    => null,
+                'verification_status'=> 'verified',
+                'verified_at'        => now(),
+            ],
+            'Studio Empat Sembilan' => [
+                'company_name'       => 'Studio Empat Sembilan',
+                'company_desc'       => 'Studio Empat Sembilan adalah studio arsitektur independen berbasis di Yogyakarta yang berfokus pada desain residensial kontemporer dengan pendekatan lokalitas dan eksplorasi material nusantara.',
+                'industry'           => 'Arsitektur & Desain',
+                'company_size'       => '1-10 Karyawan',
+                'business_fields'    => ['Arsitektur Residensial', 'Desain Interior', 'Riset Material'],
+                'founded_year'       => 2018,
+                'company_website'    => 'https://www.studio49.id',
+                'verification_status'=> 'verified',
+                'verified_at'        => now(),
+            ],
+            'CV Bangun Persada' => [
+                'company_name'       => 'CV Bangun Persada',
+                'company_desc'       => 'CV Bangun Persada adalah kontraktor dan konsultan arsitektur yang melayani proyek residensial dan komersial di wilayah Malang Raya. Kami mengutamakan kualitas gambar kerja dan ketepatan waktu pelaksanaan.',
+                'industry'           => 'Konstruksi & Konsultan',
+                'company_size'       => '11-50 Karyawan',
+                'business_fields'    => ['Konstruksi Residensial', 'Gambar Kerja', 'RAB & Tender'],
+                'founded_year'       => 2009,
+                'company_website'    => null,
+                'verification_status'=> 'verified',
+                'verified_at'        => now(),
+            ],
+            'PT Infrastruktor Muda' => [
+                'company_name'       => 'PT Infrastruktor Muda',
+                'company_desc'       => 'PT Infrastruktor Muda adalah konsultan MEP (Mekanikal, Elektrikal, Plumbing) yang berpengalaman menangani koordinasi sistem bangunan untuk gedung bertingkat tinggi dan infrastruktur publik di kawasan Jawa Timur.',
+                'industry'           => 'Engineering MEP',
+                'company_size'       => '51-200 Karyawan',
+                'business_fields'    => ['MEP Engineering', 'Koordinasi Sistem Bangunan', 'Infrastruktur'],
+                'founded_year'       => 2011,
+                'company_website'    => null,
+                'verification_status'=> 'verified',
+                'verified_at'        => now(),
+            ],
+            'Aedifica Nusantara' => [
+                'company_name'       => 'Aedifica Nusantara',
+                'company_desc'       => 'Aedifica Nusantara adalah perusahaan manajemen konstruksi dengan track record lebih dari 100 proyek besar di Indonesia. Kami mengelola proyek dari tahap perencanaan hingga commissioning dengan standar internasional.',
+                'industry'           => 'Manajemen Proyek & Konstruksi',
+                'company_size'       => '501-1000 Karyawan',
+                'business_fields'    => ['Project Management', 'Construction Management', 'Quantity Surveying'],
+                'founded_year'       => 2005,
+                'company_website'    => 'https://www.aedifica.co.id',
+                'verification_status'=> 'verified',
+                'verified_at'        => now(),
+            ],
+            'Render Studio ID' => [
+                'company_name'       => 'Render Studio ID',
+                'company_desc'       => 'Render Studio ID adalah studio visualisasi arsitektur profesional yang menghasilkan rendering fotorealistik dan animasi walkthrough berkualitas tinggi. Kami melayani biro arsitektur, developer properti, dan kontraktor di seluruh Indonesia.',
+                'industry'           => 'Visualisasi & CGI',
+                'company_size'       => '1-10 Karyawan',
+                'business_fields'    => ['3D Rendering', 'Animasi Arsitektur', 'CGI & Visualisasi'],
+                'founded_year'       => 2020,
+                'company_website'    => null,
+                'verification_status'=> 'verified',
+                'verified_at'        => now(),
+            ],
+        ];
+
+        $base = [
+            'location'           => $location,
+            'phone'              => null,
+            'company_logo_url'   => null,
+            'nib_number'         => null,
+        ];
+
+        return array_merge($base, $profiles[$companyName] ?? [
+            'company_name'       => $companyName,
+            'company_desc'       => "{$companyName} adalah perusahaan yang bergerak di bidang arsitektur dan desain, membuka lowongan melalui platform Architecture JobStreet.",
+            'industry'           => 'Architecture & Design',
+            'company_size'       => '11-50 Karyawan',
+            'business_fields'    => ['Architecture', 'Design'],
+            'founded_year'       => null,
+            'company_website'    => null,
+            'verification_status'=> 'verified',
+            'verified_at'        => now(),
+        ]);
     }
 }

@@ -12,7 +12,8 @@ import {
   Search,
   CheckCircle,
   MessageSquare,
-  Plus
+  Plus,
+  ArrowLeft
 } from "lucide-vue-next";
 import { Card, CardContent, CardHeader, CardTitle } from "@/Components/UI/ui/card";
 import { Button } from "@/Components/UI/ui/button";
@@ -40,6 +41,9 @@ const isLoggedIn = computed(() => !!user.value);
 const architects = computed(() => props.arsiteks.data);
 const selectedArsitek = ref(architects.value && architects.value.length > 0 ? architects.value[0] : null);
 
+// Mobile tab state
+const mobileTab = ref('list');
+
 watch(() => architects.value, (newArsiteks) => {
   if (newArsiteks?.length > 0) {
     if (!selectedArsitek.value || !newArsiteks.find(a => a.id === selectedArsitek.value?.id)) {
@@ -52,6 +56,7 @@ watch(() => architects.value, (newArsiteks) => {
 
 const selectArsitek = (arsitek) => {
   selectedArsitek.value = arsitek;
+  mobileTab.value = 'detail';
 };
 
 const handleHire = () => {
@@ -74,8 +79,38 @@ const handleHire = () => {
     <Head title="Cari Arsitek" />
 
     <main class="flex-1 w-full max-w-[1280px] mx-auto flex flex-col md:flex-row bg-white">
+
+      <!-- ── MOBILE TAB BAR ───────────────────────────────────────────── -->
+      <div class="md:hidden sticky top-[64px] z-30 bg-white border-b border-border flex">
+        <button
+          @click="mobileTab = 'list'"
+          :class="[
+            'flex-1 py-3 text-sm font-bold transition-colors',
+            mobileTab === 'list' ? 'text-primary border-b-2 border-primary' : 'text-muted-foreground'
+          ]"
+        >
+          Daftar ({{ arsiteks.total || 0 }})
+        </button>
+        <button
+          @click="mobileTab = 'detail'"
+          :disabled="!selectedArsitek"
+          :class="[
+            'flex-1 py-3 text-sm font-bold transition-colors',
+            mobileTab === 'detail' ? 'text-primary border-b-2 border-primary' : 'text-muted-foreground',
+            !selectedArsitek ? 'opacity-40 cursor-not-allowed' : ''
+          ]"
+        >
+          Detail
+        </button>
+      </div>
+
       <!-- Architect List -->
-      <aside class="w-full md:w-80 lg:w-96 shrink-0 border-r border-border md:h-[calc(100vh-134px)] md:min-h-[600px] overflow-y-auto">
+      <aside
+        :class="[
+          'w-full md:w-80 lg:w-96 shrink-0 md:border-r border-border md:h-[calc(100vh-134px)] md:min-h-[600px] md:overflow-y-auto',
+          mobileTab === 'list' ? 'block' : 'hidden md:block'
+        ]"
+      >
         <div class="sticky top-0 bg-white/95 backdrop-blur z-20 px-4 py-3 border-b border-border flex items-center justify-between">
           <span class="text-xs font-bold uppercase tracking-widest text-muted-foreground">{{ arsiteks.total || 0 }} Arsitek</span>
           <Button variant="ghost" size="sm" class="text-xs h-7 px-2 font-medium text-primary">Direktori</Button>
@@ -116,15 +151,38 @@ const handleHire = () => {
       </aside>
 
       <!-- Detail View -->
-      <section class="flex-1 bg-slate-50/30 md:h-[calc(100vh-134px)] md:min-h-[600px] overflow-y-auto px-6 lg:px-10 py-10">
+      <section
+        :class="[
+          'flex-1 bg-slate-50/30 md:h-[calc(100vh-134px)] md:min-h-[600px] md:overflow-y-auto',
+          mobileTab === 'detail' ? 'block' : 'hidden md:block'
+        ]"
+      >
+        <!-- Mobile back button -->
+        <div class="md:hidden px-4 pt-4">
+          <button @click="mobileTab = 'list'" class="flex items-center gap-2 text-sm font-bold text-muted-foreground hover:text-primary transition-colors mb-4">
+            <ArrowLeft class="w-4 h-4" />
+            Kembali ke Daftar
+          </button>
+        </div>
+
+        <div class="px-4 sm:px-6 lg:px-10 py-2 sm:py-10">
         <div v-if="selectedArsitek" class="max-w-3xl mx-auto space-y-8">
           <Card class="border-border/60 shadow-sm overflow-hidden rounded-2xl bg-white">
-             <!-- Banner Mockup -->
-             <div class="h-40 w-full bg-[#f8fafc] border-b border-border/40 relative">
-                <div class="absolute inset-0 opacity-5 bg-[radial-gradient(#e2e8f0_1.5px,transparent_1.5px)] [background-size:24px_24px]"></div>
-                <div class="absolute right-8 bottom-0 h-32 w-48 opacity-30">
-                   <img src="https://illustrations.popsy.co/slate/remote-work.svg" class="h-full w-full object-contain object-bottom" alt="Illustration" />
-                </div>
+             <!-- Banner -->
+             <div class="h-40 w-full bg-gradient-to-r from-gray-200 to-gray-300 relative overflow-hidden">
+                <img
+                   v-if="selectedArsitek.user?.banner_url"
+                   :src="selectedArsitek.user.banner_url"
+                   class="w-full h-full object-cover"
+                   alt="Background profil"
+                />
+                <!-- fallback decorative pattern when no banner -->
+                <template v-else>
+                   <div class="absolute inset-0 opacity-5 bg-[radial-gradient(#e2e8f0_1.5px,transparent_1.5px)] [background-size:24px_24px]"></div>
+                   <div class="absolute right-8 bottom-0 h-32 w-48 opacity-30">
+                      <img src="https://illustrations.popsy.co/slate/remote-work.svg" class="h-full w-full object-contain object-bottom" alt="" />
+                   </div>
+                </template>
              </div>
 
              <CardContent class="p-0 relative">
@@ -221,7 +279,7 @@ const handleHire = () => {
         </div>
 
         <!-- Empty State -->
-        <div v-else class="h-full flex flex-col items-center justify-center text-center p-12 space-y-6">
+        <div v-else class="h-full flex flex-col items-center justify-center text-center p-12 space-y-6 min-h-[400px]">
           <div class="w-24 h-24 bg-white shadow-sm border border-border/60 rounded-full flex items-center justify-center">
              <User class="w-10 h-10 text-slate-200" />
           </div>
@@ -230,6 +288,7 @@ const handleHire = () => {
             <p class="text-sm text-slate-400 font-medium leading-relaxed">Silakan pilih arsitek di sebelah kiri untuk melihat detail profil.</p>
           </div>
         </div>
+        </div><!-- end px wrapper -->
       </section>
     </main>
   </PublicLayout>

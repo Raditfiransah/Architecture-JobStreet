@@ -32,6 +32,8 @@ class ProposalController extends Controller
 
     public function terima(string $propId)
     {
+        $this->ensureProfileVerified();
+
         $proposal = Proposal::with('proyek')->findOrFail($propId);
 
         if ($proposal->proyek->user_id !== auth()->id()) {
@@ -73,6 +75,8 @@ class ProposalController extends Controller
 
     public function tolak(string $propId)
     {
+        $this->ensureProfileVerified();
+
         $proposal = Proposal::with('proyek')->findOrFail($propId);
 
         if ($proposal->proyek->user_id !== auth()->id()) {
@@ -99,6 +103,8 @@ class ProposalController extends Controller
 
     public function compare(Request $request, string $id)
     {
+        $this->ensureProfileVerified();
+
         $project = Proyek::where('user_id', auth()->id())->findOrFail($id);
 
         $idsString = $request->query('ids');

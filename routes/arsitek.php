@@ -7,7 +7,6 @@ use App\Http\Controllers\Arsitek\LamaranController;
 use App\Http\Controllers\Arsitek\ProposalController;
 use App\Http\Controllers\Arsitek\InboxController;
 use App\Http\Controllers\Arsitek\NotifikasiController;
-use App\Http\Controllers\Arsitek\PengaturanController;
 use Illuminate\Support\Facades\Route;
 
 // ─── Dashboard Arsitek (authenticated) ───────────────────────────────────────
@@ -24,16 +23,19 @@ Route::middleware(['auth', 'verified', 'role:arsitek'])
     Route::put('/profil', [ProfilController::class, 'update'])->name('profil.update');
     Route::get('/profil/preview', [ProfilController::class, 'preview'])->name('profil.preview');
     Route::post('/avatar', [ProfilController::class, 'updateAvatar'])->name('profil.avatar');
+    Route::post('/banner', [ProfilController::class, 'updateBanner'])->name('profil.banner');
     Route::post('/profil/document', [ProfilController::class, 'uploadDocument'])->name('profil.document');
 
-    // Portofolio
-    Route::get('/portofolio', [PortofolioController::class, 'index'])->name('portofolio.index');
-    Route::get('/portofolio/tambah', [PortofolioController::class, 'create'])->name('portofolio.create');
-    Route::post('/portofolio', [PortofolioController::class, 'store'])->name('portofolio.store');
-    Route::get('/portofolio/{portofolio}/edit', [PortofolioController::class, 'edit'])->name('portofolio.edit');
-    Route::put('/portofolio/{portofolio}', [PortofolioController::class, 'update'])->name('portofolio.update');
-    Route::delete('/portofolio/{portofolio}', [PortofolioController::class, 'destroy'])->name('portofolio.destroy');
-    Route::post('/portofolio/reorder', [PortofolioController::class, 'reorder'])->name('portofolio.reorder');
+    // Portofolio (memerlukan verifikasi dokumen)
+    Route::middleware('profile.verified')->group(function () {
+        Route::get('/portofolio', [PortofolioController::class, 'index'])->name('portofolio.index');
+        Route::get('/portofolio/tambah', [PortofolioController::class, 'create'])->name('portofolio.create');
+        Route::post('/portofolio', [PortofolioController::class, 'store'])->name('portofolio.store');
+        Route::get('/portofolio/{portofolio}/edit', [PortofolioController::class, 'edit'])->name('portofolio.edit');
+        Route::put('/portofolio/{portofolio}', [PortofolioController::class, 'update'])->name('portofolio.update');
+        Route::delete('/portofolio/{portofolio}', [PortofolioController::class, 'destroy'])->name('portofolio.destroy');
+        Route::post('/portofolio/reorder', [PortofolioController::class, 'reorder'])->name('portofolio.reorder');
+    });
 
     // Lamaran kerja
     Route::get('/lamaran', [LamaranController::class, 'index'])->name('lamaran.index');
@@ -42,7 +44,7 @@ Route::middleware(['auth', 'verified', 'role:arsitek'])
     // Proposal proyek
     Route::get('/proposal', [ProposalController::class, 'index'])->name('proposal.index');
     Route::get('/proposal/{proposal}', [ProposalController::class, 'show'])->name('proposal.show');
-    Route::put('/proposal/{proposal}', [ProposalController::class, 'update'])->name('proposal.update');
+    Route::put('/proposal/{proposal}', [ProposalController::class, 'update'])->middleware('profile.verified')->name('proposal.update');
 
     /*
     // Inbox async
@@ -58,11 +60,6 @@ Route::middleware(['auth', 'verified', 'role:arsitek'])
     Route::inertia('/verifikasi', 'Arsitek/Verifikasi')->name('verifikasi.index');
     Route::post('/verifikasi', [\App\Http\Controllers\User\VerificationController::class, 'submitArsitek'])->name('verifikasi.submit');
 
-    // Pengaturan
-    Route::get('/pengaturan', [PengaturanController::class, 'index'])->name('pengaturan.index');
-    Route::put('/pengaturan/password', [PengaturanController::class, 'updatePassword'])->name('pengaturan.password');
-    Route::put('/pengaturan/notifikasi', [PengaturanController::class, 'updateNotifikasi'])->name('pengaturan.notifikasi');
-    Route::delete('/pengaturan/akun', [PengaturanController::class, 'deleteAkun'])->name('pengaturan.delete');
 });
 
 // ─── Aksi dari halaman publik — middleware sama, tanpa prefix dashboard ───────
@@ -73,5 +70,6 @@ Route::middleware(['auth', 'verified', 'role:arsitek'])->group(function () {
         ->name('arsitek.lamaran.store');
 
     Route::post('/proyek/{proyek}/proposal', [ProposalController::class, 'store'])
+        ->middleware('profile.verified')
         ->name('arsitek.proposal.store');
 });

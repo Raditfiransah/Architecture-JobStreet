@@ -2,6 +2,8 @@
 
 namespace Tests\Feature\Marketplace;
 
+use App\Models\ArsitekProfile;
+use App\Models\ClientProfile;
 use App\Models\Proposal;
 use App\Models\Proyek;
 use App\Models\User;
@@ -15,6 +17,11 @@ class OpenBiddingFlowTest extends TestCase
     public function test_client_can_create_active_project(): void
     {
         $client = User::factory()->client()->create();
+        ClientProfile::create([
+            'user_id' => $client->id,
+            'verification_status' => 'verified',
+            'verified_at' => now(),
+        ]);
 
         $response = $this->actingAs($client)->post(route('client.proyek.store'), [
             'title' => 'Desain Rumah Tumbuh',
@@ -48,6 +55,11 @@ class OpenBiddingFlowTest extends TestCase
     public function test_architect_can_submit_proposal_to_active_project(): void
     {
         $arsitek = User::factory()->arsitek()->create();
+        ArsitekProfile::factory()->create([
+            'user_id' => $arsitek->id,
+            'verification_status' => 'verified',
+            'verified_at' => now(),
+        ]);
         $project = Proyek::factory()->create();
 
         $response = $this->actingAs($arsitek)->post(route('arsitek.proposal.store', $project->id), [
@@ -68,6 +80,11 @@ class OpenBiddingFlowTest extends TestCase
     public function test_architect_cannot_submit_duplicate_proposal(): void
     {
         $arsitek = User::factory()->arsitek()->create();
+        ArsitekProfile::factory()->create([
+            'user_id' => $arsitek->id,
+            'verification_status' => 'verified',
+            'verified_at' => now(),
+        ]);
         $project = Proyek::factory()->create();
 
         Proposal::factory()->create([
@@ -91,6 +108,11 @@ class OpenBiddingFlowTest extends TestCase
     public function test_client_accepts_one_proposal_and_other_proposals_are_rejected(): void
     {
         $client = User::factory()->client()->create();
+        ClientProfile::create([
+            'user_id' => $client->id,
+            'verification_status' => 'verified',
+            'verified_at' => now(),
+        ]);
         $project = Proyek::factory()->for($client, 'user')->create();
         $acceptedProposal = Proposal::factory()->for($project, 'proyek')->create();
         $otherProposal = Proposal::factory()->for($project, 'proyek')->create();
@@ -107,6 +129,11 @@ class OpenBiddingFlowTest extends TestCase
     public function test_architect_cannot_update_accepted_or_rejected_proposal(): void
     {
         $arsitek = User::factory()->arsitek()->create();
+        ArsitekProfile::factory()->create([
+            'user_id' => $arsitek->id,
+            'verification_status' => 'verified',
+            'verified_at' => now(),
+        ]);
         $acceptedProposal = Proposal::factory()->accepted()->create([
             'user_id' => $arsitek->id,
         ]);

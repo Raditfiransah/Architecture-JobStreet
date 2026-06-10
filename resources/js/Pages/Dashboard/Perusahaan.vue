@@ -114,7 +114,7 @@ const formatDate = (dateString) => {
             </div>
 
             <!-- Stats Grid -->
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
                 <Card class="border-border/60 shadow-sm rounded-3xl overflow-hidden hover:shadow-md transition-shadow">
                     <CardContent class="p-6">
                         <div class="flex items-center gap-4">
@@ -175,34 +175,34 @@ const formatDate = (dateString) => {
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
                 <!-- Recent Applications -->
                 <Card class="lg:col-span-2 border-border/60 shadow-sm rounded-[32px] overflow-hidden">
-                    <CardHeader class="px-8 pt-8 pb-4 flex flex-row items-center justify-between">
+                    <CardHeader class="px-4 sm:px-8 pt-6 sm:pt-8 pb-4 flex flex-row items-center justify-between">
                         <div>
-                            <CardTitle class="text-xl font-display font-bold">Kandidat Terbaru</CardTitle>
+                            <CardTitle class="text-lg sm:text-xl font-display font-bold">Kandidat Terbaru</CardTitle>
                             <CardDescription>Daftar pelamar terbaru yang masuk.</CardDescription>
                         </div>
-                        <Link :href="route('perusahaan.lowongan.index')" class="text-sm font-bold text-primary hover:underline">
+                        <Link :href="route('perusahaan.lowongan.index')" class="text-sm font-bold text-primary hover:underline whitespace-nowrap">
                             Lihat Semua
                         </Link>
                     </CardHeader>
-                    <CardContent class="px-8 pb-8">
+                    <CardContent class="px-4 sm:px-8 pb-6 sm:pb-8">
                         <div v-if="applications.length > 0" class="divide-y divide-slate-100">
-                            <div v-for="app in applications" :key="app.id" class="py-4 flex items-center justify-between group">
-                                <div class="flex items-center gap-4">
-                                    <div class="w-12 h-12 rounded-xl bg-slate-100 flex items-center justify-center font-bold text-slate-400 group-hover:bg-primary/5 group-hover:text-primary transition-colors">
+                            <div v-for="app in applications" :key="app.id" class="py-3 sm:py-4 flex items-center justify-between gap-3 group">
+                                <div class="flex items-center gap-3 min-w-0">
+                                    <div class="w-10 h-10 rounded-xl bg-slate-100 flex items-center justify-center font-bold text-slate-400 group-hover:bg-primary/5 group-hover:text-primary transition-colors shrink-0 text-sm">
                                         {{ getApplicantInitials(app) }}
                                     </div>
-                                    <div>
-                                        <h4 class="font-bold text-slate-900 leading-none mb-1 group-hover:text-primary transition-colors">{{ getApplicantName(app) }}</h4>
-                                        <p class="text-xs text-slate-500 font-medium">Melamar: <span class="text-slate-700">{{ getPositionName(app) }}</span></p>
+                                    <div class="min-w-0">
+                                        <h4 class="font-bold text-slate-900 leading-none mb-1 group-hover:text-primary transition-colors text-sm truncate">{{ getApplicantName(app) }}</h4>
+                                        <p class="text-xs text-slate-500 font-medium truncate">{{ getPositionName(app) }}</p>
                                     </div>
                                 </div>
-                                <div class="flex items-center gap-4">
-                                    <span class="px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider border" :class="getStatusColor(app.status)">
+                                <div class="flex items-center gap-2 shrink-0">
+                                    <span class="hidden sm:inline px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider border" :class="getStatusColor(app.status)">
                                         {{ getStatusLabel(app.status) }}
                                     </span>
                                     <Link :href="getApplicationHref(app)">
-                                        <Button variant="ghost" size="icon" class="rounded-xl h-10 w-10 hover:bg-slate-50">
-                                            <ChevronRight class="w-5 h-5 text-slate-400" />
+                                        <Button variant="ghost" size="icon" class="rounded-xl h-8 w-8 hover:bg-slate-50">
+                                            <ChevronRight class="w-4 h-4 text-slate-400" />
                                         </Button>
                                     </Link>
                                 </div>
@@ -220,19 +220,6 @@ const formatDate = (dateString) => {
 
                 <!-- Quick Tips -->
                 <div class="space-y-6">
-                    <Card class="border-border/60 shadow-sm rounded-[32px] overflow-hidden bg-primary text-white">
-                        <CardContent class="p-8">
-                            <div class="w-14 h-14 rounded-2xl bg-white/20 flex items-center justify-center mb-6 backdrop-blur-sm">
-                                <CheckCircle2 class="w-8 h-8 text-white" />
-                            </div>
-                            <h3 class="text-xl font-display font-bold mb-3">Tingkatkan Kualitas Iklan</h3>
-                            <p class="text-white/80 text-sm leading-relaxed mb-6">Informasi gaji dan deskripsi yang jelas meningkatkan jumlah pelamar hingga 40%.</p>
-                            <Button variant="secondary" class="w-full rounded-2xl font-bold bg-white text-primary hover:bg-slate-50">
-                                Pelajari Tips
-                            </Button>
-                        </CardContent>
-                    </Card>
-
                     <Card class="border-border/60 shadow-sm rounded-[24px] overflow-hidden">
                         <CardContent class="p-6 flex items-center gap-4">
                             <div class="w-12 h-12 rounded-2xl bg-slate-50 flex items-center justify-center shrink-0">

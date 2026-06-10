@@ -14,7 +14,8 @@ import {
   ChevronRight,
   Search,
   Users,
-  Briefcase
+  Briefcase,
+  ArrowLeft
 } from "lucide-vue-next";
 import { Card, CardContent, CardHeader, CardTitle } from "@/Components/UI/ui/card";
 import { Button } from "@/Components/UI/ui/button";
@@ -46,6 +47,9 @@ const categories = [
 
 const selectedProject = ref(props.projects && props.projects.length > 0 ? props.projects[0] : null);
 
+// Mobile tab state
+const mobileTab = ref('list');
+
 watch(() => props.projects, (newProjects) => {
   if (newProjects?.length > 0) {
     if (!selectedProject.value || !newProjects.find(p => p.id === selectedProject.value?.id)) {
@@ -69,6 +73,7 @@ const handleSearch = () => {
 
 const selectProject = (project) => {
   selectedProject.value = project;
+  mobileTab.value = 'detail';
 };
 
 const formatCurrency = (value) => {
@@ -85,9 +90,9 @@ const formatCurrency = (value) => {
     <Head :title="title" />
 
     <!-- Filters header bar -->
-    <div class="bg-slate-50 border-b border-slate-200 py-4 px-6 sticky top-[72px] z-30">
-      <div class="max-w-[1280px] mx-auto flex flex-col md:flex-row gap-4 items-center justify-between">
-        <div class="flex flex-col sm:flex-row gap-2 w-full md:w-auto flex-1 max-w-3xl">
+    <div class="bg-slate-50 border-b border-slate-200 py-3 px-4 sm:px-6 sticky top-[64px] z-30">
+      <div class="max-w-[1280px] mx-auto flex flex-col sm:flex-row gap-3 items-stretch sm:items-center">
+        <div class="flex flex-col sm:flex-row gap-2 flex-1 max-w-3xl">
           <div class="relative flex-1">
             <Search class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
             <input 
@@ -111,24 +116,52 @@ const formatCurrency = (value) => {
           <select 
             v-model="selectedCategory"
             @change="handleSearch"
-            class="h-11 px-4 bg-white border border-slate-200 rounded-xl text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-slate-600 cursor-pointer"
+            class="h-11 px-3 bg-white border border-slate-200 rounded-xl text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-slate-600 cursor-pointer"
           >
             <option value="">Semua Kategori</option>
             <option v-for="cat in categories" :key="cat" :value="cat">{{ cat }}</option>
           </select>
         </div>
-        
-        <Button class="rounded-xl font-bold h-11 px-6 shadow-sm w-full md:w-auto" @click="handleSearch">
+        <Button class="rounded-xl font-bold h-11 px-6 shadow-sm w-full sm:w-auto" @click="handleSearch">
           Terapkan
         </Button>
       </div>
     </div>
 
-    <!-- Main split layout -->
+    <!-- Main split layout: stack on mobile, side-by-side on md+ -->
     <main class="flex-1 w-full max-w-[1280px] mx-auto flex flex-col md:flex-row bg-white relative">
+
+      <!-- ── MOBILE TAB BAR ───────────────────────────────────────────── -->
+      <div class="md:hidden sticky top-0 z-30 bg-white border-b border-slate-200 flex">
+        <button
+          @click="mobileTab = 'list'"
+          :class="[
+            'flex-1 py-3 text-sm font-bold transition-colors',
+            mobileTab === 'list' ? 'text-primary border-b-2 border-primary' : 'text-muted-foreground'
+          ]"
+        >
+          Proyek ({{ projects?.length || 0 }})
+        </button>
+        <button
+          @click="mobileTab = 'detail'"
+          :disabled="!selectedProject"
+          :class="[
+            'flex-1 py-3 text-sm font-bold transition-colors',
+            mobileTab === 'detail' ? 'text-primary border-b-2 border-primary' : 'text-muted-foreground',
+            !selectedProject ? 'opacity-40 cursor-not-allowed' : ''
+          ]"
+        >
+          Detail
+        </button>
+      </div>
       
       <!-- Project List (Left Pane) -->
-      <aside class="w-full md:w-80 lg:w-[420px] shrink-0 border-r border-slate-100 md:h-[calc(100vh-190px)] overflow-y-auto bg-slate-50/50">
+      <aside
+        :class="[
+          'w-full md:w-80 lg:w-[420px] shrink-0 md:border-r border-slate-100 md:h-[calc(100vh-190px)] md:overflow-y-auto bg-slate-50/50',
+          mobileTab === 'list' ? 'block' : 'hidden md:block'
+        ]"
+      >
         <div class="sticky top-0 bg-slate-50/95 backdrop-blur z-20 px-5 py-4 border-b border-slate-100 flex items-center justify-between">
           <span class="text-xs font-black uppercase tracking-widest text-slate-400">{{ projects?.length || 0 }} Proyek Aktif</span>
           <span class="text-xs font-bold text-primary">Urutan Terbaru</span>
@@ -151,7 +184,6 @@ const formatCurrency = (value) => {
                 <h3 class="text-base font-bold text-slate-800 leading-snug hover:text-primary transition-colors">{{ project.title }}</h3>
                 <p class="text-xs text-slate-400 font-semibold mt-1 flex items-center gap-1.5"><MapPin class="w-3.5 h-3.5 text-slate-400 shrink-0" /> {{ project.location }}</p>
               </div>
-              
               <div class="flex items-center justify-between pt-2 border-t border-slate-100/60">
                 <span class="text-sm font-extrabold text-slate-800">{{ formatCurrency(project.budget) }}</span>
                 <span class="text-[10px] text-slate-400 font-semibold flex items-center gap-1"><Clock class="w-3 h-3" /> Baru saja</span>
@@ -162,7 +194,21 @@ const formatCurrency = (value) => {
       </aside>
 
       <!-- Detail (Right Pane) -->
-      <section class="flex-1 bg-white md:h-[calc(100vh-190px)] overflow-y-auto px-6 lg:px-8 py-8">
+      <section
+        :class="[
+          'flex-1 bg-white md:h-[calc(100vh-190px)] md:overflow-y-auto',
+          mobileTab === 'detail' ? 'block' : 'hidden md:block'
+        ]"
+      >
+        <!-- Mobile back button -->
+        <div class="md:hidden px-4 pt-4">
+          <button @click="mobileTab = 'list'" class="flex items-center gap-2 text-sm font-bold text-muted-foreground hover:text-primary transition-colors mb-4">
+            <ArrowLeft class="w-4 h-4" />
+            Kembali ke Daftar
+          </button>
+        </div>
+
+        <div class="px-4 sm:px-6 lg:px-8 py-2 sm:py-8">
         <div v-if="selectedProject" class="max-w-3xl mx-auto space-y-8 animate-in fade-in duration-300">
           <div class="border border-slate-100 rounded-3xl p-6 md:p-8 shadow-sm">
             <div class="flex flex-col md:flex-row md:items-start gap-6 mb-6">
@@ -239,7 +285,7 @@ const formatCurrency = (value) => {
         </div>
 
         <!-- Empty State (No selected project) -->
-        <div v-else class="h-full flex flex-col items-center justify-center text-center p-12 space-y-6">
+        <div v-else class="flex flex-col items-center justify-center text-center p-12 space-y-6 min-h-[400px]">
           <div class="w-24 h-24 bg-slate-50 border border-slate-100 rounded-full flex items-center justify-center">
              <Briefcase class="w-10 h-10 text-slate-400/55" />
           </div>
@@ -248,6 +294,7 @@ const formatCurrency = (value) => {
             <p class="text-xs text-slate-400 leading-relaxed">Silakan pilih proyek di kolom sebelah kiri untuk melihat rincian spesifikasi desain bangunan.</p>
           </div>
         </div>
+        </div><!-- end px wrapper -->
       </section>
     </main>
   </PublicLayout>

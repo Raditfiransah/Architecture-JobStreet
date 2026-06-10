@@ -9,6 +9,8 @@ class PelamarController extends Controller
 {
     public function all()
     {
+        $this->ensureProfileVerified();
+
         $lowongans = auth()->user()->lowongans()->with(['lamarans.user', 'lamarans.lowongan'])->get();
         
         $allLamarans = $lowongans->flatMap->lamarans->sortByDesc('applied_at');
@@ -20,6 +22,8 @@ class PelamarController extends Controller
 
     public function index(string $id)
     {
+        $this->ensureProfileVerified();
+
         $lowongan = auth()->user()->lowongans()->with('lamarans.user')->findOrFail($id);
 
         return \Inertia\Inertia::render('Perusahaan/Pelamar/Index', [
@@ -30,6 +34,8 @@ class PelamarController extends Controller
 
     public function show(string $id, string $appId)
     {
+        $this->ensureProfileVerified();
+
         $lowongan = auth()->user()->lowongans()->findOrFail($id);
         $lamaran = \App\Models\Lamaran::with(['user.arsitekProfile', 'lowongan'])
             ->where('lowongan_id', $id)
@@ -42,6 +48,8 @@ class PelamarController extends Controller
 
     public function updateStatus(Request $request, string $appId)
     {
+        $this->ensureProfileVerified();
+
         $validated = $request->validate([
             'status' => 'required|in:pending,reviewing,shortlisted,interview,rejected,accepted'
         ]);
@@ -57,6 +65,8 @@ class PelamarController extends Controller
 
     public function shortlist(string $appId)
     {
+        $this->ensureProfileVerified();
+
         $lamaran = \App\Models\Lamaran::whereHas('lowongan', function($q) {
             $q->where('user_id', auth()->id());
         })->findOrFail($appId);

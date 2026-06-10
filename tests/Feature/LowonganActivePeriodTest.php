@@ -212,7 +212,7 @@ class LowonganActivePeriodTest extends TestCase
 
         $response
             ->assertRedirect(route('perusahaan.verifikasi.index'))
-            ->assertSessionHas('error', 'Profil Anda harus diverifikasi admin terlebih dahulu sebelum melakukan aksi ini.');
+            ->assertSessionHas('error', 'Dokumen profil Anda belum diverifikasi. Silakan selesaikan verifikasi dokumen terlebih dahulu untuk menggunakan fitur ini.');
 
         $this->assertDatabaseCount('lowongan', 0);
     }
@@ -234,7 +234,7 @@ class LowonganActivePeriodTest extends TestCase
 
         $response
             ->assertRedirect(route('arsitek.verifikasi.index'))
-            ->assertSessionHas('error', 'Profil Anda harus diverifikasi admin terlebih dahulu sebelum melakukan aksi ini.');
+            ->assertSessionHas('error', 'Dokumen profil Anda belum diverifikasi. Silakan selesaikan verifikasi dokumen terlebih dahulu untuk menggunakan fitur ini.');
 
         $this->assertDatabaseCount('lamarans', 0);
     }

@@ -20,6 +20,7 @@ class EnsureProfileVerified
         $isVerified = match ($user->role) {
             'arsitek' => $user->arsitekProfile?->isVerified() ?? false,
             'perusahaan' => $user->companyProfile?->isVerified() ?? false,
+            'client' => $user->clientProfile?->isVerified() ?? false,
             default => true,
         };
 
@@ -30,15 +31,18 @@ class EnsureProfileVerified
         $routeName = match ($user->role) {
             'arsitek' => 'arsitek.verifikasi.index',
             'perusahaan' => 'perusahaan.verifikasi.index',
+            'client' => 'client.verifikasi.index',
             default => 'dashboard',
         };
 
+        $message = 'Dokumen profil Anda belum diverifikasi. Silakan selesaikan verifikasi dokumen terlebih dahulu untuk menggunakan fitur ini.';
+
         if ($request->expectsJson()) {
-            abort(403, 'Profil Anda harus diverifikasi admin terlebih dahulu.');
+            abort(403, $message);
         }
 
         return redirect()
             ->route($routeName)
-            ->with('error', 'Profil Anda harus diverifikasi admin terlebih dahulu sebelum melakukan aksi ini.');
+            ->with('error', $message);
     }
 }

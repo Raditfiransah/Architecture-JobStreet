@@ -43,8 +43,8 @@ const popularTags = [
     <main class="relative min-h-[90vh] flex flex-col items-center justify-center">
       <div class="w-full max-w-5xl px-6 py-20 text-center space-y-12">
         <div class="space-y-6">
-          <h1 class="text-4xl md:text-6xl font-display font-bold text-foreground tracking-tight leading-tight">
-            Bangun Karir Impianmu sebagai <br />
+          <h1 class="text-3xl sm:text-4xl md:text-6xl font-display font-bold text-foreground tracking-tight leading-tight">
+            Bangun Karir Impianmu sebagai<br class="hidden sm:block" />
             <span class="text-primary italic relative">
               Arsitek Profesional
               <svg class="absolute -bottom-2 left-0 w-full h-3 text-primary/30" viewBox="0 0 100 10" preserveAspectRatio="none">
@@ -59,7 +59,7 @@ const popularTags = [
 
         <div class="w-full max-w-2xl mx-auto">
           <div class="bg-card/80 backdrop-blur border-border/50 border-2 rounded-xl p-1.5 shadow-sm relative group focus-within:border-primary/40 transition-all">
-            <form @submit.prevent="handleSearch" class="flex flex-row items-center gap-1.5">
+            <form @submit.prevent="handleSearch" class="flex flex-col sm:flex-row items-stretch sm:items-center gap-1.5">
               <div class="flex-[1.2] flex items-center px-4">
                 <Search class="w-5 h-5 text-muted-foreground shrink-0" />
                 <Input
@@ -70,7 +70,8 @@ const popularTags = [
                 />
               </div>
               
-              <div class="w-px h-8 bg-border shrink-0"></div>
+              <div class="hidden sm:block w-px h-8 bg-border shrink-0 self-center"></div>
+              <div class="block sm:hidden h-px w-full bg-border/40 mx-1.5"></div>
               
               <div class="flex-1 flex items-center px-4">
                 <MapPin class="w-5 h-5 text-muted-foreground shrink-0" />
@@ -85,7 +86,7 @@ const popularTags = [
               <Button
                 type="submit"
                 size="lg"
-                class="rounded-lg px-8 h-12 font-bold shrink-0"
+                class="rounded-lg px-6 h-12 font-bold shrink-0 w-full sm:w-auto"
               >
                 Cari
                 <Search class="ml-2 w-4 h-4" />
@@ -93,14 +94,14 @@ const popularTags = [
             </form>
           </div>
 
-          <div class="mt-10 flex flex-wrap items-center justify-center gap-2.5">
+          <div class="mt-8 flex flex-wrap items-center justify-center gap-2">
             <span class="text-xs font-bold uppercase tracking-widest text-muted-foreground mr-2">Populer:</span>
             <Link
               v-for="tag in popularTags"
               :key="tag"
               :href="route('lowongan.index', { q: tag })"
             >
-              <Badge variant="outline" class="px-5 py-2 rounded-full border-border/50 bg-background/50 hover:bg-primary/5 hover:text-primary hover:border-primary/30 cursor-pointer font-semibold text-sm">
+              <Badge variant="outline" class="px-3 sm:px-5 py-1.5 sm:py-2 rounded-full border-border/50 bg-background/50 hover:bg-primary/5 hover:text-primary hover:border-primary/30 cursor-pointer font-semibold text-xs sm:text-sm">
                 {{ tag }}
               </Badge>
             </Link>

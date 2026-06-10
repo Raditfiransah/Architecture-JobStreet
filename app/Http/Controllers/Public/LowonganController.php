@@ -61,30 +61,56 @@ class LowonganController extends Controller
 
     private function formatJobs($jobs)
     {
-        $fallbackCompanyId = User::query()
+        // Pre-load all perusahaan users for matching — done once, not per-job
+        $companies = User::query()
             ->where('role', 'perusahaan')
-            ->oldest()
-            ->value('id');
+            ->with('companyProfile')
+            ->get();
 
-        return $jobs->map(function (Lowongan $lowongan) {
-            $companyUserId = $lowongan->user_id ?: User::query()
-                ->where('role', 'perusahaan')
-                ->where('name', $lowongan->perusahaan)
-                ->value('id');
+        // Index 1: by user.name exact (lowercase, trimmed)
+        $byUserName = $companies->keyBy(fn(User $u) => strtolower(trim($u->name)));
 
-            return array_merge($lowongan->toArray(), [
-                'company_profile_url' => $companyUserId
-                    ? route('public.perusahaan.show', $companyUserId)
-                    : null,
-            ]);
-        })->values()->map(function (array $job) use ($fallbackCompanyId) {
-            if ($job['company_profile_url'] || !$fallbackCompanyId) {
-                return $job;
+        // Index 2: by company_profile.company_name exact (lowercase, trimmed)
+        $byProfileName = $companies
+            ->filter(fn(User $u) => filled($u->companyProfile?->company_name))
+            ->keyBy(fn(User $u) => strtolower(trim($u->companyProfile->company_name)));
+
+        $findCompany = function (Lowongan $lowongan) use ($companies, $byUserName, $byProfileName): ?User {
+            // Priority 1: explicit user_id — most reliable
+            if ($lowongan->user_id) {
+                $found = $companies->find($lowongan->user_id);
+                // Only return if the found user is actually perusahaan role
+                return ($found && $found->role === 'perusahaan') ? $found : null;
             }
 
-            $job['company_profile_url'] = route('public.perusahaan.show', $fallbackCompanyId);
+            $needle = strtolower(trim($lowongan->perusahaan));
 
-            return $job;
-        });
+            if (blank($needle)) {
+                return null;
+            }
+
+            // Priority 2: exact match on user.name
+            if (isset($byUserName[$needle])) {
+                return $byUserName[$needle];
+            }
+
+            // Priority 3: exact match on company_profile.company_name
+            if (isset($byProfileName[$needle])) {
+                return $byProfileName[$needle];
+            }
+
+            // No match — do NOT fall back to any random company
+            return null;
+        };
+
+        return $jobs->map(function (Lowongan $lowongan) use ($findCompany) {
+            $match = $findCompany($lowongan);
+
+            return array_merge($lowongan->toArray(), [
+                'company_profile_url' => $match
+                    ? route('public.perusahaan.show', $match->id)
+                    : null,
+            ]);
+        })->values();
     }
 }

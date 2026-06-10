@@ -20,6 +20,37 @@ class ProfileFileUploadService
     }
 
     /**
+     * Upload and compress banner/cover image (landscape, wider crop)
+     */
+    public function uploadBanner(UploadedFile $file, string $directory, ?string $oldFilePath = null): string
+    {
+        $this->deleteOldFilePublic($oldFilePath);
+
+        if (function_exists('imagewebp')) {
+            $filename = Str::uuid() . '-' . time() . '.webp';
+            $path     = $directory . '/' . $filename;
+
+            $image = $this->imageManager->decodePath($file->getRealPath());
+            $image->cover(1200, 400); // landscape crop
+            $encoded = $image->encode(new \Intervention\Image\Encoders\WebpEncoder(quality: 82));
+            Storage::disk('public')->put($path, (string) $encoded);
+        } elseif (function_exists('imagejpeg')) {
+            $filename = Str::uuid() . '-' . time() . '.jpg';
+            $path     = $directory . '/' . $filename;
+
+            $image = $this->imageManager->decodePath($file->getRealPath());
+            $image->cover(1200, 400);
+            $encoded = $image->encode(new \Intervention\Image\Encoders\JpegEncoder(quality: 82));
+            Storage::disk('public')->put($path, (string) $encoded);
+        } else {
+            $filename = Str::uuid() . '-' . time() . '.' . $file->getClientOriginalExtension();
+            $path     = $file->storeAs($directory, $filename, 'public');
+        }
+
+        return Storage::url($path);
+    }
+
+    /**
      * Upload and compress avatar/logo image
      */
     public function uploadAvatar(UploadedFile $file, string $directory, ?string $oldFilePath = null): string

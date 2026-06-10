@@ -55,7 +55,15 @@ const handleHire = () => {
         <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
             <!-- Header Section -->
             <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-                <div class="h-32 sm:h-48 bg-gray-100"></div>
+                <!-- Banner -->
+                <div class="h-32 sm:h-48 bg-gradient-to-r from-gray-200 to-gray-300 overflow-hidden">
+                    <img
+                        v-if="arsitek.banner_url"
+                        :src="arsitek.banner_url"
+                        class="w-full h-full object-cover"
+                        alt="Background profil"
+                    />
+                </div>
                 
                 <div class="px-6 sm:px-10 py-6 relative">
                     <div class="flex flex-col sm:flex-row items-center sm:items-start gap-6 sm:gap-8 mb-6">
@@ -76,13 +84,6 @@ const handleHire = () => {
                                     {{ profile.status_pekerjaan }}
                                 </div>
                             </div>
-                        </div>
-                        
-                        <div class="flex-shrink-0 flex sm:flex-col gap-3">
-                            <button @click="handleHire" class="px-6 py-2.5 bg-black text-white font-semibold rounded-lg shadow-sm hover:bg-neutral-800 transition flex items-center gap-2">
-                                <Plus class="w-4 h-4" />
-                                Posting Proyek
-                            </button>
                         </div>
                     </div>
                 </div>

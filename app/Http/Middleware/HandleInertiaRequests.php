@@ -44,6 +44,7 @@ class HandleInertiaRequests extends Middleware
                     'email' => $request->user()->email,
                     'role' => $request->user()->role,
                     'avatar_url' => $request->user()->avatar_url,
+                    'banner_url' => $request->user()->banner_url,
                     'dashboard_route' => $request->user()->dashboardRoute(),
                     'profile' => match($request->user()->role) {
                         'arsitek' => $request->user()->arsitekProfile,

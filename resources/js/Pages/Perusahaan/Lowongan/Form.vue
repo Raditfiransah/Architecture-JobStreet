@@ -80,11 +80,11 @@ const submit = () => {
             <form @submit.prevent="submit" class="space-y-8 pb-20">
                 <!-- Main Info Card -->
                 <Card class="border-border/60 shadow-sm rounded-[32px] overflow-hidden">
-                    <CardHeader class="px-8 pt-8">
-                        <CardTitle class="text-2xl font-display font-bold">{{ isEdit ? 'Perbarui Lowongan' : 'Publikasikan Lowongan Baru' }}</CardTitle>
+                    <CardHeader class="px-5 sm:px-8 pt-6 sm:pt-8">
+                        <CardTitle class="text-xl sm:text-2xl font-display font-bold">{{ isEdit ? 'Perbarui Lowongan' : 'Publikasikan Lowongan Baru' }}</CardTitle>
                         <CardDescription>Berikan detail posisi yang Anda cari untuk menarik kandidat terbaik.</CardDescription>
                     </CardHeader>
-                    <CardContent class="px-8 pb-8 space-y-6">
+                    <CardContent class="px-5 sm:px-8 pb-6 sm:pb-8 space-y-6">
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div class="space-y-2">
                                 <Label for="posisi" class="text-sm font-bold text-slate-700">Posisi Pekerjaan <span class="text-red-500">*</span></Label>
@@ -186,14 +186,14 @@ const submit = () => {
                     </Card>
                 </div>
 
-                <!-- Action Button -->
-                <div class="flex items-center justify-end gap-4 bg-white/50 backdrop-blur-md p-6 rounded-[32px] border border-white sticky bottom-6 shadow-xl shadow-slate-200/50">
-                    <Link :href="route('perusahaan.lowongan.index')">
-                        <Button type="button" variant="ghost" class="rounded-2xl h-14 px-8 font-bold text-slate-500">
+                <!-- Action Button: sticky on desktop, static on mobile -->
+                <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-end gap-3 bg-white/80 backdrop-blur-md p-4 sm:p-6 rounded-[24px] sm:rounded-[32px] border border-white sm:sticky sm:bottom-6 shadow-xl shadow-slate-200/50">
+                    <Link :href="route('perusahaan.lowongan.index')" class="w-full sm:w-auto">
+                        <Button type="button" variant="ghost" class="rounded-xl h-12 px-6 font-bold text-slate-500 w-full sm:w-auto">
                             Batal
                         </Button>
                     </Link>
-                    <Button type="submit" :disabled="form.processing" class="rounded-2xl h-14 px-10 font-bold gap-3 shadow-xl shadow-primary/20 transition-all hover:scale-[1.02] active:scale-[0.98]">
+                    <Button type="submit" :disabled="form.processing" class="rounded-xl h-12 px-8 font-bold gap-2 shadow-lg shadow-primary/20 w-full sm:w-auto">
                         <Save class="w-5 h-5" />
                         {{ form.processing ? 'Menyimpan...' : (isEdit ? 'Simpan Perubahan' : 'Terbitkan Lowongan') }}
                     </Button>

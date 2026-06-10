@@ -164,94 +164,157 @@ const handleDelete = (id) => {
         </div>
       </div>
 
-      <!-- Users Table -->
+      <!-- Users Table (desktop) / Card List (mobile) -->
       <div class="bg-card border border-border/60 rounded-2xl shadow-sm overflow-hidden">
-        <Table>
-          <TableHeader class="bg-muted/30">
-            <TableRow>
-              <TableHead class="w-[300px] font-bold text-xs uppercase tracking-wider py-4">User Info</TableHead>
-              <TableHead class="font-bold text-xs uppercase tracking-wider">Role</TableHead>
-              <TableHead class="font-bold text-xs uppercase tracking-wider">Status</TableHead>
-              <TableHead class="font-bold text-xs uppercase tracking-wider">Tgl Pendaftaran</TableHead>
-              <TableHead class="text-right font-bold text-xs uppercase tracking-wider">Aksi</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            <TableRow v-for="user in users.data" :key="user.id" class="group hover:bg-muted/5 transition-colors">
-              <TableCell class="py-4">
-                <div class="flex items-center gap-3">
-                  <Avatar class="h-10 w-10 rounded-xl border border-border/60">
-                    <AvatarImage :src="user.avatar_url" />
-                    <AvatarFallback class="bg-primary/5 text-primary font-bold text-xs">
-                      {{ user.name.charAt(0) }}
-                    </AvatarFallback>
-                  </Avatar>
-                  <div class="min-w-0">
-                    <p class="font-bold text-sm text-foreground truncate">{{ user.name }}</p>
-                    <p class="text-xs text-muted-foreground truncate">{{ user.email }}</p>
+        <!-- Desktop Table -->
+        <div class="hidden md:block">
+          <Table>
+            <TableHeader class="bg-muted/30">
+              <TableRow>
+                <TableHead class="w-[300px] font-bold text-xs uppercase tracking-wider py-4">User Info</TableHead>
+                <TableHead class="font-bold text-xs uppercase tracking-wider">Role</TableHead>
+                <TableHead class="font-bold text-xs uppercase tracking-wider">Status</TableHead>
+                <TableHead class="font-bold text-xs uppercase tracking-wider">Tgl Pendaftaran</TableHead>
+                <TableHead class="text-right font-bold text-xs uppercase tracking-wider">Aksi</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              <TableRow v-for="user in users.data" :key="user.id" class="group hover:bg-muted/5 transition-colors">
+                <TableCell class="py-4">
+                  <div class="flex items-center gap-3">
+                    <Avatar class="h-10 w-10 rounded-xl border border-border/60">
+                      <AvatarImage :src="user.avatar_url" />
+                      <AvatarFallback class="bg-primary/5 text-primary font-bold text-xs">
+                        {{ user.name.charAt(0) }}
+                      </AvatarFallback>
+                    </Avatar>
+                    <div class="min-w-0">
+                      <p class="font-bold text-sm text-foreground truncate">{{ user.name }}</p>
+                      <p class="text-xs text-muted-foreground truncate">{{ user.email }}</p>
+                    </div>
+                  </div>
+                </TableCell>
+                <TableCell>
+                  <Badge :class="['rounded-lg font-bold text-[10px] uppercase tracking-wider px-2.5 py-1', getRoleBadge(user.role).class]" :variant="getRoleBadge(user.role).variant">
+                    {{ getRoleBadge(user.role).label }}
+                  </Badge>
+                </TableCell>
+                <TableCell>
+                  <div class="flex items-center gap-2">
+                    <div :class="[getUserStatusInfo(user).dotClass, 'w-2 h-2 rounded-full']"></div>
+                    <span :class="[getUserStatusInfo(user).textClass, 'text-xs font-bold uppercase tracking-wider']">
+                      {{ getUserStatusInfo(user).label }}
+                    </span>
+                  </div>
+                </TableCell>
+                <TableCell class="text-sm text-muted-foreground">
+                  {{ new Date(user.created_at).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' }) }}
+                </TableCell>
+                <TableCell class="text-right">
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button variant="ghost" size="icon" class="rounded-xl group-hover:bg-muted transition-colors">
+                        <MoreVertical class="w-4 h-4 text-muted-foreground" />
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end" class="w-48 rounded-xl p-2 border-border/60">
+                      <DropdownMenuItem asChild class="rounded-lg gap-2 cursor-pointer py-2">
+                        <Link :href="route('admin.users.show', user.id)" class="flex items-center gap-2">
+                          <Eye class="w-4 h-4 text-primary" />
+                          <span class="font-medium text-xs">Detail Profil</span>
+                        </Link>
+                      </DropdownMenuItem>
+                      <DropdownMenuSeparator />
+                      <DropdownMenuItem v-if="user.is_active" @click="handleSuspend(user.id)" class="rounded-lg gap-2 cursor-pointer py-2 text-rose-600 focus:text-rose-600 focus:bg-rose-50">
+                        <ShieldAlert class="w-4 h-4" />
+                        <span class="font-medium text-xs">Suspend User</span>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem v-else @click="handleActivate(user.id)" class="rounded-lg gap-2 cursor-pointer py-2 text-emerald-600 focus:text-emerald-600 focus:bg-emerald-50">
+                        <ShieldCheck class="w-4 h-4" />
+                        <span class="font-medium text-xs">Aktifkan Kembali</span>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem @click="handleDelete(user.id)" class="rounded-lg gap-2 cursor-pointer py-2 text-rose-600 focus:text-rose-600 focus:bg-rose-50">
+                        <Trash2 class="w-4 h-4" />
+                        <span class="font-medium text-xs">Hapus User</span>
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </TableCell>
+              </TableRow>
+              <TableRow v-if="users.data.length === 0">
+                <TableCell colspan="5" class="py-20 text-center">
+                  <div class="flex flex-col items-center justify-center space-y-3">
+                    <div class="p-4 bg-muted/50 rounded-full">
+                      <RefreshCcw class="w-10 h-10 text-muted-foreground/30" />
+                    </div>
+                    <p class="text-sm font-bold text-muted-foreground">Tidak ada user ditemukan.</p>
+                  </div>
+                </TableCell>
+              </TableRow>
+            </TableBody>
+          </Table>
+        </div>
+
+        <!-- Mobile Card List -->
+        <div class="md:hidden divide-y divide-border/40">
+          <div v-if="users.data.length === 0" class="py-16 text-center">
+            <p class="text-sm font-bold text-muted-foreground">Tidak ada user ditemukan.</p>
+          </div>
+          <div v-for="user in users.data" :key="user.id" class="p-4 hover:bg-muted/5 transition-colors">
+            <div class="flex items-start justify-between gap-3">
+              <div class="flex items-center gap-3 min-w-0 flex-1">
+                <Avatar class="h-10 w-10 rounded-xl border border-border/60 shrink-0">
+                  <AvatarImage :src="user.avatar_url" />
+                  <AvatarFallback class="bg-primary/5 text-primary font-bold text-xs">{{ user.name.charAt(0) }}</AvatarFallback>
+                </Avatar>
+                <div class="min-w-0">
+                  <p class="font-bold text-sm text-foreground truncate">{{ user.name }}</p>
+                  <p class="text-xs text-muted-foreground truncate">{{ user.email }}</p>
+                  <div class="flex flex-wrap items-center gap-2 mt-1.5">
+                    <Badge :class="['rounded-lg font-bold text-[10px] uppercase tracking-wider px-2 py-0.5', getRoleBadge(user.role).class]" :variant="getRoleBadge(user.role).variant">
+                      {{ getRoleBadge(user.role).label }}
+                    </Badge>
+                    <div class="flex items-center gap-1">
+                      <div :class="[getUserStatusInfo(user).dotClass, 'w-1.5 h-1.5 rounded-full']"></div>
+                      <span :class="[getUserStatusInfo(user).textClass, 'text-[10px] font-bold uppercase tracking-wider']">{{ getUserStatusInfo(user).label }}</span>
+                    </div>
                   </div>
                 </div>
-              </TableCell>
-              <TableCell>
-                <Badge :class="['rounded-lg font-bold text-[10px] uppercase tracking-wider px-2.5 py-1', getRoleBadge(user.role).class]" :variant="getRoleBadge(user.role).variant">
-                  {{ getRoleBadge(user.role).label }}
-                </Badge>
-              </TableCell>
-              <TableCell>
-                <div class="flex items-center gap-2">
-                  <div :class="[getUserStatusInfo(user).dotClass, 'w-2 h-2 rounded-full']"></div>
-                  <span :class="[getUserStatusInfo(user).textClass, 'text-xs font-bold uppercase tracking-wider']">
-                    {{ getUserStatusInfo(user).label }}
-                  </span>
-                </div>
-              </TableCell>
-              <TableCell class="text-sm text-muted-foreground">
-                {{ new Date(user.created_at).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' }) }}
-              </TableCell>
-              <TableCell class="text-right">
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" size="icon" class="rounded-xl group-hover:bg-muted transition-colors">
-                      <MoreVertical class="w-4 h-4 text-muted-foreground" />
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end" class="w-48 rounded-xl p-2 border-border/60">
-                    <DropdownMenuItem class="rounded-lg gap-2 cursor-pointer py-2">
+              </div>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" size="icon" class="rounded-xl shrink-0 h-8 w-8">
+                    <MoreVertical class="w-4 h-4 text-muted-foreground" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" class="w-48 rounded-xl p-2 border-border/60">
+                  <DropdownMenuItem asChild class="rounded-lg gap-2 cursor-pointer py-2">
+                    <Link :href="route('admin.users.show', user.id)" class="flex items-center gap-2">
                       <Eye class="w-4 h-4 text-primary" />
                       <span class="font-medium text-xs">Detail Profil</span>
-                    </DropdownMenuItem>
-                    <DropdownMenuSeparator />
-                    <DropdownMenuItem v-if="user.is_active" @click="handleSuspend(user.id)" class="rounded-lg gap-2 cursor-pointer py-2 text-rose-600 focus:text-rose-600 focus:bg-rose-50">
-                      <ShieldAlert class="w-4 h-4" />
-                      <span class="font-medium text-xs">Suspend User</span>
-                    </DropdownMenuItem>
-                    <DropdownMenuItem v-else @click="handleActivate(user.id)" class="rounded-lg gap-2 cursor-pointer py-2 text-emerald-600 focus:text-emerald-600 focus:bg-emerald-50">
-                      <ShieldCheck class="w-4 h-4" />
-                      <span class="font-medium text-xs">Aktifkan Kembali</span>
-                    </DropdownMenuItem>
-                    <DropdownMenuItem @click="handleDelete(user.id)" class="rounded-lg gap-2 cursor-pointer py-2 text-rose-600 focus:text-rose-600 focus:bg-rose-50">
-                      <Trash2 class="w-4 h-4" />
-                      <span class="font-medium text-xs">Hapus User</span>
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
-              </TableCell>
-            </TableRow>
-            <TableRow v-if="users.data.length === 0">
-               <TableCell colspan="5" class="py-20 text-center">
-                  <div class="flex flex-col items-center justify-center space-y-3">
-                     <div class="p-4 bg-muted/50 rounded-full">
-                        <Users class="w-10 h-10 text-muted-foreground/30" />
-                     </div>
-                     <p class="text-sm font-bold text-muted-foreground">Tidak ada user ditemukan.</p>
-                  </div>
-               </TableCell>
-            </TableRow>
-          </TableBody>
-        </Table>
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem v-if="user.is_active" @click="handleSuspend(user.id)" class="rounded-lg gap-2 cursor-pointer py-2 text-rose-600 focus:text-rose-600 focus:bg-rose-50">
+                    <ShieldAlert class="w-4 h-4" />
+                    <span class="font-medium text-xs">Suspend User</span>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem v-else @click="handleActivate(user.id)" class="rounded-lg gap-2 cursor-pointer py-2 text-emerald-600 focus:text-emerald-600 focus:bg-emerald-50">
+                    <ShieldCheck class="w-4 h-4" />
+                    <span class="font-medium text-xs">Aktifkan Kembali</span>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem @click="handleDelete(user.id)" class="rounded-lg gap-2 cursor-pointer py-2 text-rose-600 focus:text-rose-600 focus:bg-rose-50">
+                    <Trash2 class="w-4 h-4" />
+                    <span class="font-medium text-xs">Hapus User</span>
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
+          </div>
+        </div>
         
-        <div v-if="users.links.length > 3" class="px-8 py-4 border-t border-border/40 bg-muted/5">
-           <Pagination :links="users.links" />
+        <div v-if="users.links.length > 3" class="px-4 md:px-8 py-4 border-t border-border/40 bg-muted/5">
+          <Pagination :links="users.links" />
         </div>
       </div>
     </div>

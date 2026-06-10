@@ -68,8 +68,8 @@ const submit = () => {
             </Link>
 
             <form @submit.prevent="submit" class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                <!-- Main Info -->
-                <div class="lg:col-span-2 space-y-6">
+                <!-- Main Info: full width on mobile, 2/3 on desktop -->
+                <div class="lg:col-span-2 space-y-6 order-2 lg:order-1">
                     <Card class="border-border/60 shadow-sm rounded-3xl overflow-hidden">
                         <CardHeader class="pb-4">
                             <CardTitle class="text-2xl font-display font-bold">Detail Proyek</CardTitle>
@@ -133,8 +133,8 @@ const submit = () => {
                     </Card>
                 </div>
 
-                <!-- Sidebar Actions / Thumbnail -->
-                <div class="space-y-6">
+                <!-- Sidebar Actions / Thumbnail: comes first on mobile -->
+                <div class="space-y-6 order-1 lg:order-2">
                     <Card class="border-border/60 shadow-sm rounded-3xl overflow-hidden">
                         <CardHeader>
                             <CardTitle class="text-xl font-display font-bold">Thumbnail</CardTitle>
